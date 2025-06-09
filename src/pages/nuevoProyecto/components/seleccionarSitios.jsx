@@ -33,7 +33,14 @@ export default function SeleccionarSitios({ onSelect }) {
   return (
     <>
       <Autocomplete
-        sx={{ width: "50ch" }}
+        sx={{
+          width: "50ch",
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 2,
+            "& fieldset": { borderColor: "#d32f2f" },
+            "&:hover fieldset": { borderColor: "#9a0007" },
+          },
+        }}
         options={filterSitios(allSitios, inputValue)}
         getOptionLabel={(option) => `${option.nemonico} - ${option.nombreSitio}`}
         onChange={(event, newValue) => onSelect && onSelect(newValue)}

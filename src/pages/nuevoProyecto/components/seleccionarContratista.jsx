@@ -33,7 +33,14 @@ export default function SeleccionarContratista({ onSelect }) {
   return (
     <>
       <Autocomplete
-        sx={{ width: "50ch" }}
+        sx={{
+          width: "50ch",
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 2,
+            "& fieldset": { borderColor: "#d32f2f" },
+            "&:hover fieldset": { borderColor: "#9a0007" },
+          },
+        }}
         options={filterContratistas(allContratistas, inputValue)}
         getOptionLabel={(option) => `${option.nombreContratista}`}
         onChange={(event, newValue) => onSelect && onSelect(newValue)}

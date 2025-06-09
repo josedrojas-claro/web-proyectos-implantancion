@@ -33,7 +33,14 @@ export default function SeleccionarCodigoIng({ onSelect }) {
   return (
     <>
       <Autocomplete
-        sx={{ width: "50ch" }}
+        sx={{
+          width: "50ch",
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 2,
+            "& fieldset": { borderColor: "#d32f2f" },
+            "&:hover fieldset": { borderColor: "#9a0007" },
+          },
+        }}
         options={filterCodigoIng(allCodigoIng, inputValue)}
         getOptionLabel={(option) => `${option.codigo}`}
         onChange={(event, newValue) => onSelect && onSelect(newValue)}

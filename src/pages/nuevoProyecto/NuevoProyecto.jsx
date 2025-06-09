@@ -3,7 +3,7 @@ import MyAppBar from "../../components/MyAppBar";
 import {
   Box,
   TextField,
-  Stack,
+  Grid,
   Typography,
   ToggleButton,
   ToggleButtonGroup,
@@ -18,6 +18,7 @@ import SeleccionarContratista from "./components/seleccionarContratista";
 import SelecionarCodigoIng from "./components/selecionarCodigoIng";
 import SeleccionarTecnologia from "./components/seleccionarTecnologia";
 import { createProyecto } from "../../services/proyectoServices";
+import MainLayout from "../../layout/MainLayout";
 
 export default function NuevoProyecto() {
   const [sitioSeleccionado, setSitioSeleccionado] = React.useState(null);
@@ -92,144 +93,131 @@ export default function NuevoProyecto() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      <MyAppBar />
-      <h1>Nuevo Proyecto</h1>
+    <MainLayout>
+      <Typography variant="h5" textAlign="center" fontWeight="bold" mb={3}>
+        Nuevo Proyecto
+      </Typography>
 
-      {/* Nombre Proyecto */}
-      <Box sx={{ width: "90%", maxWidth: 500, mb: 2 }}>
-        <TextField
-          label="Nombre del Proyecto"
-          fullWidth
-          variant="outlined"
-          required
-          value={nombreProyecto} // 💡 aquí se enlaza el valor
-          onChange={(e) => setNombreProyecto(e.target.value)} // 💡 aquí se actualiza
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              "& fieldset": { borderColor: "#d32f2f" },
-              "&:hover fieldset": { borderColor: "#9a0007" },
-            },
-          }}
-          helperText={errores.nombre ? "Este campo es obligatorio" : ""}
-        />
-      </Box>
+      <Grid container spacing={3} justifyContent="center">
+        {/* Columna izquierda */}
+        <Grid item xs={12} md={6} display="flex" flexDirection="column" gap={2} alignItems="center">
+          <TextField
+            label="Nombre del Proyecto"
+            fullWidth
+            value={nombreProyecto}
+            onChange={(e) => setNombreProyecto(e.target.value)}
+            error={errores.nombre}
+            helperText={errores.nombre ? "Este campo es obligatorio" : ""}
+            sx={{
+              width: "50ch",
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                "& fieldset": { borderColor: "#d32f2f" },
+                "&:hover fieldset": { borderColor: "#9a0007" },
+              },
+            }}
+          />
 
-      {/* Descripción */}
-      <Box sx={{ width: "90%", maxWidth: 500, mb: 1 }}>
-        <TextField
-          label="Descripcion Proyecto"
-          fullWidth
-          multiline
-          rows={4}
-          value={descripcionProyecto} // 💡 aquí se enlaza el valor}
-          onChange={(e) => setDescripcionProyecto(e.target.value)} // 💡 aquí se actualiza
-          helperText={
-            errores.descripcion
-              ? "Este campo es obligatorio"
-              : "Puede poner un nombre más amplio o algo que describa más al proyecto"
-          }
-          error={errores.descripcion}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              "& fieldset": { borderColor: "#d32f2f" },
-              "&:hover fieldset": { borderColor: "#9a0007" },
-            },
-          }}
-        />
-      </Box>
+          <SeleccionarSitios onSelect={setSitioSeleccionado} />
+          {errores.sitio && (
+            <Typography color="error" variant="caption">
+              Debe seleccionar un sitio
+            </Typography>
+          )}
 
-      <Stack spacing={2} sx={{ width: "50ch" }}>
-        {/* Seleccion de sitio  */}
-        <SeleccionarSitios onSelect={(sitio) => setSitioSeleccionado(sitio)} />
-        {errores.sitio && (
-          <Typography variant="caption" color="error" sx={{ ml: 1 }}>
-            Debe seleccionar un sitio
-          </Typography>
-        )}
-        {/* Selecionar contratista */}
-        <SeleccionarContratista onSelect={(contratista) => setContratistaSeleccionado(contratista)} />
-        {errores.contratista && (
-          <Typography variant="caption" color="error" sx={{ ml: 1 }}>
-            Debe seleccionar un contratista
-          </Typography>
-        )}
-        {/* seleccionar codigo ingeniería */}
-        <SelecionarCodigoIng onSelect={(codigoIng) => setCodigoIngSeleccionado(codigoIng)} />
-        {errores.codigo && (
-          <Typography variant="caption" color="error" sx={{ ml: 1 }}>
-            Debe seleccionar un código de ingeniería
-          </Typography>
-        )}
-        {/* selecionar tecnologia */}
-        <SeleccionarTecnologia onSelect={(tecnologia) => setTecnologiaSeleccionada(tecnologia)} />
-        {errores.tecnologia && (
-          <Typography variant="caption" color="error" sx={{ ml: 1 }}>
-            Debe seleccionar una tecnología
-          </Typography>
-        )}
-      </Stack>
-      <Box sx={{ mt: 2 }} />
+          <SeleccionarContratista onSelect={setContratistaSeleccionado} />
+          {errores.contratista && (
+            <Typography color="error" variant="caption">
+              Debe seleccionar un contratista
+            </Typography>
+          )}
 
-      {/* Selector PO */}
-      <ToggleButtonGroup
-        value={poStatus ? "true" : "false"}
-        exclusive
-        onChange={(e, newVal) => {
-          if (newVal !== null) setPoStatus(newVal === "true");
-        }}
-      >
-        <ToggleButton
-          value="true"
-          sx={{
-            color: "#d32f2f",
-            borderColor: "#d32f2f",
-            "&.Mui-selected": {
-              bgcolor: "#d32f2f",
-              color: "#fff",
-            },
-            "&:hover": {
-              bgcolor: "#f5f5f5",
-            },
-          }}
-        >
-          Con PO
-        </ToggleButton>
-        <ToggleButton
-          value="false"
-          sx={{
-            color: "#d32f2f",
-            borderColor: "#d32f2f",
-            "&.Mui-selected": {
-              bgcolor: "#d32f2f",
-              color: "#fff",
-            },
-            "&:hover": {
-              bgcolor: "#f5f5f5",
-            },
-          }}
-        >
-          ✓ Sin PO
-        </ToggleButton>
-      </ToggleButtonGroup>
+          <SelecionarCodigoIng onSelect={setCodigoIngSeleccionado} />
+          {errores.codigo && (
+            <Typography color="error" variant="caption">
+              Debe seleccionar un código
+            </Typography>
+          )}
+
+          <SeleccionarTecnologia onSelect={setTecnologiaSeleccionada} />
+          {errores.tecnologia && (
+            <Typography color="error" variant="caption">
+              Debe seleccionar una tecnología
+            </Typography>
+          )}
+        </Grid>
+
+        {/* Columna derecha */}
+        <Grid item xs={12} md={6} display="flex" flexDirection="column" gap={2} alignItems="center">
+          <TextField
+            label="Descripción Proyecto"
+            fullWidth
+            multiline
+            rows={6}
+            value={descripcionProyecto}
+            onChange={(e) => setDescripcionProyecto(e.target.value)}
+            error={errores.descripcion}
+            helperText={
+              errores.descripcion
+                ? "Este campo es obligatorio"
+                : "Puede poner un nombre más amplio o algo que describa más al proyecto"
+            }
+            sx={{
+              width: "50ch",
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                "& fieldset": { borderColor: "#d32f2f" },
+                "&:hover fieldset": { borderColor: "#9a0007" },
+              },
+            }}
+          />
+
+          <ToggleButtonGroup
+            value={poStatus ? "true" : "false"}
+            exclusive
+            onChange={(e, newVal) => {
+              if (newVal !== null) setPoStatus(newVal === "true");
+            }}
+            sx={{ mt: 2 }}
+          >
+            <ToggleButton
+              value="true"
+              sx={{
+                color: "#d32f2f",
+                borderColor: "#d32f2f",
+                "&.Mui-selected": {
+                  bgcolor: "#d32f2f",
+                  color: "#fff",
+                },
+              }}
+            >
+              Con PO
+            </ToggleButton>
+            <ToggleButton
+              value="false"
+              sx={{
+                color: "#d32f2f",
+                borderColor: "#d32f2f",
+                "&.Mui-selected": {
+                  bgcolor: "#d32f2f",
+                  color: "#fff",
+                },
+              }}
+            >
+              ✓ Sin PO
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Grid>
+      </Grid>
 
       {/* Botón Guardar */}
-      <Box sx={{ mt: 1 }}>
-        <Button variant="contained" color="error" size="large" onClick={handleGuardarProyecto}>
+      <Box mt={4} display="flex" justifyContent="center">
+        <Button variant="contained" color="error" size="large" onClick={handleGuardarProyecto} sx={{ width: "250px" }}>
           Guardar Proyecto
         </Button>
       </Box>
-      <Box sx={{ mt: 2 }} />
-      {/* dialgon para mostrar el mensaje */}
+
+      {/* Diálogo */}
       <Dialog
         open={openDialog}
         onClose={() => {
@@ -256,6 +244,6 @@ export default function NuevoProyecto() {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </MainLayout>
   );
 }

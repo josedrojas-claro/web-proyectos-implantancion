@@ -7,7 +7,6 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Paper,
   CircularProgress,
   Alert,
   TextField,
@@ -25,9 +24,9 @@ import {
 } from "@mui/material";
 import { fetchProyectosLideres, updateAsignarSupervisor } from "../services/proyectoServices";
 import { fetchSupervisoresClaro } from "../services/userServices";
-import MyAppBar from "../components/MyAppBar";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import MainLayout from "../layout/MainLayout";
 
 export default function ListaProyectos() {
   const [proyectos, setProyectos] = useState([]);
@@ -76,10 +75,9 @@ export default function ListaProyectos() {
   };
 
   return (
-    <>
-      <MyAppBar />
-      <Box sx={{ p: 3, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Typography variant="h4" gutterBottom>
+    <MainLayout>
+      <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+        <Typography variant="h6" gutterBottom>
           Lista de Proyectos pendientes de asignar supervisor
         </Typography>
 
@@ -92,93 +90,92 @@ export default function ListaProyectos() {
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
         />
-        {/* Tabla de proyectos */}
       </Box>
+      {/* Tabla de proyectos */}
+
       {loading ? (
         <CircularProgress />
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : (
-        <Paper elevation={3}>
-          <TableContainer>
-            <Table stickyHeader>
-              <TableHead sx={{ bgcolor: "#f5f5f5" }}>
-                <TableRow>
-                  <TableCell>
-                    <strong>Ticket</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Nombre</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Contratista</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Tecnología</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Sitio</strong>
-                  </TableCell>
+        <TableContainer>
+          <Table stickyHeader>
+            <TableHead sx={{ bgcolor: "#f5f5f5" }}>
+              <TableRow>
+                <TableCell>
+                  <strong>Ticket</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Nombre</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Contratista</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Tecnología</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Sitio</strong>
+                </TableCell>
 
-                  <TableCell align="center">
-                    <strong>Acciones</strong>
+                <TableCell align="center">
+                  <strong>Acciones</strong>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {proyectosFiltrados.map((proy, index) => (
+                <TableRow key={proy.id} sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}>
+                  <TableCell>{proy.ticketCode}</TableCell>
+                  <TableCell>{proy.nombre}</TableCell>
+                  <TableCell>{proy.Contratistas.nombre_contratista}</TableCell>
+                  <TableCell
+                    sx={{
+                      textTransform: "capitalize",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: 150,
+                    }}
+                  >
+                    {proy.tecnologia}
+                  </TableCell>
+                  <TableCell>{proy.Sitios.nombre_sitio}</TableCell>
+
+                  <TableCell align="left">
+                    <Stack direction="row" spacing={1}>
+                      <Tooltip title="Ver detalles">
+                        <Button
+                          size="small"
+                          component="label"
+                          variant="contained"
+                          tabIndex={-1}
+                          startIcon={<VisibilityIcon />}
+                          onClick={() => handleVerDetalles(proy)}
+                        >
+                          Ver
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="Ver detalles">
+                        <Button
+                          size="small"
+                          color="success"
+                          component="label"
+                          variant="contained"
+                          tabIndex={-1}
+                          startIcon={<PersonAddAltIcon />}
+                          onClick={() => handleAsignarSupervisor(proy)}
+                        >
+                          Asignar supervisor
+                        </Button>
+                      </Tooltip>
+                    </Stack>
                   </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {proyectosFiltrados.map((proy, index) => (
-                  <TableRow key={proy.id} sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}>
-                    <TableCell>{proy.ticketCode}</TableCell>
-                    <TableCell>{proy.nombre}</TableCell>
-                    <TableCell>{proy.Contratistas.nombre_contratista}</TableCell>
-                    <TableCell
-                      sx={{
-                        textTransform: "capitalize",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        maxWidth: 150,
-                      }}
-                    >
-                      {proy.tecnologia}
-                    </TableCell>
-                    <TableCell>{proy.Sitios.nombre_sitio}</TableCell>
-
-                    <TableCell align="left">
-                      <Stack direction="row" spacing={1}>
-                        <Tooltip title="Ver detalles">
-                          <Button
-                            size="small"
-                            component="label"
-                            variant="contained"
-                            tabIndex={-1}
-                            startIcon={<VisibilityIcon />}
-                            onClick={() => handleVerDetalles(proy)}
-                          >
-                            Ver
-                          </Button>
-                        </Tooltip>
-                        <Tooltip title="Ver detalles">
-                          <Button
-                            size="small"
-                            color="success"
-                            component="label"
-                            variant="contained"
-                            tabIndex={-1}
-                            startIcon={<PersonAddAltIcon />}
-                            onClick={() => handleAsignarSupervisor(proy)}
-                          >
-                            Asignar supervisor
-                          </Button>
-                        </Tooltip>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
       {/* // Dialogo para ver detalles del proyecto */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
@@ -410,6 +407,6 @@ export default function ListaProyectos() {
           {alerta.mensaje}
         </Alert>
       </Snackbar>
-    </>
+    </MainLayout>
   );
 }

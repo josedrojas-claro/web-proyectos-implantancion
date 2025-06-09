@@ -32,7 +32,14 @@ export default function SeleccionarTecnologia({ onSelect }) {
   return (
     <>
       <Autocomplete
-        sx={{ width: "50ch" }}
+        sx={{
+          width: "50ch",
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 2,
+            "& fieldset": { borderColor: "#d32f2f" },
+            "&:hover fieldset": { borderColor: "#9a0007" },
+          },
+        }}
         options={filterTecnologias(allTecnologias, inputValue)}
         getOptionLabel={(option) => `${option.nombre_tecnologia}`}
         onChange={(event, newValue) => onSelect && onSelect(newValue)}
