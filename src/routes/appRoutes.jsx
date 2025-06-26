@@ -6,6 +6,8 @@ import ReplanteoPage from "../pages/replanteo/ReplanteoPage";
 import ListaProyectosReplanteo from "../pages/replanteo/ListaProyectosReplanteo";
 import ListaProyectosEjecucion from "../pages/ejecucionDiaria/ListaProyectosEjecucion";
 import EjecucionDiaria from "../pages/ejecucionDiaria/EjecucionDiaria";
+import BitacoraFinal from "../pages/ejecucionDiaria/BitacoraFinal";
+import ValidacionDocumentos from "../pages/ejecucionDiaria/ValidacionDocumentos";
 
 const appRoutes = [
   { path: "/login", element: <Login />, isPrivate: false },
@@ -42,6 +44,16 @@ const appRoutes = [
   {
     path: "/lista-proyectos-ejecucion/ejecucion-diaria/:ticketCode",
     element: <EjecucionDiaria />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-ejecucion/ejecucion-diaria/bitacora-final/:ticketCode",
+    element: <BitacoraFinal />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-ejecucion/validacion-documentos/:ticketCode",
+    element: <ValidacionDocumentos />,
     isPrivate: true,
   },
 ];

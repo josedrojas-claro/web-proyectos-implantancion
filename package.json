@@ -22,7 +22,12 @@
     "js-cookie": "^3.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.4.0"
+    "react-router-dom": "^7.4.0",
+    "react-signature-canvas": "^1.1.0-alpha.2",
+    "react-signature-pad-wrapper": "^4.1.0",
+    "signature_pad": "^5.0.9",
+    "styled-components": "^6.1.19",
+    "sweetalert2": "^11.22.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

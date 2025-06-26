@@ -20,11 +20,12 @@ import {
   DialogContent,
   DialogActions,
   Grid,
-  TableBody,
+  Alert,
 } from "@mui/material";
 import { fetchListaProyectosEjecucion } from "../../services/proyectoServices";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
+import { useLocation } from "react-router-dom";
 
 export default function ListaProyectosEjecucion() {
   const [proyectos, setProyectos] = React.useState([]);
@@ -70,6 +71,21 @@ export default function ListaProyectosEjecucion() {
       state: { proyecto },
     });
   };
+
+  const cargarValidacionDocumentos = (proyecto) => {
+    navigate(`/lista-proyectos-ejecucion/validacion-documentos/${proyecto.ticketCode}`, {
+      state: { proyecto },
+    });
+  };
+
+  const location = useLocation();
+  const errorMessage = location.state?.error;
+
+  useEffect(() => {
+    if (errorMessage) {
+      alert(errorMessage); // o un Snackbar, como prefieras
+    }
+  }, [errorMessage]);
 
   return (
     <MainLayout>
@@ -205,7 +221,7 @@ export default function ListaProyectosEjecucion() {
                           display: proyecto.estado?.nombre === "Validacion Documentos" ? "inline-flex" : "none",
                         }}
                         startIcon={<ImportContactsIcon />}
-                        onClick={() => cargarEjecucion(proyecto)}
+                        onClick={() => cargarValidacionDocumentos(proyecto)}
                       >
                         Vali. Docu
                       </Button>

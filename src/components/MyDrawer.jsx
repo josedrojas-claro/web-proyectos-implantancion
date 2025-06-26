@@ -1,6 +1,17 @@
 // src/components/MyDrawer.jsx
 import React from "react";
-import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box } from "@mui/material";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Box,
+  Avatar,
+  Typography,
+  Divider,
+} from "@mui/material";
 import {
   Home as HomeIcon,
   Construction as ConstructionIcon,
@@ -11,9 +22,12 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/authServices";
+import { useAuthUser } from "../services/authServices";
 
 export default function MyDrawer({ open, toggleDrawer }) {
   const navigate = useNavigate();
+
+  const user = useAuthUser();
 
   const drawerItems = [
     { label: "Página Principal", path: "/home", icon: <HomeIcon /> },
@@ -35,6 +49,24 @@ export default function MyDrawer({ open, toggleDrawer }) {
   return (
     <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
       <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+        {/* Avatar y datos del usuario */}
+        <Box sx={{ p: 2, display: "flex", alignItems: "center", flexDirection: "column" }}>
+          <Avatar sx={{ bgcolor: "#1976d2", width: 56, height: 56 }}>
+            {user?.UserData.nombre?.[0]?.toUpperCase()}
+          </Avatar>
+          <Typography variant="subtitle1" sx={{ mt: 1 }}>
+            {user?.UserData.nombre || "Usuario"}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {user?.email || "correo@ejemplo.com"}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Role: {user?.role || "correo@ejemplo.com"}
+          </Typography>
+          <Divider sx={{ my: 2, width: "100%" }} />
+        </Box>
+
+        {/* Menú de navegación */}
         <List>
           {drawerItems.map((item) => (
             <ListItem key={item.label} disablePadding>

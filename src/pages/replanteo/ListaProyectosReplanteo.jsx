@@ -235,6 +235,7 @@ export default function ListaProyectosReplanteo() {
                     </Typography>
                     <Typography>{proyectoSeleccionado.Planificador?.UserData?.nombre || "—"}</Typography>
                   </Box>
+
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Estado

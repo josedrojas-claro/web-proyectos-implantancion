@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useParams, useLocation } from "react-router-dom";
 import MainLayout from "../../layout/MainLayout";
 import {
@@ -16,7 +18,11 @@ import {
   DialogActions,
   Snackbar,
   Alert,
+  Grid,
 } from "@mui/material";
+
+import DialogSolicitarServicio from "./components/DialogSolictarServicio";
+import DialogSolicitarMaterial from "./components/DialogSolictarMaterial";
 //importa funcion para traer los servicio asignados
 import { fetchServiciosAsignadosByProyecto } from "../../services/serviciosServices";
 //importa funcion para traer los materiales asignados
@@ -29,8 +35,13 @@ import FormularioSerMate from "../../components/FormularioSerMate";
 import EjecucionDiariaList from "./components/EjecucionDiariaList";
 //funcion para optener el role
 import { useAuthUser } from "../../services/authServices";
-//funcion de servicio por contratsita
-import { fetchServiciosByContratista } from "../../services/serviciosServices";
+import {
+  fetchServiciosSoclitados,
+  fetchMaterialesSolicitados,
+  deleteSolictdAproRecha,
+} from "../../services/aproServiMate";
+import SolicitudCard from "./components/SolicitudCard";
+
 const EjecucionDiaria = () => {
   const { ticketCode } = useParams();
   const location = useLocation();
@@ -61,11 +72,9 @@ const EjecucionDiaria = () => {
   const [openDialogConfirmar, setOpenDialogConfirmar] = useState(false);
   const [comentario, setComentario] = useState("");
 
-  //variables para sacar los servicios by contratistas para hacer solicitudes de nuevos
-  const [serviciosCatalogo, setServiciosCatalogo] = useState([]);
-  const [filtroServicio, setFiltroServicio] = useState("");
-  const [openAgregarServicio, setOpenAgregarServicio] = useState(false);
-  const [loadingServiciosCatalogo, setLoadingServiciosCatalogo] = useState(false);
+  // //cargar solicitudes de servicios y materiales
+  const [serviciosSolicitados, setServiciosSolicitados] = useState([]);
+  const [materialesSolicitados, setMaterialesSolicitados] = useState([]);
 
   const fetchData = useCallback(async () => {
     setLoadingData(true);
@@ -75,6 +84,9 @@ const EjecucionDiaria = () => {
       //ejecución diaria
       const ejecucionDiaria = await fetchEjecucionDiaria(proyecto.id);
 
+      //solicitudes de servicios y materiales
+      const servicioSoli = await fetchServiciosSoclitados(proyecto.id);
+      const materialSoli = await fetchMaterialesSolicitados(proyecto.id);
       const lastApproved = ejecucionDiaria
         .filter((e) => e.estado === "aprobada")
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
@@ -84,6 +96,8 @@ const EjecucionDiaria = () => {
       setServiciosAsignados(servicios);
       setMaterialesAsingados(materiales);
       setEjecucionDiaria(ejecucionDiaria);
+      setServiciosSolicitados(servicioSoli);
+      setMaterialesSolicitados(materialSoli);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -165,47 +179,39 @@ const EjecucionDiaria = () => {
     }
   };
 
-  const solicitarServicio = async (serv) => {
+  //variables para sacar los servicios by contratistas para hacer solicitudes de nuevos
+
+  const [openAgregarServicio, setOpenAgregarServicio] = useState(false);
+  const [openAgregarMaterial, setOpenAgregarMaterial] = useState(false);
+
+  const handleEliminarSolicitud = async (id, tipo) => {
+    const confirmar = window.confirm("¿Estás seguro que deseas eliminar esta solicitud?", tipo);
+    if (!confirmar) return;
     try {
-      // Aquí puedes hacer un POST a tu backend para solicitarlo formalmente
-      // o agregarlo al estado `serviciosAsignados` si es inmediato
+      const response = await deleteSolictdAproRecha(id);
       setSnackbar({
         open: true,
-        message: `Servicio "${serv.servicio}" solicitado correctamente.`,
+        message: response.message || "Solicitud eliminada con éxito",
         severity: "success",
       });
-      setOpenAgregarServicio(false);
+      // Refrescar las solicitudes después de eliminar
+
+      fetchData();
     } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "No se pudo solicitar el servicio.",
-        error,
-        severity: "error",
-      });
+      console.error("Error al eliminar:", error);
+      const msg = error?.response?.data?.message || "Error inesperado al eliminar la solicitud";
+      setSnackbar({ open: true, message: msg, severity: "error" });
     }
   };
 
-  //funcion para cargar lo servicios
-  const cargarCatalogoServicios = async () => {
-    setLoadingServiciosCatalogo(true);
-    try {
-      const data = await fetchServiciosByContratista(proyecto.contratistaId);
-      setServiciosCatalogo(data);
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Error al cargar servicios del catálogo.",
-        error,
-        severity: "error",
-      });
-    } finally {
-      setLoadingServiciosCatalogo(false);
-    }
-  };
+  const navigate = useNavigate();
 
-  // const agregarMateriales = () => {
-  //   console.log("guardar material");
-  // };
+  //funcion para navegar a la página de bitacora final
+  const cargarBitacoraFinal = (proyecto) => {
+    navigate(`/lista-proyectos-ejecucion/ejecucion-diaria/bitacora-final/${proyecto.ticketCode}`, {
+      state: { proyecto },
+    });
+  };
 
   return (
     <MainLayout>
@@ -242,13 +248,26 @@ const EjecucionDiaria = () => {
             onChange={(e, newValue) => setPorcentajeActual(newValue)}
             min={ultimoPorcentajeAprobado}
             max={1}
-            step={0.01}
+            step={0.05}
             marks={[
               { value: ultimoPorcentajeAprobado, label: `${Math.round(ultimoPorcentajeAprobado * 100)}%` },
               { value: 1, label: "100%" },
             ]}
             valueLabelDisplay="auto"
           />
+        </Box>
+        <Box display="flex" justifyContent="center" mt={2} pb={2}>
+          {ultimoPorcentajeAprobado === 1 && (
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              sx={{ px: 2, minWidth: "auto" }}
+              onClick={() => cargarBitacoraFinal(proyecto)}
+            >
+              Generar Bitácora Final
+            </Button>
+          )}
         </Box>
         <Box
           sx={{ display: "flex", flexDirection: "row", gap: 2, mb: 2, flexWrap: "nowrap", justifyContent: "center" }}
@@ -272,29 +291,31 @@ const EjecucionDiaria = () => {
           >
             Añadir Ejecucion
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{ px: 2, minWidth: 180 }}
-            onClick={() => {
-              setOpenAgregarServicio(true);
-              cargarCatalogoServicios();
-            }}
-          >
-            Solicitar servicio
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{ px: 2, minWidth: 160 }}
-            // onClick={() => setOpenDialogSupervisor(true)}
-          >
-            Solicitar material
-          </Button>
-        </Box>
+          {/* Botón para abrir diálogo de solicitud de servicio */}
+          {user.role !== "contratista" && user.role !== "contratista-lider" && (
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ px: 2, minWidth: 180 }}
+                onClick={() => setOpenAgregarServicio(true)}
+              >
+                Solicitar Servicio
+              </Button>
 
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ px: 2, minWidth: 160 }}
+                onClick={() => setOpenAgregarMaterial(true)}
+              >
+                Solicitar material
+              </Button>
+            </>
+          )}
+        </Box>
         <Divider sx={{ width: "100%", marginTop: 2 }} />
         {loadingData ? (
           <CircularProgress />
@@ -308,7 +329,72 @@ const EjecucionDiaria = () => {
         )}
         <Divider sx={{ width: "100%", marginTop: 2 }} />
         <EjecucionDiariaList ejecuciones={ejecucionDiaria} user={user} refetch={fetchData} />
+        <Divider sx={{ width: "100%", marginTop: 2 }} />
+        <Box>
+          <Typography variant="h5" fontWeight="bold" textAlign="center" mb={2}>
+            Solicitud de servicios y materiales
+          </Typography>
+          <Typography variant="body2" textAlign="center" mb={1}>
+            Aquí podrás visualizar el estado actual de tus solicitudes de servicios y materiales, ya sea que estén
+            pendientes, aprobadas o rechazadas.
+          </Typography>
+        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h6">Servicios a aprobar</Typography>
+            {serviciosSolicitados.map((s) => (
+              <SolicitudCard
+                key={s.id}
+                solicitud={s}
+                tipo="servicio"
+                onDelete={(id, tipo) => handleEliminarSolicitud(id, tipo)}
+                user={user}
+              />
+            ))}
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Typography variant="h6">Materiales a aprobar</Typography>
+            {materialesSolicitados.map((m) => (
+              <SolicitudCard
+                key={m.id}
+                solicitud={m}
+                tipo="material"
+                onDelete={(id, tipo) => handleEliminarSolicitud(id, tipo)}
+                user={user}
+              />
+            ))}
+          </Grid>
+        </Grid>
       </Box>
+
+      {/* Dialog de materiales, para solcitar nuevos materiales */}
+      <DialogSolicitarMaterial
+        open={openAgregarMaterial}
+        onClose={(success) => {
+          setOpenAgregarMaterial(false);
+          if (success) {
+            setSnackbar({ open: true, message: "Solicitud enviada con éxito", severity: "success" });
+            fetchData();
+          }
+        }}
+        proyecto={proyecto}
+        materialesAsignados={materialesAsingados}
+      />
+
+      {/* Diálogo de servicios, colocado fuera del Box para mantener el orden visual */}
+      <DialogSolicitarServicio
+        open={openAgregarServicio}
+        onClose={(success) => {
+          setOpenAgregarServicio(false);
+          if (success) {
+            setSnackbar({ open: true, message: "Solicitud enviada con éxito", severity: "success" });
+            fetchData();
+          }
+        }}
+        proyecto={proyecto}
+        serviciosAsignados={serviciosAsignados}
+      />
 
       {/* dialog para confirmar subida de ejeucion diaria */}
       <Dialog open={openDialogConfirmar} onClose={() => setOpenDialogConfirmar(false)}>
@@ -351,51 +437,6 @@ const EjecucionDiaria = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-      {/* dialog para cargar los servicios por contratista */}
-      <Dialog open={openAgregarServicio} onClose={() => setOpenAgregarServicio(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Solicitar nuevo servicio</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Buscar servicio"
-            fullWidth
-            margin="normal"
-            value={filtroServicio}
-            onChange={(e) => setFiltroServicio(e.target.value)}
-          />
-          <Box sx={{ maxHeight: 300, overflowY: "auto", mt: 2 }}>
-            {loadingServiciosCatalogo ? (
-              <CircularProgress />
-            ) : (
-              serviciosCatalogo
-                .filter(
-                  (s) =>
-                    s.servicio.toLowerCase().includes(filtroServicio.toLowerCase()) ||
-                    s.descripcionServicio.toLowerCase().includes(filtroServicio.toLowerCase())
-                )
-                .map((serv) => (
-                  <Box
-                    key={serv.id}
-                    sx={{
-                      p: 1,
-                      borderBottom: "1px solid #ddd",
-                      cursor: "pointer",
-                      "&:hover": { backgroundColor: "#f5f5f5" },
-                    }}
-                    onClick={() => solicitarServicio(serv)}
-                  >
-                    <Typography variant="body1" fontWeight="bold">
-                      {serv.servicio}
-                    </Typography>
-                    <Typography variant="body2">{serv.descripcionServicio}</Typography>
-                  </Box>
-                ))
-            )}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenAgregarServicio(false)}>Cerrar</Button>
-        </DialogActions>
-      </Dialog>
     </MainLayout>
   );
 };

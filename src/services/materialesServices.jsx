@@ -5,6 +5,14 @@ export const fetchMateriales = async () => {
   return response.data;
 };
 
+//funcion para buscar con filtro desde el backend
+export const fetchMaterialesByFiltro = async (busqueda) => {
+  const response = await apiClient.get("/materiales/filtro", {
+    params: { q: busqueda },
+  });
+  return response.data;
+};
+
 ///funciones para materiales Asignados
 export const createMaterialesAsignados = async (data) => {
   const response = await apiClient.post(`/materiales-asignado`, data);

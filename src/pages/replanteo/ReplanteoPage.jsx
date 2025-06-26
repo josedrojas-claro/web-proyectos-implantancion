@@ -116,7 +116,7 @@ export default function ReplanteoPage() {
 
   /// cargar lista de servicios
   const [inputBusqueda, setInputBusqueda] = useState("");
-  const [filtroServicio, setFiltroServicio] = useState("");
+  const [, setFiltroServicio] = useState("");
 
   const buscarServicios = async () => {
     setBuscando(true);
@@ -244,7 +244,7 @@ export default function ReplanteoPage() {
     const serviciosAsignados = servicios
       .filter((s) => parseFloat(s.cantidad) > 0)
       .map((s) => ({
-        serviciosId: s.id,
+        serviciosId: s.Servicios.id,
         cantidadAsignada: parseFloat(s.cantidad),
         proyectoId: proyecto.id,
         userId: user.id,
@@ -254,7 +254,7 @@ export default function ReplanteoPage() {
     const materialesAsignados = materiales
       .filter((m) => parseFloat(m.cantidad) > 0)
       .map((m) => ({
-        materialesId: m.id,
+        materialesId: m.Materiales.id,
         cantidadAsignado: parseFloat(m.cantidad),
         proyectoId: proyecto.id,
         userId: user.id,

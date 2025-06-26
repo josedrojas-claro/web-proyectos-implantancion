@@ -2,7 +2,7 @@ import apiClient from "./apiClient";
 
 export const fetchServiciosByContratista = async (contratistaId, busqueda) => {
   const response = await apiClient.get(`/servicios/by-contratista-for-asig/${contratistaId}`, {
-    params: { q: busqueda }, // 👈 Asegúrate de enviar esto
+    params: { q: busqueda },
   });
   return response.data;
 };
