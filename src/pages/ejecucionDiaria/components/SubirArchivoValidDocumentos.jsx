@@ -1,16 +1,16 @@
-import React, { useState, useRef } from "react";
-import { Box, Stack, Typography, Button, TextField, IconButton } from "@mui/material";
-import { UploadFile, CheckCircle } from "@mui/icons-material";
+import React, { useState } from "react";
+import { Upload, Input, Button, Card, Typography, Space, message } from "antd";
+import { UploadOutlined, CheckCircleOutlined } from "@ant-design/icons";
+
+const { TextArea } = Input;
 
 export default function SubirArchivoValidDocumentos({ onSubmit }) {
-  const [files, setFiles] = useState([]);
+  const [fileList, setFileList] = useState([]);
   const [comentario, setComentario] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const fileInputRef = useRef();
-
-  const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files));
+  const handleUploadChange = ({ fileList }) => {
+    setFileList(fileList);
   };
 
   const handleSubmit = async () => {
@@ -18,83 +18,59 @@ export default function SubirArchivoValidDocumentos({ onSubmit }) {
 
     setLoading(true);
     try {
+      const files = fileList.map((f) => f.originFileObj);
       await onSubmit?.({ files, comentario });
-      setFiles([]);
+      setFileList([]);
       setComentario("");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""; // 👈 reinicia el input para que pueda volver a seleccionar el mismo archivo
-      }
+      message.success("Archivos subidos correctamente");
     } catch (error) {
       console.error("Error al subir documentos:", error);
-      setFiles([]);
-      setComentario("");
+      message.error("Error al subir los archivos");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box
-      sx={{
-        p: 2,
-        borderRadius: 2,
-        bgcolor: "#fff",
-        boxShadow: 2,
-        width: { xs: "100%", md: "50%" }, // ½ de pantalla en ≥ md
-        maxWidth: 600, // no crece demasiado en pantallas muy grandes
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
+    <Card
+      style={{
+        maxWidth: 600,
+        minWidth: 550,
+        margin: "auto",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}
+      title={
+        <Space>
+          <UploadOutlined />
+          <Typography.Text strong>Subir Documentos Finales</Typography.Text>
+        </Space>
+      }
     >
-      {/* Encabezado */}
-      <Stack direction="row" spacing={1} alignItems="center">
-        <UploadFile color="action" />
-        <Typography variant="subtitle1" fontWeight="bold">
-          Subir Documentos Finales
-        </Typography>
-      </Stack>
-
-      {/* Selector de archivos */}
-      <Button variant="outlined" component="label" startIcon={<UploadFile />} sx={{ alignSelf: "flex-start" }}>
-        Seleccionar archivos
-        <input
-          type="file"
-          hidden
+      <Space direction="vertical" style={{ width: "100%" }} size="middle">
+        <Upload
           multiple
-          ref={fileInputRef} // 👈 aquí
-          onChange={handleFileChange}
+          beforeUpload={() => false} // para evitar la subida automática
+          fileList={fileList}
+          onChange={handleUploadChange}
+        >
+          <Button icon={<UploadOutlined />}>Seleccionar archivos</Button>
+        </Upload>
+
+        {fileList.length > 0 && (
+          <Typography.Text type="secondary">{fileList.length} archivo(s) seleccionado(s)</Typography.Text>
+        )}
+
+        <TextArea
+          placeholder="Comentario"
+          rows={4}
+          value={comentario}
+          onChange={(e) => setComentario(e.target.value)}
         />
-      </Button>
 
-      {/* Muestra rápida de archivos seleccionados (opcional) */}
-      {files.length > 0 && (
-        <Typography variant="caption" color="text.secondary">
-          {files.length} archivo(s) seleccionado(s)
-        </Typography>
-      )}
-
-      {/* Comentario */}
-      <TextField
-        placeholder="Comentario"
-        multiline
-        minRows={3}
-        fullWidth
-        value={comentario}
-        onChange={(e) => setComentario(e.target.value)}
-      />
-
-      {/* Botón de envío */}
-      <Button
-        variant="contained"
-        color="success"
-        startIcon={<CheckCircle />}
-        sx={{ alignSelf: { xs: "stretch", md: "flex-end" } }} // ocupa todo en móvil, se alinea a la derecha en ≥ md
-        onClick={handleSubmit}
-        disabled={loading}
-      >
-        {loading ? "Subiendo..." : "Subir información"}
-      </Button>
-    </Box>
+        <Button type="primary" icon={<CheckCircleOutlined />} loading={loading} onClick={handleSubmit} block>
+          Subir información
+        </Button>
+      </Space>
+    </Card>
   );
 }

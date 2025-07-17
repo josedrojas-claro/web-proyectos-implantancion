@@ -21,6 +21,8 @@ import {
   DialogTitle,
   Snackbar,
   Grid,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { fetchProyectosLideres, updateAsignarSupervisor } from "../services/proyectoServices";
 import { fetchSupervisoresClaro } from "../services/userServices";
@@ -46,6 +48,8 @@ export default function ListaProyectos() {
   // alerta para mostrar mensajes
   const [alerta, setAlerta] = useState({ open: false, mensaje: "", tipo: "" });
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   useEffect(() => {
     fetchProyectosLideres()
       .then((data) => setProyectos(data))
@@ -76,7 +80,13 @@ export default function ListaProyectos() {
 
   return (
     <MainLayout>
-      <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+      <Box
+        sx={{
+          px: 2,
+          maxWidth: "100%",
+          overflowX: "auto",
+        }}
+      >
         <Typography variant="h6" gutterBottom>
           Lista de Proyectos pendientes de asignar supervisor
         </Typography>
@@ -98,23 +108,26 @@ export default function ListaProyectos() {
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : (
-        <TableContainer>
+        <TableContainer sx={{ maxWidth: "100%", overflowX: "auto" }}>
           <Table stickyHeader>
             <TableHead sx={{ bgcolor: "#f5f5f5" }}>
               <TableRow>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  <strong>#</strong>
+                </TableCell>
                 <TableCell>
                   <strong>Ticket</strong>
                 </TableCell>
                 <TableCell>
                   <strong>Nombre</strong>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   <strong>Contratista</strong>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   <strong>Tecnología</strong>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   <strong>Sitio</strong>
                 </TableCell>
 
@@ -126,9 +139,12 @@ export default function ListaProyectos() {
             <TableBody>
               {proyectosFiltrados.map((proy, index) => (
                 <TableRow key={proy.id} sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{index + 1}</TableCell>
                   <TableCell>{proy.ticketCode}</TableCell>
                   <TableCell>{proy.nombre}</TableCell>
-                  <TableCell>{proy.Contratistas.nombre_contratista}</TableCell>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {proy.Contratistas.nombre_contratista}
+                  </TableCell>
                   <TableCell
                     sx={{
                       textTransform: "capitalize",
@@ -136,14 +152,15 @@ export default function ListaProyectos() {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       maxWidth: 150,
+                      display: { xs: "none", sm: "table-cell" },
                     }}
                   >
                     {proy.tecnologia}
                   </TableCell>
-                  <TableCell>{proy.Sitios.nombre_sitio}</TableCell>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{proy.Sitios.nombre_sitio}</TableCell>
 
                   <TableCell align="left">
-                    <Stack direction="row" spacing={1}>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="flex-start">
                       <Tooltip title="Ver detalles">
                         <Button
                           size="small"
@@ -163,10 +180,10 @@ export default function ListaProyectos() {
                           component="label"
                           variant="contained"
                           tabIndex={-1}
-                          startIcon={<PersonAddAltIcon />}
                           onClick={() => handleAsignarSupervisor(proy)}
+                          startIcon={isMobile ? null : <PersonAddAltIcon />}
                         >
-                          Asignar supervisor
+                          {isMobile ? "Supervisor" : "Asignar supervisor"}
                         </Button>
                       </Tooltip>
                     </Stack>

@@ -15,17 +15,29 @@ export default function MaterialSolicitudCard({
   const [enviando, setEnviando] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-  const puedeSolicitar = parseFloat(nuevaCantidad) > cantidadAsignada && comentario.trim().length > 0;
+  // === CAMBIO CLAVE AQUÍ ===
+  // Permite solicitar si la nueva cantidad es un número válido (>= 0) y hay un comentario.
+  const puedeSolicitar =
+    !isNaN(parseFloat(nuevaCantidad)) && parseFloat(nuevaCantidad) >= 0 && comentario.trim().length > 0;
+  // ==========================
 
   const handleSolicitar = async () => {
-    if (!puedeSolicitar) return;
+    if (!puedeSolicitar) {
+      // Opcional: Dar un feedback al usuario si la validación falla
+      setSnackbar({
+        open: true,
+        message: "Por favor, ingresa una cantidad válida y un comentario.",
+        severity: "warning",
+      });
+      return;
+    }
 
     setEnviando(true);
     try {
       const data = {
         proyectoId,
         tipo: "material",
-        cantidad: parseFloat(nuevaCantidad),
+        cantidad: parseFloat(nuevaCantidad), // Asegúrate de que esto siempre sea un número
         estado: "pendiente",
         contratistaId,
         comentarioUsuario: comentario,
@@ -67,9 +79,9 @@ export default function MaterialSolicitudCard({
       <Typography variant="body2" color="primary">
         Ya asignado: {cantidadAsignada}
       </Typography>
-
+      {/* Cambié el label para reflejar la nueva flexibilidad */}
       <TextField
-        label="Nueva cantidad (mayor a actual)"
+        label="Nueva cantidad"
         type="number"
         fullWidth
         size="small"

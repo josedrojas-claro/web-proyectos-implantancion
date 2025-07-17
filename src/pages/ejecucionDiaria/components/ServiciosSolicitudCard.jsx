@@ -15,17 +15,31 @@ export default function ServicioSolicitudCard({
   const [enviando, setEnviando] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-  const puedeSolicitar = parseFloat(nuevaCantidad) > cantidadAsignada && comentario.trim().length > 0;
+  // === CAMBIO CLAVE AQUÍ ===
+  // Permite solicitar si la nueva cantidad es un número y mayor o igual a 0,
+  // y si hay un comentario. Ajusta esta lógica según tus necesidades específicas.
+  const puedeSolicitar =
+    !isNaN(parseFloat(nuevaCantidad)) && parseFloat(nuevaCantidad) >= 0 && comentario.trim().length > 0;
+  // ==========================
 
   const handleSolicitar = async () => {
-    if (!puedeSolicitar) return;
+    // Es buena práctica tener una validación de seguridad aquí también,
+    // aunque el botón esté deshabilitado si no se cumple la condición.
+    if (!puedeSolicitar) {
+      setSnackbar({
+        open: true,
+        message: "Por favor, ingresa una cantidad válida y un comentario.",
+        severity: "warning",
+      });
+      return;
+    }
 
     setEnviando(true);
     try {
       const data = {
         proyectoId,
         tipo: "servicio",
-        cantidad: parseFloat(nuevaCantidad),
+        cantidad: parseFloat(nuevaCantidad), // Asegúrate de que esto siempre sea un número
         estado: "pendiente",
         contratistaId,
         comentarioUsuario: comentario,

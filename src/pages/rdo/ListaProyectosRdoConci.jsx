@@ -1,56 +1,46 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import MainLayout from "../../layout/MainLayout";
+import { fetchListaProyectosRdoConci } from "../../services/proyectoServices";
 import {
   Box,
-  Typography,
+  TextField,
+  CircularProgress,
+  TableContainer,
   Table,
   TableHead,
-  TableRow,
   TableCell,
+  TableRow,
   TableBody,
-  CircularProgress,
-  Alert,
-  TextField,
-  TableContainer,
-  Tooltip,
-  Stack,
+  Typography,
   Button,
+  Stack,
   Dialog,
-  DialogActions,
-  DialogContent,
   DialogTitle,
+  DialogContent,
+  DialogActions,
   Grid,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
-import MainLayout from "../../layout/MainLayout";
-import { fetchListaProyectosReplanteo } from "../../services/proyectoServices";
+import FormatListBulletedAddIcon from "@mui/icons-material/FormatListBulletedAdd";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import ImportContactsIcon from "@mui/icons-material/ImportContacts";
-export default function ListaProyectosReplanteo() {
+import { useNavigate } from "react-router-dom";
+
+export default function ListaProyectosRdoConci() {
   const [proyectos, setProyectos] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
-  ///variables de estado para el dialog
-  const [openDialog, setOpenDialog] = useState(false);
-  const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null);
-  const [filtro, setFiltro] = useState("");
+  const [filtro, setFiltro] = React.useState("");
 
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchListaProyectosReplanteo();
+        const data = await fetchListaProyectosRdoConci();
         setProyectos(data);
-      } catch (err) {
-        setError(err.message);
+      } catch (error) {
+        setError(error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -59,14 +49,21 @@ export default function ListaProyectosReplanteo() {
     (proy) => proy.nombre.toLowerCase().includes(filtro.toLowerCase()) || String(proy.ticketCode).includes(filtro)
   );
 
-  // abrir modal para ver detalles del proyecto
+  //variables para manejar el dialog de detalles
+  const [proyectoSeleccionado, setProyectoSeleccionado] = React.useState(null);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  //funcion para abrir el dialog de detalles
   const handleVerDetalles = (proyecto) => {
     setProyectoSeleccionado(proyecto);
     setOpenDialog(true);
   };
+  const navigate = useNavigate();
 
-  const cargarReplanteo = (proyecto) => {
-    navigate(`/replanteo/${proyecto.ticketCode}`, { state: { proyecto } });
+  //funcion para navegar a la página de RDo
+  const cargarPageRDO = (proyecto) => {
+    navigate(`/lista-proyectos-rdo-conciliacion-materiales/rdo/${proyecto.ticketCode}`, {
+      state: { proyecto },
+    });
   };
 
   return (
@@ -78,93 +75,102 @@ export default function ListaProyectosReplanteo() {
           overflowX: "auto",
         }}
       >
-        <h1>Lista Replanteo Page</h1>
+        <h2>Lista de Proyectos en RDO o Conciliación de Materiales</h2>
         <TextField
-          label="Buscar proyecto"
-          placeholder="Buscar por nombre o ticket"
+          label="Filtrar por nombre o ticket"
           variant="outlined"
-          fullWidth
-          sx={{ mb: 2, maxWidth: 400 }}
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
+          sx={{ mb: 2, maxWidth: 400, width: "100%" }}
         />
       </Box>
       {loading ? (
         <CircularProgress />
       ) : error ? (
-        <Alert severity="error">{error}</Alert>
+        <Box sx={{ color: "red", textAlign: "center" }}>
+          <h2>Error al cargar los proyectos: {error}</h2>
+        </Box>
+      ) : proyectosFiltrados.length === 0 ? (
+        <Box sx={{ textAlign: "center" }}>
+          <h2>No se encontraron proyectos</h2>
+        </Box>
       ) : (
         <TableContainer sx={{ maxWidth: "100%", overflowX: "auto" }}>
-          <Table>
+          <Table size="small">
             <TableHead>
               <TableRow>
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>#</TableCell>
-
                 <TableCell>Ticket</TableCell>
-                <TableCell>Nombre proyecto</TableCell>
+                <TableCell>Nombre del Proyecto</TableCell>
+
+                {/* Ocultar en móviles */}
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Contratista</TableCell>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Tecnología</TableCell>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Asignado Por</TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Tecnología</TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Supervisado por:</TableCell>
+
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>%Ejecución</TableCell>
                 <TableCell>Detalles</TableCell>
               </TableRow>
             </TableHead>
-            {proyectosFiltrados.map((proyecto, index) => (
-              <TableRow key={proyecto.id} sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{index + 1}</TableCell>
-                <TableCell>{proyecto.ticketCode}</TableCell>
-                <TableCell>{proyecto.nombre}</TableCell>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
-                  {proyecto.Contratistas.nombre_contratista}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    textTransform: "capitalize",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: 150,
-                    display: { xs: "none", sm: "table-cell" },
-                  }}
-                >
-                  {proyecto.tecnologia}
-                </TableCell>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
-                  {proyecto.Planificador.UserData.nombre}
-                </TableCell>
-                <TableCell align="left">
-                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="flex-start">
-                    <Tooltip title="Ver detalles">
+
+            <TableBody>
+              {proyectosFiltrados.map((proyecto, index) => (
+                <TableRow key={proyecto.id}>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{index + 1}</TableCell>
+                  <TableCell>{proyecto.ticketCode}</TableCell>
+                  <TableCell>{proyecto.nombre}</TableCell>
+
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {proyecto.Contratistas.nombre_contratista}
+                  </TableCell>
+                  <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>{proyecto.tecnologia}</TableCell>
+                  <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {proyecto.Supervisor.UserData.nombre}
+                  </TableCell>
+
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {proyecto.EjecucionDiaria?.length > 0 ? (
+                      <Typography variant="body2">
+                        {Math.round(proyecto.EjecucionDiaria[0].porcenEjecucion * 100)}%
+                      </Typography>
+                    ) : (
+                      <Typography variant="body2" color="text.disabled">
+                        0%
+                      </Typography>
+                    )}
+                  </TableCell>
+
+                  <TableCell>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="flex-start">
                       <Button
                         size="small"
-                        component="label"
                         variant="contained"
-                        tabIndex={-1}
                         startIcon={<VisibilityIcon />}
                         onClick={() => handleVerDetalles(proyecto)}
                       >
                         Ver
                       </Button>
-                    </Tooltip>
-                    <Tooltip title="Cargar replanteo">
                       <Button
                         size="small"
-                        color="success"
-                        component="label"
                         variant="contained"
-                        tabIndex={-1}
-                        startIcon={isMobile ? null : <ImportContactsIcon />}
-                        onClick={() => cargarReplanteo(proyecto)}
+                        color="success"
+                        startIcon={<FormatListBulletedAddIcon />}
+                        sx={{
+                          display: proyecto.estado?.nombre === "RDO" ? "none" : "inline-flex",
+                        }}
+                        onClick={() => cargarPageRDO(proyecto)}
                       >
-                        {isMobile ? "Replanteo" : "Cargar Replanteo"}
+                        RDO
                       </Button>
-                    </Tooltip>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            ))}
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </TableContainer>
       )}
+
       {/* // Dialogo para ver detalles del proyecto */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
         <DialogTitle>Detalles del Proyecto</DialogTitle>
@@ -249,12 +255,29 @@ export default function ListaProyectosReplanteo() {
                     </Typography>
                     <Typography>{proyectoSeleccionado.Planificador?.UserData?.nombre || "—"}</Typography>
                   </Box>
-
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Estado
                     </Typography>
                     <Typography>{proyectoSeleccionado.estado?.nombre || "—"}</Typography>
+                  </Box>
+                  <Box sx={{ minWidth: 250 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Asignado a
+                    </Typography>
+                    <Typography>{proyectoSeleccionado.Supervisor.UserData.nombre}</Typography>
+                  </Box>
+                  <Box sx={{ minWidth: 250 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Supervisor Contratista
+                    </Typography>
+                    <Typography>{proyectoSeleccionado.SupervisorContratista.UserData.nombre}</Typography>
+                  </Box>
+                  <Box sx={{ minWidth: 250 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Recibido por
+                    </Typography>
+                    <Typography>{proyectoSeleccionado.BitacoraFinalProyecto?.[0]?.nombreOperaciones}</Typography>
                   </Box>
                 </Box>
               </Grid>

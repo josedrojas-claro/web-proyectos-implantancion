@@ -1,28 +1,25 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { useAuthUser } from "../../services/authServices";
 import { Box, Typography, Stack, Button, Snackbar } from "@mui/material";
 import { Assignment, Folder, Build, Wifi } from "@mui/icons-material";
 import AlertaValidacionDocumentos from "./components/AlertaValidacionDocumentos";
 import SubirArchivoValidDocumentos from "./components/SubirArchivoValidDocumentos";
 import ListaDocumentos from "./components/ListaDocumentos";
 import MainLayout from "../../layout/MainLayout";
-import { descargarPdfBitacora, cambioEstadoGeneral } from "../../services/bitacoraFinalServices";
+import { cambioEstadoGeneral } from "../../services/bitacoraFinalServices";
 import Swal from "sweetalert2";
 import { subirDocumentos } from "../../services/DocumentosServices";
+import ProyectoResumenCard from "../../components/ProyectoResumenCard";
+
 export default function ValidacionDocumentos() {
   const location = useLocation();
   const proyecto = location.state?.proyecto;
   const [reloadKey, setReloadKey] = useState(0);
   const navigate = useNavigate();
 
-  const handleDescargar = async () => {
-    try {
-      await descargarPdfBitacora(proyecto.id);
-    } catch (error) {
-      console.error("Error al descargar el PDF:", error);
-    }
-  };
+  const user = useAuthUser();
+
   //variable para manejar el cambio de estado del proyecto
   const [loadingNuevoEstado, setLoadingNuevoEstado] = useState(false);
 
@@ -89,51 +86,8 @@ export default function ValidacionDocumentos() {
       </Stack>
       <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap" justifyContent="center" alignItems="center">
         {/* Box 1 datos generales del proyecto */}
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          sx={{
-            p: 2,
-            borderRadius: 2,
-            bgcolor: "#fff",
-            boxShadow: 2,
-            minWidth: 300,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            🎯 Datos Generales del proyecto
-          </Typography>
-          <Stack
-            direction={{ xs: "column", sm: "column", md: "row" }} // 👈 clave aquí
-            spacing={2}
-            alignItems="flex-start"
-            flexWrap="wrap"
-            sx={{ mb: 2, gap: 1 }} // Espacio entre elementos
-          >
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Assignment fontSize="small" />
-              <Typography variant="body2">Ticket: {proyecto.ticketCode}</Typography>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Folder fontSize="small" />
-              <Typography variant="body2">Proyecto: {proyecto.nombre}</Typography>
-            </Stack>
+        <ProyectoResumenCard proyecto={proyecto} />
 
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Build fontSize="small" />
-              <Typography variant="body2">Contratista: {proyecto.Contratistas.nombre_contratista}</Typography>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Wifi fontSize="small" />
-              <Typography variant="body2">Tecnología: {proyecto.tecnologia}</Typography>
-            </Stack>
-          </Stack>
-          <Button variant="contained" size="small" sx={{ width: 200 }} onClick={handleDescargar}>
-            Descargar PDF
-          </Button>
-        </Box>
         {/* Box 2 datos de alerta y abvertencia */}
         <AlertaValidacionDocumentos />
         {/* Box 3 subir archivos */}
@@ -166,11 +120,13 @@ export default function ValidacionDocumentos() {
         />
         <ListaDocumentos proyectoId={proyecto.id} reloadTrigger={reloadKey} />
       </Stack>
-      <Stack sx={{ mt: 4 }} alignItems="center">
-        <Button variant="contained" color="warning" size="small" sx={{ width: 200 }} onClick={cargarBitacoraFinal}>
-          {loadingNuevoEstado ? "Cargando..." : "Documentos Completos"}
-        </Button>
-      </Stack>
+      {user.role !== "contratista" && user.role !== "contratista-lider" && (
+        <Stack sx={{ mt: 4 }} alignItems="center">
+          <Button variant="contained" color="warning" size="small" sx={{ width: 200 }} onClick={cargarBitacoraFinal}>
+            {loadingNuevoEstado ? "Cargando..." : "Documentos Completos"}
+          </Button>
+        </Stack>
+      )}
     </MainLayout>
   );
 }

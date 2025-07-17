@@ -8,7 +8,12 @@ import ListaProyectosEjecucion from "../pages/ejecucionDiaria/ListaProyectosEjec
 import EjecucionDiaria from "../pages/ejecucionDiaria/EjecucionDiaria";
 import BitacoraFinal from "../pages/ejecucionDiaria/BitacoraFinal";
 import ValidacionDocumentos from "../pages/ejecucionDiaria/ValidacionDocumentos";
-
+import ListaProyectosRdoConci from "../pages/rdo/ListaProyectosRdoConci";
+import RdoPage from "../pages/rdo/RdoPage";
+import ListaProyectosGenerales from "../pages/proyectos/ListaProyectosGeneral";
+import ProyectoDetalles from "../pages/proyectos/ProyectosDetalles";
+import ReportePage from "../pages/reporte/ReportePage";
+import ListaProyectoHoras from "../pages/reporte/ListaProyectoHoras";
 const appRoutes = [
   { path: "/login", element: <Login />, isPrivate: false },
   {
@@ -54,6 +59,36 @@ const appRoutes = [
   {
     path: "/lista-proyectos-ejecucion/validacion-documentos/:ticketCode",
     element: <ValidacionDocumentos />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-rdo-conciliacion-materiales",
+    element: <ListaProyectosRdoConci />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-rdo-conciliacion-materiales/rdo/:ticketCode",
+    element: <RdoPage />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-generales",
+    element: <ListaProyectosGenerales />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-generales/detalles/:ticketCode",
+    element: <ProyectoDetalles />,
+    isPrivate: true,
+  },
+  {
+    path: "/reporte-horas-retraso",
+    element: <ReportePage />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-reporte-horas-retraso",
+    element: <ListaProyectoHoras />,
     isPrivate: true,
   },
 ];

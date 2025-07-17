@@ -1,0 +1,56 @@
+.pag-root {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 3px 6px;
+  font-size: 13px;
+  min-width: 340px;    /* tamaño fijo compacto, ajusta a gusto */
+  max-width: 340px;
+  height: 32px;        /* altura compacta */
+  background: none;
+  border: none;
+}
+
+.pag-btn {
+  background: none;
+  border: none;
+  color: #444;
+  font-size: 15px;
+  padding: 1px 7px;
+  border-radius: 3px;
+  cursor: pointer;
+  min-width: 28px;      /* para que todos los botones midan igual */
+  height: 26px;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pag-btn:disabled {
+  color: #ccc;
+  cursor: default;
+  background: none;
+}
+.pag-btn:not(:disabled):hover {
+  background: #f0f0f0;
+}
+
+.pag-info {
+  margin: 0 5px;
+  min-width: 75px;
+  text-align: center;
+  font-size: 13px;
+  color: #333;
+}
+
+.pag-select {
+  font-size: 12px;
+  margin-left: 8px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  color: #333;
+  height: 24px;
+}

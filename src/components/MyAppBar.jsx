@@ -32,13 +32,18 @@ export default function MyAppBar({ toggleDrawer }) {
             <Button color="inherit" startIcon={<HomeIcon />} onClick={() => navigate("/home")}>
               Home
             </Button>
-            <Button color="inherit" startIcon={<ArticleIcon />}>
+            <Button color="inherit" startIcon={<ArticleIcon />} onClick={() => navigate("/lista-proyectos-generales")}>
               Proyectos
             </Button>
-            <Button color="inherit" startIcon={<NoteAltIcon />}>
+
+            <Button color="inherit" startIcon={<NoteAltIcon />} onClick={() => navigate("/lista-proyectos-ejecucion")}>
               Ejecución Diaria
             </Button>
-            <Button color="inherit" startIcon={<DocumentScannerIcon />}>
+            <Button
+              color="inherit"
+              startIcon={<DocumentScannerIcon />}
+              onClick={() => navigate("/lista-proyectos-rdo-conciliacion-materiales")}
+            >
               RDO
             </Button>
           </Box>

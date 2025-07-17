@@ -23,3 +23,9 @@ export const fetchMaterialesAsignadosByProyecto = async (proyectoId) => {
   const response = await apiClient.get(`/materiales-asignado/${proyectoId}`);
   return response.data;
 };
+
+//funcion para aprobar o recharzar solicitudes de servicios
+export const fetchMaterialesSolicutudAproRecha = async (proyectoId) => {
+  const response = await apiClient.get(`/aprobacion-servicio-material/proyecto-material/${proyectoId}`);
+  return response.data;
+};

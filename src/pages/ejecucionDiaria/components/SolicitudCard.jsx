@@ -3,7 +3,7 @@ import { Box, Typography, IconButton, Chip, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function SolicitudCard({ solicitud, tipo, onDelete, user }) {
-  const isPendiente = solicitud.estado === "pendiente";
+  // const isPendiente = solicitud.estado === "pendiente";
   const isAprobado = solicitud.estado === "aprobado";
   const isRechazado = solicitud.estado === "rechazado";
 
@@ -27,7 +27,7 @@ export default function SolicitudCard({ solicitud, tipo, onDelete, user }) {
     >
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Chip label={labelEstado} color={colorEstado} variant="outlined" />
-        {isPendiente && onDelete && !esContratista && (
+        {!isAprobado && onDelete && !esContratista && (
           <Tooltip title="Eliminar solicitud" arrow>
             <span
               onClick={() => onDelete(solicitud.id, tipo)}

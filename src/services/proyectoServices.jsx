@@ -37,8 +37,54 @@ export const fetchListaProyectosEjecucion = async () => {
   return response.data;
 };
 
+// consulta proyectos que estan en RDO o conciliacion de materiales
+export const fetchListaProyectosRdoConci = async () => {
+  const response = await apiClient.get("/proyecto/proyectos-Rdo");
+  return response.data;
+};
+
 ///cargar supervisor contrasta
 export const updateAsignarSupervisorContratista = async (data) => {
   const response = await apiClient.patch(`/proyecto/cargar-supervisor-contrata`, data);
+  return response.data;
+};
+
+///estapa para cargar los proyectos generales
+// utils para query string
+export const fetchProyectosGenerales = async (params = {}) => {
+  // Elimina claves nulas/vacías
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter((entry) => entry[1] !== undefined && entry[1] !== null && entry[1] !== "")
+  );
+  const queryString = new URLSearchParams(cleanParams).toString();
+  const response = await apiClient.get(`/proyecto/proyectos-generales?${queryString}`);
+  return response.data;
+};
+
+//historial para los proyectos
+export const fetchHistorialProyectos = async (id) => {
+  const response = await apiClient.get(`/historial-casos-proyectos/${id}`);
+  return response.data;
+};
+
+//reporte lista de horas retraso
+export const fetchListaHorasRetraso = async (page = 1, pageSize = 15, searchTerm = "") => {
+  // Codificamos el término de búsqueda para que sea seguro en una URL
+  const encodedSearchTerm = encodeURIComponent(searchTerm);
+
+  const response = await apiClient.get(
+    `/proyecto/reporte-de-dias-por-proyecto?page=${page}&pageSize=${pageSize}&search=${encodedSearchTerm}`
+  );
+  return response.data;
+};
+// estadistica de proyectos horas retraso
+export const fetchEstadisticaHorasRetraso = async () => {
+  const response = await apiClient.get(`/proyecto/reporte-de-dias-por-proyecto/estadisticas`);
+  return response.data;
+};
+
+// promedio en tiempo entre cada estado, cuando le dura a las personas en cambiar de estado
+export const fetchTiempoTrancision = async () => {
+  const response = await apiClient.get(`/proyecto/reporte-de-dias-por-proyecto/estadisticas/transiciones`);
   return response.data;
 };
