@@ -14,6 +14,9 @@ import ListaProyectosGenerales from "../pages/proyectos/ListaProyectosGeneral";
 import ProyectoDetalles from "../pages/proyectos/ProyectosDetalles";
 import ReportePage from "../pages/reporte/ReportePage";
 import ListaProyectoHoras from "../pages/reporte/ListaProyectoHoras";
+//lista configuraciones
+import Configuracion from "../pages/configuracion/configuracion";
+import EstadosProyectos from "../pages/configuracion/EstadosProyectos/estadosProyectos";
 const appRoutes = [
   { path: "/login", element: <Login />, isPrivate: false },
   {
@@ -89,6 +92,17 @@ const appRoutes = [
   {
     path: "/lista-proyectos-reporte-horas-retraso",
     element: <ListaProyectoHoras />,
+    isPrivate: true,
+  },
+  //configuraciones
+  {
+    path: "/configuraciones",
+    element: <Configuracion />,
+    isPrivate: true,
+  },
+  {
+    path: "/configuraciones/estados",
+    element: <EstadosProyectos />,
     isPrivate: true,
   },
 ];

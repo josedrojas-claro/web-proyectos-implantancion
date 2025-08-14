@@ -2,35 +2,23 @@ import React, { useEffect, useState } from "react";
 import MainLayout from "../../layout/MainLayout";
 import { fetchListaHorasRetraso } from "../../services/proyectoServices";
 import { Table, Typography, Tag, Spin, Alert, Input, Space } from "antd";
+import { getEstadoColor } from "../../utils/colorUtils";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
 
-// Define tu función de colores aquí o impórtala de un archivo de utilidades
-const getEstadoColor = (estado) => {
-  const estadoColores = {
-    "En planificación": "#795548",
-    "Pendiente asignación": "#FF9800",
-    Asignado: "#2196F3",
-    Replanteo: "#FFEB3B",
-    Ejecucion: "#4CAF50",
-    "En RDO": "#009688",
-    Finalizado: "#9E9E9E",
-    Ticket: "#0D7575",
-    "Validacion Documentos": "#9C27B0",
-    "Con SOLPED": "#4E342E",
-    "Con PO": "#00838F",
-    Liquidacion: "#BF360C",
-    "Con Correlativo": "#33691E",
-    DTA: "#3E2723",
-  };
-  return estadoColores[estado] || "#BDBDBD";
-};
-
 const columns = [
   { title: "Ticket", dataIndex: "ticketCode", key: "ticketCode" },
-  { title: "Nombre del Proyecto", dataIndex: "nombreProyecto", key: "nombreProyecto" },
-  { title: "Supervisor", dataIndex: "supervisorAsignado", key: "supervisorAsignado" },
+  {
+    title: "Nombre del Proyecto",
+    dataIndex: "nombreProyecto",
+    key: "nombreProyecto",
+  },
+  {
+    title: "Supervisor",
+    dataIndex: "supervisorAsignado",
+    key: "supervisorAsignado",
+  },
   {
     title: "Estado Actual",
     dataIndex: "estadoActual",
@@ -41,7 +29,12 @@ const columns = [
       </Tag>
     ),
   },
-  { title: "Horas Transcurridas", dataIndex: "horasTranscurridas", key: "horasTranscurridas", align: "right" },
+  {
+    title: "Horas Transcurridas",
+    dataIndex: "horasTranscurridas",
+    key: "horasTranscurridas",
+    align: "right",
+  },
   {
     title: "Horas Retraso",
     dataIndex: "horasRetraso",
@@ -71,7 +64,11 @@ export default function ListaProyectoHoras() {
 
   useEffect(() => {
     setLoading(true);
-    fetchListaHorasRetraso(tableParams.pagination.current, tableParams.pagination.pageSize, tableParams.searchTerm)
+    fetchListaHorasRetraso(
+      tableParams.pagination.current,
+      tableParams.pagination.pageSize,
+      tableParams.searchTerm
+    )
       .then((responseData) => {
         setData(responseData);
         setTableParams((prev) => ({
@@ -91,7 +88,11 @@ export default function ListaProyectoHoras() {
     // LA CORRECCIÓN DEFINITIVA: El array de dependencias solo contiene valores primitivos.
     // Se eliminó "tableParams.pagination" de aquí.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableParams.pagination.current, tableParams.pagination.pageSize, tableParams.searchTerm]);
+  }, [
+    tableParams.pagination.current,
+    tableParams.pagination.pageSize,
+    tableParams.searchTerm,
+  ]);
 
   const handleTableChange = (pagination) => {
     setTableParams((prev) => ({
@@ -118,7 +119,13 @@ export default function ListaProyectoHoras() {
   if (error) {
     return (
       <MainLayout>
-        <Alert message="Error" description={error} type="error" showIcon style={{ margin: "24px" }} />
+        <Alert
+          message="Error"
+          description={error}
+          type="error"
+          showIcon
+          style={{ margin: "24px" }}
+        />
       </MainLayout>
     );
   }
@@ -142,7 +149,9 @@ export default function ListaProyectoHoras() {
             loading={loading}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
-            rowClassName={(record) => (record.horasRetraso > 0 ? "fila-retrasada" : "")}
+            rowClassName={(record) =>
+              record.horasRetraso > 0 ? "fila-retrasada" : ""
+            }
           />
         </Space>
       </div>

@@ -25,13 +25,13 @@ import {
 } from "@mui/material";
 import { fetchProyectosGenerales } from "../../services/proyectoServices";
 import PaginadorNumerado from "./components/PaginadorNumerado";
-import SelectFiltrosCheck from "./components/SelectFiltrosCheck";
 import FiltroChips from "./components/FiltroChips";
 import FiltroBotones from "./components/FiltroBotones";
 const PAGE_SIZE = 20;
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import { useNavigate } from "react-router-dom";
+import { getEstadoColor } from "../../utils/colorUtils";
 
 export default function ListaProyectosGenerales() {
   const navigate = useNavigate();
@@ -136,7 +136,12 @@ export default function ListaProyectosGenerales() {
   };
 
   // Botón limpiar se habilita si hay filtros aplicados
-  const tieneFiltrosAplicados = !!search || estado.length > 0 || tecnologia.length > 0 || !!startDate || !!endDate;
+  const tieneFiltrosAplicados =
+    !!search ||
+    estado.length > 0 ||
+    tecnologia.length > 0 ||
+    !!startDate ||
+    !!endDate;
 
   //variables para manejar el dialog de detalles
   const [proyectoSeleccionado, setProyectoSeleccionado] = React.useState(null);
@@ -155,32 +160,23 @@ export default function ListaProyectosGenerales() {
     });
   };
 
-  const getEstadoColor = (estado) => {
-    const estadoColores = {
-      "En planificación": "#795548",
-      "Pendiente asignación": "#FF9800",
-      Asignado: "#2196F3",
-      Replanteo: "#d8c40eff",
-      Ejecucion: "#4CAF50",
-      "En RDO": "#009688",
-      Finalizado: "#9E9E9E",
-      Ticket: "#0D7575",
-      "Validacion Documentos": "#9C27B0",
-      "Con SOLPED": "#4E342E",
-      "Con PO": "#00838F",
-      Liquidacion: "#BF360C",
-      "Con Correlativo": "#33691E",
-      DTA: "#3E2723",
-    };
-    return estadoColores[estado] || "#BDBDBD";
-  };
-
   return (
     <MainLayout>
       <Stack spacing={1} divider={<Divider />}>
         {/* El formulario de búsqueda es el primer elemento del Stack */}
-        <Box component="form" onSubmit={handleSearch} display="flex" gap={2} alignItems="center">
-          <TextField label="Buscar" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} size="small" />
+        <Box
+          component="form"
+          onSubmit={handleSearch}
+          display="flex"
+          gap={2}
+          alignItems="center"
+        >
+          <TextField
+            label="Buscar"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            size="small"
+          />
           <TextField
             label="Fecha inicial"
             type="date"
@@ -197,7 +193,12 @@ export default function ListaProyectosGenerales() {
             size="small"
             InputLabelProps={{ shrink: true }}
           />
-          <Button type="submit" variant="contained" color="primary" sx={{ width: 120 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ width: 120 }}
+          >
             Buscar
           </Button>
           <Button
@@ -269,7 +270,9 @@ export default function ListaProyectosGenerales() {
                         size="small"
                         sx={{
                           backgroundColor: getEstadoColor(p.estado?.nombre),
-                          color: ["#FFEB3B", "#FF9800"].includes(getEstadoColor(p.estado?.nombre)) // colores claros: negro, los demás: blanco
+                          color: ["#FFEB3B", "#FF9800"].includes(
+                            getEstadoColor(p.estado?.nombre)
+                          ) // colores claros: negro, los demás: blanco
                             ? "#222"
                             : "#fff",
                           fontWeight: 600,
@@ -282,11 +285,19 @@ export default function ListaProyectosGenerales() {
                     <TableCell>
                       {p.EjecucionDiaria?.length > 0 ? (
                         <Box sx={{ minWidth: 100 }}>
-                          <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              mb: 0.5,
+                            }}
+                          >
                             <Box sx={{ width: "100%", mr: 1 }}>
                               <LinearProgress
                                 variant="determinate"
-                                value={p.EjecucionDiaria[0].porcenEjecucion * 100}
+                                value={
+                                  p.EjecucionDiaria[0].porcenEjecucion * 100
+                                }
                                 sx={{
                                   height: 10,
                                   borderRadius: 5,
@@ -295,7 +306,8 @@ export default function ListaProyectosGenerales() {
                                     backgroundColor:
                                       p.EjecucionDiaria[0].porcenEjecucion < 0.5
                                         ? "#f44336" // rojo
-                                        : p.EjecucionDiaria[0].porcenEjecucion < 0.8
+                                        : p.EjecucionDiaria[0].porcenEjecucion <
+                                          0.8
                                         ? "#ff9800" // anaranjado
                                         : "#4caf50", // verde
                                   },
@@ -303,8 +315,14 @@ export default function ListaProyectosGenerales() {
                               />
                             </Box>
                             <Box sx={{ minWidth: 30 }}>
-                              <Typography variant="body2" color="text.secondary">
-                                {Math.round(p.EjecucionDiaria[0].porcenEjecucion * 100)}%
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {Math.round(
+                                  p.EjecucionDiaria[0].porcenEjecucion * 100
+                                )}
+                                %
                               </Typography>
                             </Box>
                           </Box>
@@ -364,7 +382,12 @@ export default function ListaProyectosGenerales() {
         </Box>
       </Paper>
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Detalles del Proyecto</DialogTitle>
         <DialogContent dividers>
           {proyectoSeleccionado ? (
@@ -379,25 +402,33 @@ export default function ListaProyectosGenerales() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Ticket
                     </Typography>
-                    <Typography>{proyectoSeleccionado.ticketCode ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.ticketCode ?? "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Nombre
                     </Typography>
-                    <Typography>{proyectoSeleccionado.nombre ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.nombre ?? "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Tecnología
                     </Typography>
-                    <Typography>{proyectoSeleccionado.tecnologia ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.tecnologia ?? "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Rubro
                     </Typography>
-                    <Typography>{proyectoSeleccionado.CodigosIngenieria?.codigo ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.CodigosIngenieria?.codigo ?? "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -412,19 +443,25 @@ export default function ListaProyectosGenerales() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Nombre Sitio
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.nombre_sitio ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.nombre_sitio ?? "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Nemonico
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.nemonico ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.nemonico ?? "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Municipio
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.Municipio?.municipio ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.Municipio?.municipio ?? "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -439,38 +476,53 @@ export default function ListaProyectosGenerales() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Contratista
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Contratistas?.nombre_contratista ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Contratistas?.nombre_contratista ??
+                        "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Planificador
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Planificador?.UserData?.nombre ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Planificador?.UserData?.nombre ??
+                        "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Estado
                     </Typography>
-                    <Typography>{proyectoSeleccionado.estado?.nombre ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.estado?.nombre ?? "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Asignado a
                     </Typography>
-                    <Typography>{proyectoSeleccionado?.Supervisor?.UserData?.nombre ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado?.Supervisor?.UserData?.nombre ??
+                        "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Supervisor Contratista
                     </Typography>
-                    <Typography>{proyectoSeleccionado?.SupervisorContratista?.UserData?.nombre ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado?.SupervisorContratista?.UserData
+                        ?.nombre ?? "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Recibido por
                     </Typography>
                     <Typography>
-                      {proyectoSeleccionado?.BitacoraFinalProyecto?.[0]?.nombreOperaciones ?? "—"}
+                      {proyectoSeleccionado?.BitacoraFinalProyecto?.[0]
+                        ?.nombreOperaciones ?? "—"}
                     </Typography>
                   </Box>
                 </Box>
@@ -488,7 +540,9 @@ export default function ListaProyectosGenerales() {
                     </Typography>
                     <Typography>
                       {proyectoSeleccionado.fechaInicio
-                        ? new Date(proyectoSeleccionado.fechaInicio).toLocaleDateString("es-NI")
+                        ? new Date(
+                            proyectoSeleccionado.fechaInicio
+                          ).toLocaleDateString("es-NI")
                         : "—"}
                     </Typography>
                   </Box>
@@ -496,7 +550,9 @@ export default function ListaProyectosGenerales() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Descripción
                     </Typography>
-                    <Typography>{proyectoSeleccionado.descripcion ?? "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.descripcion ?? "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>

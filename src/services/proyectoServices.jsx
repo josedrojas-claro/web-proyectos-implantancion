@@ -21,7 +21,10 @@ export const updateProyecto = async (id, data) => {
 };
 
 export const updateAsignarSupervisor = async (data) => {
-  const response = await apiClient.patch(`/proyecto/para-lideres-asignar`, data);
+  const response = await apiClient.patch(
+    `/proyecto/para-lideres-asignar`,
+    data
+  );
   return response.data;
 };
 
@@ -33,7 +36,9 @@ export const fetchListaProyectosReplanteo = async () => {
 
 //consutal para traer lista de proyectos para ejecucion diaria
 export const fetchListaProyectosEjecucion = async () => {
-  const response = await apiClient.get("/proyecto/proyectos-replanteo-ejecucion-all");
+  const response = await apiClient.get(
+    "/proyecto/proyectos-replanteo-ejecucion-all"
+  );
   return response.data;
 };
 
@@ -45,7 +50,10 @@ export const fetchListaProyectosRdoConci = async () => {
 
 ///cargar supervisor contrasta
 export const updateAsignarSupervisorContratista = async (data) => {
-  const response = await apiClient.patch(`/proyecto/cargar-supervisor-contrata`, data);
+  const response = await apiClient.patch(
+    `/proyecto/cargar-supervisor-contrata`,
+    data
+  );
   return response.data;
 };
 
@@ -54,10 +62,14 @@ export const updateAsignarSupervisorContratista = async (data) => {
 export const fetchProyectosGenerales = async (params = {}) => {
   // Elimina claves nulas/vacías
   const cleanParams = Object.fromEntries(
-    Object.entries(params).filter((entry) => entry[1] !== undefined && entry[1] !== null && entry[1] !== "")
+    Object.entries(params).filter(
+      (entry) => entry[1] !== undefined && entry[1] !== null && entry[1] !== ""
+    )
   );
   const queryString = new URLSearchParams(cleanParams).toString();
-  const response = await apiClient.get(`/proyecto/proyectos-generales?${queryString}`);
+  const response = await apiClient.get(
+    `/proyecto/proyectos-generales?${queryString}`
+  );
   return response.data;
 };
 
@@ -68,7 +80,11 @@ export const fetchHistorialProyectos = async (id) => {
 };
 
 //reporte lista de horas retraso
-export const fetchListaHorasRetraso = async (page = 1, pageSize = 15, searchTerm = "") => {
+export const fetchListaHorasRetraso = async (
+  page = 1,
+  pageSize = 15,
+  searchTerm = ""
+) => {
   // Codificamos el término de búsqueda para que sea seguro en una URL
   const encodedSearchTerm = encodeURIComponent(searchTerm);
 
@@ -79,12 +95,54 @@ export const fetchListaHorasRetraso = async (page = 1, pageSize = 15, searchTerm
 };
 // estadistica de proyectos horas retraso
 export const fetchEstadisticaHorasRetraso = async () => {
-  const response = await apiClient.get(`/proyecto/reporte-de-dias-por-proyecto/estadisticas`);
+  const response = await apiClient.get(
+    `/proyecto/reporte-de-dias-por-proyecto/estadisticas`
+  );
   return response.data;
 };
 
 // promedio en tiempo entre cada estado, cuando le dura a las personas en cambiar de estado
 export const fetchTiempoTrancision = async () => {
-  const response = await apiClient.get(`/proyecto/reporte-de-dias-por-proyecto/estadisticas/transiciones`);
+  const response = await apiClient.get(
+    `/proyecto/reporte-de-dias-por-proyecto/estadisticas/transiciones`
+  );
+  return response.data;
+};
+
+///estados proyectos
+export const fetchEstadosProyectos = async () => {
+  const response = await apiClient.get(`/estadoproyecto`);
+  return response.data;
+};
+
+export const createEstadoProyecto = async (data) => {
+  const response = await apiClient.post("/estadoproyecto", data);
+  return response.data;
+};
+
+export const updateEstadoProyectos = async (id, data) => {
+  const response = await apiClient.patch(`/estadoproyecto/${id}`, data);
+  return response.data;
+};
+
+export const deleteEstadoProyecto = async (id) => {
+  const response = await apiClient.delete(`/estadoproyecto/${id}`);
+  return response.data;
+};
+
+//funciones especiales para editar el historial de proyectos, cancelado y borrado
+export const cancelarProyecto = async (data) => {
+  const response = await apiClient.patch(
+    `/proyecto/cambiar-estado/cancelar-proyectos/`,
+    data
+  );
+  return response.data;
+};
+
+export const pausarProyecto = async (data) => {
+  const response = await apiClient.patch(
+    `/proyecto/cambiar-estado/pausar-proyectos/`,
+    data
+  );
   return response.data;
 };

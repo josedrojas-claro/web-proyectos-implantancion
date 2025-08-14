@@ -1,30 +1,25 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import { Card } from "antd";
+import { getEstadoColor } from "../../../utils/colorUtils";
 
-// Tu función para obtener el color de cada estado
-const getEstadoColor = (estado) => {
-  const estadoColores = {
-    "En planificación": "#795548",
-    "Pendiente asignación": "#FF9800",
-    Asignado: "#2196F3",
-    Replanteo: "#FFEB3B",
-    Ejecucion: "#4CAF50",
-    "En RDO": "#009688",
-    Finalizado: "#9E9E9E",
-    Ticket: "#0D7575",
-    "Validacion Documentos": "#9C27B0",
-    "Con SOLPED": "#4E342E",
-    "Con PO": "#00838F",
-    Liquidacion: "#BF360C",
-    "Con Correlativo": "#33691E",
-    DTA: "#3E2723",
-  };
-  return estadoColores[estado] || "#BDBDBD"; // Color por defecto
-};
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function EstadoBarChart({ data }) {
   const labels = Object.keys(data);

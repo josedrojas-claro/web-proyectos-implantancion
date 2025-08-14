@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   TextField,
@@ -22,17 +22,18 @@ import { useAuthUser } from "../../services/authServices";
 import Swal from "sweetalert2";
 
 export default function NuevoProyecto() {
-  const [sitioSeleccionado, setSitioSeleccionado] = React.useState(null);
-  const [contratistaSeleccionado, setContratistaSeleccionado] = React.useState(null);
-  const [codigoIngSeleccionado, setCodigoIngSeleccionado] = React.useState(null);
-  const [tecnologiaSeleccionada, setTecnologiaSeleccionada] = React.useState(null);
-  const [poStatus, setPoStatus] = React.useState(false); // false = sin PO
-  const [nombreProyecto, setNombreProyecto] = React.useState("");
-  const [descripcionProyecto, setDescripcionProyecto] = React.useState("");
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [ticketCode, setTicketCode] = React.useState(null);
-  const [mensaje, setMensaje] = React.useState("");
-  const [errores, setErrores] = React.useState({
+  const [sitioSeleccionado, setSitioSeleccionado] = useState(null);
+  const [contratistaSeleccionado, setContratistaSeleccionado] = useState(null);
+  const [codigoIngSeleccionado, setCodigoIngSeleccionado] = useState(null);
+  const [tecnologiaSeleccionada, setTecnologiaSeleccionada] = useState(null);
+  const [poStatus, setPoStatus] = useState(false); // false = sin PO
+  const [poSubStatus, setSubPoStatus] = useState(false); // false = sin PO
+  const [nombreProyecto, setNombreProyecto] = useState("");
+  const [descripcionProyecto, setDescripcionProyecto] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [ticketCode, setTicketCode] = useState(null);
+  const [mensaje, setMensaje] = useState("");
+  const [errores, setErrores] = useState({
     nombre: false,
     descripcion: false,
     sitio: false,
@@ -66,6 +67,7 @@ export default function NuevoProyecto() {
       codigoIngenieriaId: codigoIngSeleccionado.id,
       tecnologia: tecnologiaSeleccionada.nombre_tecnologia,
       havePo: poStatus,
+      poSubStatus: poSubStatus,
       userId: user.id,
     };
 
@@ -96,6 +98,7 @@ export default function NuevoProyecto() {
     setDescripcionProyecto("");
 
     setPoStatus(false);
+    setSubPoStatus(false);
     setTicketCode(null);
     setMensaje("");
   };
@@ -124,7 +127,15 @@ export default function NuevoProyecto() {
 
       <Grid container spacing={3} justifyContent="center">
         {/* Columna izquierda */}
-        <Grid item xs={12} md={6} display="flex" flexDirection="column" gap={2} alignItems="center">
+        <Grid
+          item
+          xs={12}
+          md={6}
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          alignItems="center"
+        >
           <TextField
             label="Nombre del Proyecto"
             fullWidth
@@ -172,20 +183,23 @@ export default function NuevoProyecto() {
         </Grid>
 
         {/* Columna derecha */}
-        <Grid item xs={12} md={6} display="flex" flexDirection="column" gap={2} alignItems="center">
+        <Grid
+          item
+          xs={12}
+          md={6}
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          alignItems="center"
+        >
           <TextField
             label="Descripción Proyecto"
             fullWidth
             multiline
-            rows={6}
+            rows={4}
             value={descripcionProyecto}
             onChange={(e) => setDescripcionProyecto(e.target.value)}
             error={errores.descripcion}
-            helperText={
-              errores.descripcion
-                ? "Este campo es obligatorio"
-                : "Puede poner un nombre más amplio o algo que describa más al proyecto"
-            }
             sx={{
               width: "50ch",
               "& .MuiOutlinedInput-root": {
@@ -206,6 +220,7 @@ export default function NuevoProyecto() {
           >
             <ToggleButton
               value="true"
+              size="small"
               sx={{
                 color: "#d32f2f",
                 borderColor: "#d32f2f",
@@ -219,6 +234,7 @@ export default function NuevoProyecto() {
             </ToggleButton>
             <ToggleButton
               value="false"
+              size="small"
               sx={{
                 color: "#d32f2f",
                 borderColor: "#d32f2f",
@@ -231,12 +247,55 @@ export default function NuevoProyecto() {
               ✓ Sin PO
             </ToggleButton>
           </ToggleButtonGroup>
+          <ToggleButtonGroup
+            value={poSubStatus ? "true" : "false"}
+            exclusive
+            onChange={(e, newVal) => {
+              if (newVal !== null) setSubPoStatus(newVal === "true");
+            }}
+            sx={{ mt: 2 }}
+          >
+            <ToggleButton
+              value="true"
+              size="small"
+              sx={{
+                color: "#d32f2f",
+                borderColor: "#d32f2f",
+                "&.Mui-selected": {
+                  bgcolor: "#d32f2f",
+                  color: "#fff",
+                },
+              }}
+            >
+              Ticket
+            </ToggleButton>
+            <ToggleButton
+              value="false"
+              size="small"
+              sx={{
+                color: "#d32f2f",
+                borderColor: "#d32f2f",
+                "&.Mui-selected": {
+                  bgcolor: "#d32f2f",
+                  color: "#fff",
+                },
+              }}
+            >
+              ✓ Flujo Ejecucion
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Grid>
       </Grid>
 
       {/* Botón Guardar */}
       <Box mt={4} display="flex" justifyContent="center">
-        <Button variant="contained" color="error" size="large" onClick={handleGuardarProyecto} sx={{ width: "250px" }}>
+        <Button
+          variant="contained"
+          color="error"
+          size="large"
+          onClick={handleGuardarProyecto}
+          sx={{ width: "250px" }}
+        >
           Guardar Proyecto
         </Button>
       </Box>

@@ -31,7 +31,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const response = await login(email, password);
-
+      console.log(response.data);
       setAlertType("success");
       setAlertMsg(`Bienvenido ${response.data.User?.UserData.nombre}`);
       setAlertOpen(true);
@@ -72,7 +72,12 @@ export default function Login() {
         {/* Input Email con ícono */}
         <div className="input-container">
           <i className="fas fa-envelope icon" />
-          <input type="text" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Correo"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
 
         {/* Input Password con candado y toggle */}
@@ -84,7 +89,10 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <i className={`fa ${showPass ? "fa-eye-slash" : "fa-eye"} toggle`} onClick={togglePassword} />
+          <i
+            className={`fa ${showPass ? "fa-eye-slash" : "fa-eye"} toggle`}
+            onClick={togglePassword}
+          />
         </div>
 
         <button onClick={handleLogin} disabled={loading}>
@@ -102,7 +110,8 @@ export default function Login() {
         </button>
 
         <p className="login-footer">
-          ¿No tiene cuenta? Comuníquese con la Subgerencia de Ingeniería PX para gestionar su acceso.
+          ¿No tiene cuenta? Comuníquese con la Subgerencia de Ingeniería PX para
+          gestionar su acceso.
         </p>
       </div>
       <Snackbar
@@ -111,7 +120,11 @@ export default function Login() {
         onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={handleClose} severity={alertType} sx={{ width: "100%" }}>
+        <Alert
+          onClose={handleClose}
+          severity={alertType}
+          sx={{ width: "100%" }}
+        >
           {alertMsg}
         </Alert>
       </Snackbar>

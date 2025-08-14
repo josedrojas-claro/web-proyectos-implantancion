@@ -19,6 +19,7 @@ import {
   LocationOn as LocationOnIcon,
   Group as GroupIcon,
   Logout as LogoutIcon,
+  Settings as SettingsIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/authServices";
@@ -35,6 +36,16 @@ export default function MyDrawer({ open, toggleDrawer }) {
     { label: "Materiales", path: "/materiales", icon: <WarehouseIcon /> },
     { label: "Sitios", path: "/sitios", icon: <LocationOnIcon /> },
     { label: "Contratistas", path: "/contratistas", icon: <GroupIcon /> },
+    // El ítem de Configuración solo se añade al arreglo si el rol del usuario es 'admin'
+    ...(user?.role === "admin"
+      ? [
+          {
+            label: "Configuracion",
+            path: "/configuraciones", // Corregí la ruta para que sea única
+            icon: <SettingsIcon />,
+          },
+        ]
+      : []), // Si no es admin, se añade un arreglo vacío (o sea, nada)
     { label: "Cerrar Sesión", action: "logout", icon: <LogoutIcon /> },
   ];
 
@@ -48,9 +59,20 @@ export default function MyDrawer({ open, toggleDrawer }) {
 
   return (
     <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
-      <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+      <Box
+        sx={{ width: 250 }}
+        role="presentation"
+        onClick={toggleDrawer(false)}
+      >
         {/* Avatar y datos del usuario */}
-        <Box sx={{ p: 2, display: "flex", alignItems: "center", flexDirection: "column" }}>
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
           <Avatar sx={{ bgcolor: "#1976d2", width: 56, height: 56 }}>
             {user?.UserData.nombre?.[0]?.toUpperCase()}
           </Avatar>

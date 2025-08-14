@@ -13,6 +13,8 @@ const ROLES = {
   supervisoContratista: "contratista",
   liderConstratista: "contratista-lider",
   planificador: "planificador",
+  coordinadorIng: "coordinador-ing",
+  coordinadorSup: "coordinador-sup",
 };
 
 const features = [
@@ -20,19 +22,32 @@ const features = [
     title: "Nuevo Proyecto",
     icon: "src/assets/project.png",
     path: "/nuevo-proyecto",
-    allowedRoles: [ROLES.admin, ROLES.planificador], // Solo el administrador puede crear nuevos proyectos
+    allowedRoles: [ROLES.admin, ROLES.planificador, ROLES.coordinadorIng], // Solo el administrador puede crear nuevos proyectos
+  },
+  {
+    title: "Planificacion",
+    icon: "src/assets/dta.png",
+    path: "/asignar-supervisor",
+    allowedRoles: [ROLES.admin, ROLES.planificador, ROLES.coordinadorIng], // Solo el administrador puede asignar supervisores
   },
   {
     title: "Asignar Supervisor",
     icon: "src/assets/labor.png",
     path: "/asignar-supervisor",
-    allowedRoles: [ROLES.admin, ROLES.lider], // Solo el administrador puede asignar supervisores
+
+    allowedRoles: [ROLES.admin, ROLES.lider, ROLES.coordinadorSup], // Solo el administrador puede asignar supervisores
   },
   {
     title: "Replanteo",
     icon: "src/assets/gear.png",
     path: "/lista-proyectos-replanteo",
-    allowedRoles: [ROLES.admin, ROLES.supervisorClaro, ROLES.lider], // Admin y Supervisor pueden ver replanteo
+    allowedRoles: [
+      ROLES.admin,
+      ROLES.supervisorClaro,
+      ROLES.lider,
+      ROLES.coordinadorIng,
+      ROLES.coordinadorSup,
+    ], // Admin y Supervisor pueden ver replanteo
   },
   {
     title: "Ejecución Diaria",
@@ -45,6 +60,8 @@ const features = [
       ROLES.lider,
       ROLES.liderConstratista,
       ROLES.planificador,
+      ROLES.coordinadorIng,
+      ROLES.coordinadorSup,
     ], // Admin, Supervisor y Ejecutor
   },
   {
@@ -58,6 +75,8 @@ const features = [
       ROLES.lider,
       ROLES.liderConstratista,
       ROLES.planificador,
+      ROLES.coordinadorIng,
+      ROLES.coordinadorSup,
     ],
   },
   // {
@@ -77,13 +96,15 @@ const features = [
       ROLES.lider,
       ROLES.liderConstratista,
       ROLES.planificador,
-    ], // Todos pueden ver la lista general de proyectos
+      ROLES.coordinadorIng,
+      ROLES.coordinadorSup,
+    ],
   },
   {
     title: "Reportes",
     icon: "src/assets/reporteNegocio.png",
     path: "/reporte-horas-retraso",
-    allowedRoles: [ROLES.admin],
+    allowedRoles: [ROLES.admin, ROLES.coordinadorIng, ROLES.coordinadorSup],
   },
 ];
 

@@ -5,7 +5,20 @@ import ProyectoResumenCard from "../../components/ProyectoResumenCard";
 import InfoProyecto from "./components/InfoProyecto";
 import HistorialProyecto from "./components/HistorialProyecto";
 import ListaDocumentos from "../ejecucionDiaria/components/ListaDocumentos";
-import { Typography, Space, Row, Col, Divider, Spin, Empty } from "antd";
+import {
+  Typography,
+  Space,
+  Row,
+  Col,
+  Divider,
+  Spin,
+  Empty,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Card,
+} from "antd";
 import { fetchServiciosAsignadosByProyecto } from "../../services/serviciosServices";
 import { fetchMaterialesAsignadosByProyecto } from "../../services/materialesServices";
 import CardServicioResumen from "../../components/CardServicioResumen";
@@ -15,13 +28,23 @@ import { useAuthUser } from "../../services/authServices";
 import { fetchServiciosSolicutudAproRecha } from "../../services/serviciosServices";
 import { fetchMaterialesSolicutudAproRecha } from "../../services/materialesServices";
 import SolicitudAprobarCard from "./components/SolicitudAprobarCard";
+import {
+  cancelarProyecto,
+  pausarProyecto,
+} from "../../services/proyectoServices";
+import {
+  PauseCircleOutlined,
+  CloseCircleOutlined,
+  PlayCircleOutlined,
+} from "@ant-design/icons";
+import Swal from "sweetalert2";
 
 const { Title } = Typography;
 
 export default function ProyectoDetalles() {
   const { ticketCode } = useParams();
   const location = useLocation();
-  const proyecto = location.state?.proyecto;
+  const [proyecto, setProyecto] = useState(location.state?.proyecto);
   const user = useAuthUser();
 
   const [servicios, setServicios] = useState([]);
@@ -34,7 +57,12 @@ export default function ProyectoDetalles() {
   const cargarTodo = useCallback(async () => {
     setLoading(true);
     try {
-      const [dataServicios, dataMateriales, dataServiciosApro, dataMaterialesApro] = await Promise.all([
+      const [
+        dataServicios,
+        dataMateriales,
+        dataServiciosApro,
+        dataMaterialesApro,
+      ] = await Promise.all([
         fetchServiciosAsignadosByProyecto(proyecto.id),
         fetchMaterialesAsignadosByProyecto(proyecto.id),
         fetchServiciosSolicutudAproRecha(proyecto.id),
@@ -59,6 +87,109 @@ export default function ProyectoDetalles() {
     cargarTodo();
   }, [cargarTodo]);
 
+  // ✨ --- Estados para el Modal de Acciones ---
+  const [isPauseModalVisible, setIsPauseModalVisible] = useState(false);
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+
+  // ✨ Un form para cada modal
+  const [pauseForm] = Form.useForm();
+  const [cancelForm] = Form.useForm();
+
+  const [historialKey, setHistorialKey] = useState(0); // ✨ Añade este estado
+
+  const handlePauseSubmit = async () => {
+    try {
+      const values = await pauseForm.validateFields();
+      const isPausado = proyecto.estado.nombre === "En pausa";
+      const actionText = isPausado ? "reanudar" : "pausar";
+
+      Swal.fire({
+        title: `¿Estás seguro de ${actionText} el proyecto?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: `Sí, ${actionText}`,
+        cancelButtonText: "No",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const { message, nuevoEstado } = await pausarProyecto({
+              proyectoId: proyecto.id,
+              comentario: values.comentario,
+            });
+
+            await Swal.fire("¡Éxito!", message, "success");
+
+            // Actualizamos el estado
+            setProyecto((prev) => ({
+              ...prev,
+              estado: { ...prev.estado, nombre: nuevoEstado.nombre }, // Reemplazamos el objeto de estado anterior
+            }));
+            setHistorialKey((prevKey) => prevKey + 1);
+
+            setIsPauseModalVisible(false);
+            pauseForm.resetFields();
+          } catch (error) {
+            console.log(error);
+            Swal.fire(
+              "Error",
+              error.message || "No se pudo completar la acción.",
+              "error"
+            );
+          }
+        }
+      });
+    } catch (e) {
+      console.log(e.message);
+      console.log("Error de validación", e.message);
+    }
+  };
+
+  // ✨ Función para CANCELAR y REACTIVAR
+  const handleCancelSubmit = async () => {
+    try {
+      const values = await cancelForm.validateFields();
+      const isCancelado = proyecto.estado.nombre === "Cancelado";
+      const actionText = isCancelado ? "reactivar" : "cancelar";
+
+      Swal.fire({
+        title: `¿Estás seguro de ${actionText} el proyecto?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: `Sí, ${actionText}`,
+        cancelButtonText: "No",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            // El backend usa el mismo servicio como un "toggle"
+            const { message, nuevoEstado } = await cancelarProyecto({
+              proyectoId: proyecto.id,
+              comentario: values.comentario,
+            });
+            await Swal.fire("¡Éxito!", message, "success");
+
+            setProyecto((prev) => ({
+              ...prev,
+              estado: { ...prev.estado, nombre: nuevoEstado.nombre },
+            }));
+
+            setHistorialKey((prevKey) => prevKey + 1);
+
+            setIsCancelModalVisible(false);
+            cancelForm.resetFields();
+          } catch (error) {
+            Swal.fire(
+              "Error",
+              error || "No se pudo completar la acción.",
+              "error"
+            );
+          }
+        }
+      });
+    } catch (e) {
+      console.log("Error de validación", e);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ textAlign: "center", marginTop: 60 }}>
@@ -67,8 +198,12 @@ export default function ProyectoDetalles() {
     );
   }
 
-  const rolesConPermiso = ["admin", "lider", "planificador"];
+  const rolesConPermiso = ["admin", "lider", "planificador", "coordinador-sup"];
   const rolesParaAprobar = ["admin", "planificador"];
+  const roleCancelarProyecto = ["admin", "coordinador-ing"];
+  const rolesPausarProyecto = ["admin", "coordinador-sup"];
+
+  const { TextArea } = Input;
 
   return (
     <MainLayout>
@@ -76,24 +211,99 @@ export default function ProyectoDetalles() {
         Detalles de proyecto para ticket: {ticketCode}
       </Title>
       <ProyectoResumenCard proyecto={proyecto} />
+      <Space style={{ marginTop: "20px" }}>
+        {(() => {
+          const estado = proyecto.estado.nombre;
+
+          // --- Lógica para el estado "Cancelado" ---
+          if (estado === "Cancelado") {
+            // ✨ Muestra el botón "Reactivar" solo si el rol del usuario está permitido
+            return (
+              roleCancelarProyecto.includes(user.role) && (
+                <Button
+                  type="primary"
+                  icon={<PlayCircleOutlined />}
+                  onClick={() => setIsCancelModalVisible(true)}
+                >
+                  Reactivar
+                </Button>
+              )
+            );
+          }
+          // --- Lógica para el estado "En pausa" ---
+          else if (estado === "En pausa") {
+            // ✨ Muestra el botón "Reanudar" solo si el rol del usuario está permitido
+            return (
+              rolesPausarProyecto.includes(user.role) && (
+                <Button
+                  type="primary"
+                  icon={<PlayCircleOutlined />}
+                  onClick={() => setIsPauseModalVisible(true)}
+                >
+                  Reanudar
+                </Button>
+              )
+            );
+          }
+          // --- Lógica para otros estados ---
+          else {
+            // ✨ Muestra los botones de Pausar y Cancelar, cada uno con su propia validación de rol
+            return (
+              <>
+                {rolesPausarProyecto.includes(user.role) && (
+                  <Button
+                    icon={<PauseCircleOutlined />}
+                    onClick={() => setIsPauseModalVisible(true)}
+                  >
+                    Pausar
+                  </Button>
+                )}
+                {roleCancelarProyecto.includes(user.role) && (
+                  <Button
+                    danger
+                    type="primary"
+                    icon={<CloseCircleOutlined />}
+                    onClick={() => setIsCancelModalVisible(true)}
+                  >
+                    Cancelar
+                  </Button>
+                )}
+              </>
+            );
+          }
+        })()}
+      </Space>
       <InfoProyecto proyecto={proyecto} />
       <Space direction="horizontal" size={25}>
         <ListaDocumentos proyectoId={proyecto.id} ventana={true} />
-        <ListaDocumentos proyectoId={proyecto.id} ventana={true} docFirmados={true} />
+        <ListaDocumentos
+          proyectoId={proyecto.id}
+          ventana={true}
+          docFirmados={true}
+        />
       </Space>
       <Divider />
-      <HistorialProyecto proyectoId={proyecto.id} />
+      <HistorialProyecto proyectoId={proyecto.id} key={historialKey} />
+
       <Row gutter={[16, 16]} wrap>
         {/* Servicios */}
         <Col xs={24} md={12}>
           <Typography.Title level={5}>Servicios</Typography.Title>
           <Space direction="vertical" size="middle" style={{ width: "100%" }}>
             {servicios.map((item, index) => (
-              <CardServicioResumen key={item.id || index} item={item} index={index} role={user.role} />
+              <CardServicioResumen
+                key={item.id || index}
+                item={item}
+                index={index}
+                role={user.role}
+              />
             ))}
             {/* Condición para mostrar el total de servicios */}
             {rolesConPermiso.includes(user.role) && (
-              <Typography.Text strong style={{ textAlign: "center", display: "block" }}>
+              <Typography.Text
+                strong
+                style={{ textAlign: "center", display: "block" }}
+              >
                 Total Servicios: {proyecto.totalServiciosUsd.toFixed(2)} USD
               </Typography.Text>
             )}
@@ -105,11 +315,19 @@ export default function ProyectoDetalles() {
           <Typography.Title level={5}>Materiales</Typography.Title>
           <Space direction="vertical" size="middle" style={{ width: "100%" }}>
             {materiales.map((item, index) => (
-              <CardMaterialResumen key={item.id || index} item={item} index={index} role={user.role} />
+              <CardMaterialResumen
+                key={item.id || index}
+                item={item}
+                index={index}
+                role={user.role}
+              />
             ))}
             {/* Condición para mostrar el total de materiales */}
             {rolesConPermiso.includes(user.role) && (
-              <Typography.Text strong style={{ textAlign: "center", display: "block" }}>
+              <Typography.Text
+                strong
+                style={{ textAlign: "center", display: "block" }}
+              >
                 Total Materiales: {proyecto.totalMaterialesUsd.toFixed(2)} USD
               </Typography.Text>
             )}
@@ -127,7 +345,10 @@ export default function ProyectoDetalles() {
       )}
       {rolesParaAprobar.includes(user.role) && (
         <>
-          <Typography.Title level={4} style={{ textAlign: "center", margin: 0 }}>
+          <Typography.Title
+            level={4}
+            style={{ textAlign: "center", margin: 0 }}
+          >
             Solicitud de servicios y materiales a aprobar
           </Typography.Title>
           <Row gutter={24} style={{ marginTop: 16 }}>
@@ -174,6 +395,58 @@ export default function ProyectoDetalles() {
           </Row>
         </>
       )}
+      <Modal
+        title={
+          proyecto.estado.nombre === "En pausa"
+            ? "Reanudar Proyecto"
+            : "Pausar Proyecto"
+        }
+        visible={isPauseModalVisible}
+        onOk={handlePauseSubmit}
+        onCancel={() => {
+          setIsPauseModalVisible(false);
+          pauseForm.resetFields();
+        }}
+        okText="Confirmar"
+        cancelText="Cancelar"
+      >
+        <Form form={pauseForm} layout="vertical">
+          <Form.Item
+            name="comentario"
+            label="Motivo"
+            rules={[{ required: true, message: "El motivo es obligatorio." }]}
+          >
+            <TextArea rows={4} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Modal para Cancelar y Reactivar */}
+      <Modal
+        title={
+          proyecto.estado.nombre === "Cancelado"
+            ? "Reactivar Proyecto"
+            : "Cancelar Proyecto"
+        }
+        visible={isCancelModalVisible}
+        onOk={handleCancelSubmit}
+        onCancel={() => {
+          setIsCancelModalVisible(false);
+          cancelForm.resetFields();
+        }}
+        okText="Confirmar"
+        cancelText="Cancelar"
+      >
+        <Form form={cancelForm} layout="vertical">
+          <Form.Item
+            name="comentario"
+            label="Motivo"
+            rules={[{ required: true, message: "El motivo es obligatorio." }]}
+          >
+            <TextArea rows={4} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </MainLayout>
   );
 }
