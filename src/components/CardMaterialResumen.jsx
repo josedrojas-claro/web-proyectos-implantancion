@@ -72,10 +72,7 @@ export default function CardMaterialResumen({ item, index, role }) {
           <Typography variant="caption" color="text.secondary">
             Adicional
           </Typography>
-          <Typography variant="body2">
-            {" "}
-            {item.cantidadAdicional > 0 ? Math.max(0, item.cantidadAdicional - item.cantidadReplanteo) : 0}
-          </Typography>
+          <Typography variant="body2">{item.cantidadAdicional}</Typography>
         </Grid>
         <Divider orientation="vertical" variant="middle" flexItem />
         <Grid item xs={3}>
@@ -84,7 +81,14 @@ export default function CardMaterialResumen({ item, index, role }) {
           </Typography>
           <Typography
             variant="body2"
-            sx={{ color: item.diferencia > 0 ? "orange" : item.diferencia < 0 ? "red" : "green" }}
+            sx={{
+              color:
+                item.diferencia > 0
+                  ? "orange"
+                  : item.diferencia < 0
+                  ? "red"
+                  : "green",
+            }}
           >
             {item.diferencia.toFixed(2)}
           </Typography>

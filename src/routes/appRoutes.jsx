@@ -17,6 +17,10 @@ import ListaProyectoHoras from "../pages/reporte/ListaProyectoHoras";
 //lista configuraciones
 import Configuracion from "../pages/configuracion/configuracion";
 import EstadosProyectos from "../pages/configuracion/EstadosProyectos/estadosProyectos";
+
+//planificaciones
+import ListaPlanificacion from "../pages/planificacion/listaPlanificacion";
+import CargarAlcancesPreliminares from "../pages/planificacion/cargarAlcancesPreliminares";
 const appRoutes = [
   { path: "/login", element: <Login />, isPrivate: false },
   {
@@ -103,6 +107,17 @@ const appRoutes = [
   {
     path: "/configuraciones/estados",
     element: <EstadosProyectos />,
+    isPrivate: true,
+  },
+  //planificacion
+  {
+    path: "/lista-proyectos-planificacion",
+    element: <ListaPlanificacion />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-planificacion/alances-preliminares/:ticketCode",
+    element: <CargarAlcancesPreliminares />,
     isPrivate: true,
   },
 ];

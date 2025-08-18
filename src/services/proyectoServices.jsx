@@ -146,3 +146,22 @@ export const pausarProyecto = async (data) => {
   );
   return response.data;
 };
+
+//funciones para planificar proyects
+export const fetchProyectosEnPlanificacion = async ({
+  limit,
+  offset,
+  estados,
+  search,
+} = {}) => {
+  const response = await apiClient.get("/proyecto/proyectos-en-planificacion", {
+    params: {
+      limit,
+      offset,
+      estados,
+      search,
+    },
+  });
+
+  return response.data;
+};

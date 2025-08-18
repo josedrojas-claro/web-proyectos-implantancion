@@ -1,9 +1,12 @@
 import apiClient from "./apiClient";
 
 export const fetchServiciosByContratista = async (contratistaId, busqueda) => {
-  const response = await apiClient.get(`/servicios/by-contratista-for-asig/${contratistaId}`, {
-    params: { q: busqueda },
-  });
+  const response = await apiClient.get(
+    `/servicios/by-contratista-for-asig/${contratistaId}`,
+    {
+      params: { q: busqueda },
+    }
+  );
   return response.data;
 };
 ///funciones para servicios Asignados
@@ -19,12 +22,43 @@ export const fetchServiciosAsignadosByProyecto = async (proyectoId) => {
 
 //funcion para aprobar o recharzar solicitudes de servicios
 export const fetchServiciosSolicutudAproRecha = async (proyectoId) => {
-  const response = await apiClient.get(`/aprobacion-servicio-material/proyecto-servicio/${proyectoId}`);
+  const response = await apiClient.get(
+    `/aprobacion-servicio-material/proyecto-servicio/${proyectoId}`
+  );
   return response.data;
 };
 
 //funcion para aprobar, lo vamos adejar aqui para aprobar servicio y materiales pero es el mismo entpint al infla como para no estar repiendo
 export const updateSerMateAproRecha = async (id, data) => {
-  const response = await apiClient.patch(`/aprobacion-servicio-material/${id}`, data);
+  const response = await apiClient.patch(
+    `/aprobacion-servicio-material/${id}`,
+    data
+  );
+  return response.data;
+};
+
+//funcion general para traer todos los servicios
+export const fetchServiciosPorArray = async (data, contratistaId) => {
+  const response = await apiClient.post(`/servicios/array-servicios`, {
+    data,
+    contratistaId,
+  });
+  return response.data;
+};
+
+//funciones para los servicios asignados
+export const createServiciosPlanificacion = async (data, proyectoId) => {
+  const response = await apiClient.post(
+    `/servicios-asignado/planificacion/${proyectoId}`,
+    data
+  );
+  return response.data;
+};
+
+//funcion sera para la planficacion pero podria ser usuado para uso general todo los items que esten con ese nombre tabla servicios_asignados
+export const deleteServiciosAsignados = async (data) => {
+  const response = await apiClient.delete(`/servicios-asignado/array-bulk`, {
+    data,
+  });
   return response.data;
 };

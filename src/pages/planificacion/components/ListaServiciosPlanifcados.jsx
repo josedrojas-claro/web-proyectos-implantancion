@@ -1,0 +1,125 @@
+import React, { useState } from "react";
+import { Table, Card, Typography, Tag, Button } from "antd";
+import { DeleteOutlined } from "@ant-design/icons"; // ✨ Añade un ícono
+import Swal from "sweetalert2";
+import { deleteServiciosAsignados } from "../../../services/serviciosServices";
+const { Title } = Typography;
+
+const columns = [
+  {
+    title: "Código",
+    dataIndex: ["Servicios", "servicio"],
+    key: "codigo",
+  },
+  {
+    title: "Descripción",
+    dataIndex: ["Servicios", "descripcionServicio"],
+    key: "descripcion",
+  },
+  {
+    title: "Planificado",
+    dataIndex: "cantidadPlanificada",
+    key: "planificada",
+    render: (text) => <Tag color="blue">{text}</Tag>,
+  },
+  {
+    title: "Unidad",
+    dataIndex: ["Servicios", "unidadMedida"],
+    key: "unidad",
+  },
+];
+
+const ListaServiciosPlanificados = ({ servicios, loading, onUpdate }) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteSelected = async () => {
+    // Confirmación con Swal
+    const confirmacion = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: `Se eliminarán ${selectedRowKeys.length} servicio(s) planificado(s). ¡Esta acción no se puede revertir!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, ¡eliminar!",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!confirmacion.isConfirmed) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      // Llamamos al servicio de borrado en lote que ya creamos
+      const response = await deleteServiciosAsignados({
+        ids: selectedRowKeys.map((id) => Number(id)),
+      });
+
+      await Swal.fire("¡Eliminados!", response.message, "success");
+
+      // ✨ Le decimos al componente padre que los datos cambiaron para que refresque la lista
+      if (onUpdate) {
+        onUpdate();
+      }
+      setSelectedRowKeys([]); // Limpiamos la selección
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Ocurrió un error al eliminar.";
+      await Swal.fire("Error", errorMessage, "error");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const rowSelection = {
+    selectedRowKeys, // El estado que controla qué filas están seleccionadas
+    onChange: (newSelectedRowKeys) => {
+      setSelectedRowKeys(newSelectedRowKeys); // Actualiza el estado cuando el usuario selecciona/deselecciona
+    },
+  };
+
+  const hasSelected = selectedRowKeys.length > 0;
+
+  return (
+    <Card style={{ marginTop: "20px" }}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Title level={4} style={{ margin: 0 }}>
+          Servicios Ya Planificados
+        </Title>
+        {/*  El botón de eliminar solo aparece si hay algo seleccionado */}
+        {hasSelected && (
+          <Button
+            type="primary"
+            danger
+            onClick={handleDeleteSelected}
+            disabled={!hasSelected}
+            loading={deleting}
+            icon={<DeleteOutlined />}
+          >
+            Eliminar ({selectedRowKeys.length})
+          </Button>
+        )}
+      </div>
+      <Table
+        rowSelection={rowSelection} // ✨ Añadimos la capacidad de seleccionar filas
+        columns={columns}
+        dataSource={servicios}
+        loading={loading}
+        rowKey="id"
+        pagination={{ pageSize: 5 }}
+        bordered
+      />
+    </Card>
+  );
+};
+
+export default ListaServiciosPlanificados;

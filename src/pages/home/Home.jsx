@@ -27,7 +27,7 @@ const features = [
   {
     title: "Planificacion",
     icon: "src/assets/dta.png",
-    path: "/asignar-supervisor",
+    path: "/lista-proyectos-planificacion",
     allowedRoles: [ROLES.admin, ROLES.planificador, ROLES.coordinadorIng], // Solo el administrador puede asignar supervisores
   },
   {
@@ -104,7 +104,12 @@ const features = [
     title: "Reportes",
     icon: "src/assets/reporteNegocio.png",
     path: "/reporte-horas-retraso",
-    allowedRoles: [ROLES.admin, ROLES.coordinadorIng, ROLES.coordinadorSup],
+    allowedRoles: [
+      ROLES.admin,
+      ROLES.coordinadorIng,
+      ROLES.coordinadorSup,
+      ROLES.lider,
+    ],
   },
 ];
 
