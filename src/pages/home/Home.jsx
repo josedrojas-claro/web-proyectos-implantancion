@@ -4,6 +4,13 @@ import { Typography, Card, CardContent, CardMedia, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layout/MainLayout"; // ✅ Importa el layout
 import { useAuthUser } from "../../services/authServices"; // Importa el hook para obtener el usuario autenticado
+import nuevoProyectoIcon from "../../assets/project.png";
+import asigarSupervisorIcon from "../../assets/labor.png";
+import replanteoIcon from "../../assets/gear.png";
+import ejecucionDiariaIcon from "../../assets/ejecucion.png";
+import rdoConciliacionIcon from "../../assets/wire.png";
+import proyectosIcon from "../../assets/metric.png";
+import reportesIcon from "../../assets/reporteNegocio.png";
 
 // Define los roles de ejemplo que podrías usar. ¡Asegúrate de que estos coincidan con los roles reales de tus usuarios!
 const ROLES = {
@@ -20,7 +27,7 @@ const ROLES = {
 const features = [
   {
     title: "Nuevo Proyecto",
-    icon: "src/assets/project.png",
+    icon: nuevoProyectoIcon,
     path: "/nuevo-proyecto",
     allowedRoles: [ROLES.admin, ROLES.planificador, ROLES.coordinadorIng], // Solo el administrador puede crear nuevos proyectos
   },
@@ -32,14 +39,14 @@ const features = [
   },
   {
     title: "Asignar Supervisor",
-    icon: "src/assets/labor.png",
+    icon: asigarSupervisorIcon,
     path: "/asignar-supervisor",
 
     allowedRoles: [ROLES.admin, ROLES.lider, ROLES.coordinadorSup], // Solo el administrador puede asignar supervisores
   },
   {
     title: "Replanteo",
-    icon: "src/assets/gear.png",
+    icon: replanteoIcon,
     path: "/lista-proyectos-replanteo",
     allowedRoles: [
       ROLES.admin,
@@ -51,7 +58,7 @@ const features = [
   },
   {
     title: "Ejecución Diaria",
-    icon: "src/assets/ejecucion.png",
+    icon: ejecucionDiariaIcon,
     path: "/lista-proyectos-ejecucion",
     allowedRoles: [
       ROLES.admin,
@@ -66,7 +73,7 @@ const features = [
   },
   {
     title: "RDO y/o Conciliación Mate",
-    icon: "src/assets/wire.png",
+    icon: rdoConciliacionIcon,
     path: "/lista-proyectos-rdo-conciliacion-materiales",
     allowedRoles: [
       ROLES.admin,
@@ -87,7 +94,7 @@ const features = [
   // },
   {
     title: "Proyectos",
-    icon: "src/assets/metric.png",
+    icon: proyectosIcon,
     path: "/lista-proyectos-generales",
     allowedRoles: [
       ROLES.admin,
@@ -102,7 +109,7 @@ const features = [
   },
   {
     title: "Reportes",
-    icon: "src/assets/reporteNegocio.png",
+    icon: reportesIcon,
     path: "/reporte-horas-retraso",
     allowedRoles: [
       ROLES.admin,

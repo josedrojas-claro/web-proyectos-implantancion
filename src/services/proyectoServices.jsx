@@ -165,3 +165,9 @@ export const fetchProyectosEnPlanificacion = async ({
 
   return response.data;
 };
+
+//funcion para cambiar de estado
+export const cambiarEstadoProyecto = async (id) => {
+  const response = await apiClient.patch(`/proyecto/${id}/avanzar-estado`);
+  return response.data;
+};

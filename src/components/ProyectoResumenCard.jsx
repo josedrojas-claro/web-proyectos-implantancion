@@ -1,6 +1,15 @@
 // components/proyectos/ProyectoResumenCard.jsx
-import React from "react";
-import { App as AntApp, Card, Typography, Button, Flex, Space, Tag, Divider, message } from "antd";
+import React, { useState } from "react";
+import {
+  App as AntApp,
+  Card,
+  Typography,
+  Button,
+  Flex,
+  Space,
+  Tag,
+  Divider,
+} from "antd";
 import {
   FileTextOutlined,
   FolderOutlined,
@@ -11,26 +20,75 @@ import {
 } from "@ant-design/icons";
 import { descargarPdfBitacora } from "../services/bitacoraFinalServices";
 import { descargarRdoExcel } from "../services/bitacoraFinalServices";
+import Swal from "sweetalert2";
 
 export default function ProyectoResumenCard({ proyecto }) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleDescargar = async () => {
+    Swal.fire({
+      title: "Generando Bitácora",
+      text: "Por favor, espera mientras preparamos tu archivo...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    setIsDownloading(true);
     try {
       await descargarPdfBitacora(proyecto.id);
-      message.success("La bitácora se ha descargado correctamente.");
+      Swal.fire({
+        icon: "success",
+        title: "¡Descarga Exitosa!",
+        text: "Tu archivo se ha descargado correctamente.",
+        timer: 2000, // Close automatically after 2 seconds
+        showConfirmButton: false,
+      });
     } catch (error) {
-      console.error("Error al descargar el PDF:", error);
-      message.error("Hubo un problema al descargar la bitácora.");
+      // 5. Show an error message if anything fails
+      console.error("Error al descargar el archivo:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error en la Descarga",
+        text: "No se pudo generar el archivo. Por favor, intenta de nuevo.",
+      });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
   //funcion para descargar el rdo en excel
   const handleDescargarRdo = async () => {
+    Swal.fire({
+      title: "Generando RDO",
+      text: "Por favor, espera mientras preparamos tu archivo...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    setIsDownloading(true);
     try {
       await descargarRdoExcel(proyecto.id);
-      message.success("El RDO se ha descargado correctamente.");
+      Swal.fire({
+        icon: "success",
+        title: "¡Descarga Exitosa!",
+        text: "Tu archivo se ha descargado correctamente.",
+        timer: 2000, // Close automatically after 2 seconds
+        showConfirmButton: false,
+      });
     } catch (error) {
-      console.error("Error al descargar el PDF:", error);
-      message.error("Hubo un problema al descargar el RDO.");
+      // 5. Show an error message if anything fails
+      console.error("Error al descargar el archivo:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error en la Descarga",
+        text: "No se pudo generar el archivo. Por favor, intenta de nuevo.",
+      });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -79,19 +137,24 @@ export default function ProyectoResumenCard({ proyecto }) {
 
             <Space align="center" size="small">
               <FolderOutlined style={{ color: "#1890ff" }} />
-              <Typography.Text strong>Proyecto: {proyecto.nombre}</Typography.Text>
+              <Typography.Text strong>
+                Proyecto: {proyecto.nombre}
+              </Typography.Text>
             </Space>
 
             <Space align="center" size="small">
               <ToolOutlined style={{ color: "#1890ff" }} />
               <Typography.Text>
-                Contratista: {proyecto.Contratistas?.nombre_contratista || "No asignado"}
+                Contratista:{" "}
+                {proyecto.Contratistas?.nombre_contratista || "No asignado"}
               </Typography.Text>
             </Space>
 
             <Space align="center" size="small">
               <WifiOutlined style={{ color: "#1890ff" }} />
-              <Typography.Text>Tecnología: {proyecto.tecnologia}</Typography.Text>
+              <Typography.Text>
+                Tecnología: {proyecto.tecnologia}
+              </Typography.Text>
             </Space>
           </Flex>
 
@@ -105,7 +168,10 @@ export default function ProyectoResumenCard({ proyecto }) {
             </Space>
             <Space align="start">
               <ReadOutlined style={{ color: "#595959", marginTop: "4px" }} />
-              <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+              <Typography.Paragraph
+                type="secondary"
+                style={{ marginBottom: 0 }}
+              >
                 {proyecto.descripcion}
               </Typography.Paragraph>
             </Space>
@@ -116,10 +182,18 @@ export default function ProyectoResumenCard({ proyecto }) {
             <>
               <Divider style={{ margin: "8px 0" }} />
               <Flex justify="center">
-                <Button type="primary" icon={<DownloadOutlined />} onClick={handleDescargar} size="middle">
+                <Button
+                  type="primary"
+                  icon={<DownloadOutlined />}
+                  onClick={handleDescargar}
+                  size="middle"
+                  loading={isDownloading}
+                >
                   Descargar Bitácora
                 </Button>
-                <Button onClick={handleDescargarRdo}>Descargar RDO</Button>
+                <Button onClick={handleDescargarRdo} loading={isDownloading}>
+                  Descargar RDO
+                </Button>
               </Flex>
             </>
           )}
