@@ -92,7 +92,16 @@ export default function ProyectoResumenCard({ proyecto }) {
     }
   };
 
-  const estadosDescarga = [
+  const estadosDescargaConPo = [
+    "En RDO",
+    "En Conciliación de Materiales",
+    "Finalizado",
+    "Liquidacion",
+    "DTA",
+    "Validacion Documentos",
+  ];
+
+  const estadosDescargaSinPo = [
     "En RDO",
     "En Conciliación de Materiales",
     "En planificación",
@@ -102,7 +111,6 @@ export default function ProyectoResumenCard({ proyecto }) {
     "Validacion Documentos",
     "Con SOLPED",
     "Con Correlativo",
-    "Con PO",
   ];
 
   // Función para verificar si el estado del proyecto está en la lista estadosDescarga
@@ -111,7 +119,9 @@ export default function ProyectoResumenCard({ proyecto }) {
     if (!project || !project.estado || !project.estado.nombre) {
       return false;
     }
-    return estadosDescarga.includes(project.estado.nombre);
+    return proyecto.havePo
+      ? estadosDescargaConPo.includes(project.estado.nombre)
+      : estadosDescargaSinPo.includes(project.estado.nombre);
   };
   // Ahora puedes usar isEstadoDescarga(proyecto) donde necesites el valor booleano
   const aplicaDescarga = isEstadoDescarga(proyecto);

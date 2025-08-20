@@ -21,6 +21,8 @@ import EstadosProyectos from "../pages/configuracion/EstadosProyectos/estadosPro
 //planificaciones
 import ListaPlanificacion from "../pages/planificacion/listaPlanificacion";
 import CargarAlcancesPreliminares from "../pages/planificacion/cargarAlcancesPreliminares";
+import VerSolpedsCorrelativo from "../pages/planificacion/verSolpedsCorrelativo";
+import CargaSolpedsMasiva from "../pages/planificacion/cargaSolpedsMasiva";
 const appRoutes = [
   { path: "/login", element: <Login />, isPrivate: false },
   {
@@ -118,6 +120,16 @@ const appRoutes = [
   {
     path: "/lista-proyectos-planificacion/alances-preliminares/:ticketCode",
     element: <CargarAlcancesPreliminares />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-planificacion/ver-solpeds/:ticketCode",
+    element: <VerSolpedsCorrelativo />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-planificacion/carga-solpeds-masiva",
+    element: <CargaSolpedsMasiva />,
     isPrivate: true,
   },
 ];

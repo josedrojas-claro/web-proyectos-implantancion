@@ -29,7 +29,12 @@ const columns = [
   },
 ];
 
-const ListaMaterialesPlanificados = ({ materiales, loading, onUpdate }) => {
+const ListaMaterialesPlanificados = ({
+  materiales,
+  loading,
+  onUpdate,
+  rowSeleccionActivate = true,
+}) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [deleting, setDeleting] = useState(false);
 
@@ -110,7 +115,7 @@ const ListaMaterialesPlanificados = ({ materiales, loading, onUpdate }) => {
         )}
       </div>
       <Table
-        rowSelection={rowSelection} // ✨ Añadimos la capacidad de seleccionar filas
+        {...(rowSeleccionActivate ? { rowSelection } : {})}
         columns={columns}
         dataSource={materiales}
         loading={loading}

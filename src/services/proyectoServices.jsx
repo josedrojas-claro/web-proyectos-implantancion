@@ -171,3 +171,18 @@ export const cambiarEstadoProyecto = async (id) => {
   const response = await apiClient.patch(`/proyecto/${id}/avanzar-estado`);
   return response.data;
 };
+
+//funcion para actualizar correlativo
+export const updateCorrelativoProyecto = async (id, data) => {
+  const response = await apiClient.patch(
+    `/proyecto/${id}/actualizar-correlativo`,
+    data
+  );
+  return response.data;
+};
+
+//funcion para traer correlativo
+export const fetchCorrelativoProyecto = async (id) => {
+  const response = await apiClient.get(`/proyecto/${id}/correlativo`);
+  return response.data;
+};

@@ -16,7 +16,7 @@ import {
   SearchOutlined,
   ClearOutlined,
   EyeOutlined,
-  EditOutlined,
+  VerticalAlignTopOutlined,
 } from "@ant-design/icons";
 import { getEstadoColor } from "../../utils/colorUtils";
 import MainLayout from "../../layout/MainLayout";
@@ -65,7 +65,6 @@ export default function ListaPlanificacion() {
         </Tag>
       ),
     },
-    // --- ✅ NUEVA COLUMNA DE ACCIONES ---
     {
       title: "Acciones",
       key: "acciones",
@@ -82,17 +81,12 @@ export default function ListaPlanificacion() {
           );
         } else if (
           estado === "En planificación" ||
-          estado === "Con Correlativo"
+          estado === "Con Correlativo" ||
+          estado === "Con SOLPED"
         ) {
           actionButton = (
-            <Button size="small" onClick={() => handleCargarSolped(record.id)}>
-              Cargar Solped
-            </Button>
-          );
-        } else if (estado === "Con SOLPED") {
-          actionButton = (
-            <Button size="small" onClick={() => handleVerSolpeds(record.id)}>
-              Ver Solpeds
+            <Button size="small" onClick={() => handleVerSolped(record)}>
+              Ver Data
             </Button>
           );
         } else if (estado === "Con PO") {
@@ -112,7 +106,7 @@ export default function ListaPlanificacion() {
               size="small"
               onClick={() => handleVerDetalles(record)}
             >
-              Detalles
+              Vista Rapida
             </Button>
 
             {/* Botón 2: Se renderiza solo si cumple una de las condiciones */}
@@ -134,12 +128,17 @@ export default function ListaPlanificacion() {
     );
   };
 
-  const handleCargarSolped = () => {
-    console.log("Cargar Solpeds");
+  const handleVerSolped = (proyectoSeleccionado) => {
+    navigate(
+      `/lista-proyectos-planificacion/ver-solpeds/${proyectoSeleccionado.ticketCode}`,
+      {
+        state: { proyectoSeleccionado },
+      }
+    );
   };
 
-  const handleVerSolpeds = () => {
-    console.log("Ver Solpeds");
+  const handleCargaSolpedMasiva = () => {
+    navigate(`/lista-proyectos-planificacion/carga-solpeds-masiva`);
   };
 
   const handleAsignar = () => {
@@ -223,7 +222,6 @@ export default function ListaPlanificacion() {
     setProyectoSeleccionado(null);
   };
 
-  // --- 4. RENDERIZADO DEL COMPONENTE ---
   return (
     <MainLayout>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
@@ -254,7 +252,6 @@ export default function ListaPlanificacion() {
             </Col>
             <Col xs={24} sm={12} md={8}>
               <Space>
-                {/* --- CAMBIO 5: El nuevo botón de Buscar --- */}
                 <Button
                   type="primary"
                   onClick={handleSearch}
@@ -268,6 +265,12 @@ export default function ListaPlanificacion() {
                   icon={<ClearOutlined />}
                 >
                   Limpiar
+                </Button>
+                <Button
+                  onClick={handleCargaSolpedMasiva}
+                  icon={<VerticalAlignTopOutlined />}
+                >
+                  Carga Solped Masiva
                 </Button>
               </Space>
             </Col>
