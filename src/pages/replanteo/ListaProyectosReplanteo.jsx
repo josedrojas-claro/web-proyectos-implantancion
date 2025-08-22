@@ -7,7 +7,6 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableBody,
   CircularProgress,
   Alert,
   TextField,
@@ -56,7 +55,9 @@ export default function ListaProyectosReplanteo() {
 
   // filtrar proyectos por nombre
   const proyectosFiltrados = proyectos.filter(
-    (proy) => proy.nombre.toLowerCase().includes(filtro.toLowerCase()) || String(proy.ticketCode).includes(filtro)
+    (proy) =>
+      proy.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+      String(proy.ticketCode).includes(filtro)
   );
 
   // abrir modal para ver detalles del proyecto
@@ -66,7 +67,9 @@ export default function ListaProyectosReplanteo() {
   };
 
   const cargarReplanteo = (proyecto) => {
-    navigate(`/replanteo/${proyecto.ticketCode}`, { state: { proyecto } });
+    navigate(`/lista-proyectos-replanteo/replanteo-v2/${proyecto.ticketCode}`, {
+      state: { proyecto },
+    });
   };
 
   return (
@@ -98,19 +101,32 @@ export default function ListaProyectosReplanteo() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>#</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  #
+                </TableCell>
 
                 <TableCell>Ticket</TableCell>
                 <TableCell>Nombre proyecto</TableCell>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Contratista</TableCell>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Tecnología</TableCell>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Asignado Por</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  Contratista
+                </TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  Tecnología
+                </TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  Asignado Por
+                </TableCell>
                 <TableCell>Detalles</TableCell>
               </TableRow>
             </TableHead>
             {proyectosFiltrados.map((proyecto, index) => (
-              <TableRow key={proyecto.id} sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{index + 1}</TableCell>
+              <TableRow
+                key={proyecto.id}
+                sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}
+              >
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  {index + 1}
+                </TableCell>
                 <TableCell>{proyecto.ticketCode}</TableCell>
                 <TableCell>{proyecto.nombre}</TableCell>
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
@@ -132,7 +148,11 @@ export default function ListaProyectosReplanteo() {
                   {proyecto.Planificador.UserData.nombre}
                 </TableCell>
                 <TableCell align="left">
-                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="flex-start">
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1}
+                    alignItems="flex-start"
+                  >
                     <Tooltip title="Ver detalles">
                       <Button
                         size="small"
@@ -166,7 +186,12 @@ export default function ListaProyectosReplanteo() {
         </TableContainer>
       )}
       {/* // Dialogo para ver detalles del proyecto */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Detalles del Proyecto</DialogTitle>
         <DialogContent dividers>
           {proyectoSeleccionado ? (
@@ -199,7 +224,9 @@ export default function ListaProyectosReplanteo() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Rubro
                     </Typography>
-                    <Typography>{proyectoSeleccionado.CodigosIngenieria?.codigo || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.CodigosIngenieria?.codigo || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -214,19 +241,25 @@ export default function ListaProyectosReplanteo() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Nombre Sitio
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.nombre_sitio || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.nombre_sitio || "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Nemonico
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.nemonico || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.nemonico || "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Municipio
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.Municipio?.municipio || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.Municipio?.municipio || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -241,20 +274,28 @@ export default function ListaProyectosReplanteo() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Contratista
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Contratistas?.nombre_contratista || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Contratistas?.nombre_contratista ||
+                        "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Planificador
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Planificador?.UserData?.nombre || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Planificador?.UserData?.nombre ||
+                        "—"}
+                    </Typography>
                   </Box>
 
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Estado
                     </Typography>
-                    <Typography>{proyectoSeleccionado.estado?.nombre || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.estado?.nombre || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -269,13 +310,19 @@ export default function ListaProyectosReplanteo() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Fecha Inicio
                     </Typography>
-                    <Typography>{new Date(proyectoSeleccionado.fechaInicio).toLocaleDateString("es-NI")}</Typography>
+                    <Typography>
+                      {new Date(
+                        proyectoSeleccionado.fechaInicio
+                      ).toLocaleDateString("es-NI")}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Descripción
                     </Typography>
-                    <Typography>{proyectoSeleccionado.descripcion || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.descripcion || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>

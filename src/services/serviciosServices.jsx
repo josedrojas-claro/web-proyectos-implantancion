@@ -55,6 +55,15 @@ export const createServiciosPlanificacion = async (data, proyectoId) => {
   return response.data;
 };
 
+//funcion para los servicios replanteo
+export const createServiciosReplanteo = async (data, proyectoId) => {
+  const response = await apiClient.post(
+    `/servicios-asignado/replanteo/${proyectoId}`,
+    data
+  );
+  return response.data;
+};
+
 //funcion sera para la planficacion pero podria ser usuado para uso general todo los items que esten con ese nombre tabla servicios_asignados
 export const deleteServiciosAsignados = async (data) => {
   const response = await apiClient.delete(`/servicios-asignado/array-bulk`, {

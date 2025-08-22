@@ -13,10 +13,12 @@ export const getEstadoColor = (estado) => {
     "Validacion Documentos": "#9C27B0",
     "Con SOLPED": "#4E342E",
     "Con PO": "#00838F",
+    "Con PO-Ejecutado": "#1d5c54ff",
     Liquidacion: "#BF360C",
     "Con Correlativo": "#33691E",
     DTA: "#3E2723",
     "Alcances Preliminares": "#3F51B5", // Nuevo estado y color
+    Cancelado: "#f02f21ff",
   };
 
   // Devuelve el color correspondiente o uno por defecto si no lo encuentra.

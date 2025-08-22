@@ -2,16 +2,22 @@ import Login from "../pages/login/Login";
 import Home from "../pages/home/Home";
 import NuevoProyecto from "../pages/nuevoProyecto/NuevoProyecto";
 import AsignarSupervisor from "../pages/AsignarSupervisor";
+//replanteo
 import ReplanteoPage from "../pages/replanteo/ReplanteoPage";
 import ListaProyectosReplanteo from "../pages/replanteo/ListaProyectosReplanteo";
 import ListaProyectosEjecucion from "../pages/ejecucionDiaria/ListaProyectosEjecucion";
+import ReplanteoPageV2 from "../pages/replanteo/ReplanteoPageV2";
+//ejecucionDiaria
 import EjecucionDiaria from "../pages/ejecucionDiaria/EjecucionDiaria";
 import BitacoraFinal from "../pages/ejecucionDiaria/BitacoraFinal";
 import ValidacionDocumentos from "../pages/ejecucionDiaria/ValidacionDocumentos";
+//rdo
 import ListaProyectosRdoConci from "../pages/rdo/ListaProyectosRdoConci";
 import RdoPage from "../pages/rdo/RdoPage";
+//proyectos generales
 import ListaProyectosGenerales from "../pages/proyectos/ListaProyectosGeneral";
 import ProyectoDetalles from "../pages/proyectos/ProyectosDetalles";
+//Reporte
 import ReportePage from "../pages/reporte/ReportePage";
 import ListaProyectoHoras from "../pages/reporte/ListaProyectoHoras";
 //lista configuraciones
@@ -23,6 +29,7 @@ import ListaPlanificacion from "../pages/planificacion/listaPlanificacion";
 import CargarAlcancesPreliminares from "../pages/planificacion/cargarAlcancesPreliminares";
 import VerSolpedsCorrelativo from "../pages/planificacion/verSolpedsCorrelativo";
 import CargaSolpedsMasiva from "../pages/planificacion/cargaSolpedsMasiva";
+import CargaPoMasiva from "../pages/planificacion/cargaPoMasiva";
 const appRoutes = [
   { path: "/login", element: <Login />, isPrivate: false },
   {
@@ -50,6 +57,13 @@ const appRoutes = [
     element: <ReplanteoPage />,
     isPrivate: true,
   },
+  {
+    path: "/lista-proyectos-replanteo/replanteo-v2/:ticketCode",
+    element: <ReplanteoPageV2 />,
+    isPrivate: true,
+  },
+
+  //ejecucionDiaria
   {
     path: "/lista-proyectos-ejecucion",
     element: <ListaProyectosEjecucion />,
@@ -130,6 +144,11 @@ const appRoutes = [
   {
     path: "/lista-proyectos-planificacion/carga-solpeds-masiva",
     element: <CargaSolpedsMasiva />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-planificacion/carga-po-masiva",
+    element: <CargaPoMasiva />,
     isPrivate: true,
   },
 ];

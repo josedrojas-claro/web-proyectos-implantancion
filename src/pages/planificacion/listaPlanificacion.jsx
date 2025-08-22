@@ -17,11 +17,14 @@ import {
   ClearOutlined,
   EyeOutlined,
   VerticalAlignTopOutlined,
+  FullscreenExitOutlined,
 } from "@ant-design/icons";
 import { getEstadoColor } from "../../utils/colorUtils";
 import MainLayout from "../../layout/MainLayout";
 import { fetchProyectosEnPlanificacion } from "../../services/proyectoServices";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { cambiarEstadoProyecto } from "../../services/proyectoServices";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -91,7 +94,7 @@ export default function ListaPlanificacion() {
           );
         } else if (estado === "Con PO") {
           actionButton = (
-            <Button size="small" onClick={() => handleAsignar(record.id)}>
+            <Button size="small" onClick={() => handleAsignar(record)}>
               Asignar
             </Button>
           );
@@ -141,8 +144,72 @@ export default function ListaPlanificacion() {
     navigate(`/lista-proyectos-planificacion/carga-solpeds-masiva`);
   };
 
-  const handleAsignar = () => {
-    console.log("asignar");
+  const handleCargaPO = () => {
+    navigate(`/lista-proyectos-planificacion/carga-po-masiva`);
+  };
+
+  const handleAsignar = async (proyectoSeleccionado) => {
+    // --- PASO 1: Confirmación más detallada ---
+    // Usamos la propiedad `html` para mostrar más información y dar formato.
+    const confirmacion = await Swal.fire({
+      title: "¿Confirmar Envío a Ejecución?",
+      icon: "warning",
+      html: `
+      <p>Estás a punto de cambiar el estado del proyecto:</p>
+      <div style="text-align: left; display: inline-block; margin-top: 10px; padding: 10px; border-radius: 5px; background-color: #f9f9f9;">
+        <strong>Ticket:</strong> ${proyectoSeleccionado.ticketCode}<br/>
+        <strong>Nombre:</strong> ${proyectoSeleccionado.nombre}
+      </div>
+      <p style="margin-top: 15px;">El nuevo estado será: <strong>"Pendiente Asignación"</strong>.</p>
+      <p>¿Deseas continuar?</p>
+    `,
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, ¡Asignar!",
+      cancelButtonText: "Cancelar",
+    });
+
+    // Si el usuario confirma la acción...
+    if (confirmacion.isConfirmed) {
+      try {
+        // --- PASO 2: Mostrar un mensaje de "cargando" mientras se ejecuta la API ---
+        Swal.fire({
+          title: "Asignando proyecto...",
+          text: "Por favor espera.",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        // Llamamos a la API para cambiar el estado
+        const response = await cambiarEstadoProyecto(proyectoSeleccionado.id);
+
+        // Recargamos la lista de proyectos en segundo plano
+        await loadProyectos(initialFilters);
+
+        // --- PASO 3: Mostrar mensaje de éxito ---
+        // Cerramos el 'loading' y mostramos el éxito
+        Swal.fire({
+          icon: "success",
+          title: "¡Proyecto Asignado!",
+          text:
+            response.message ||
+            "El proyecto fue enviado a ejecución correctamente.",
+          timer: 2500, // Se cierra solo después de 2.5 segundos
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        // --- PASO 4: Manejar errores si la API falla ---
+        console.error("Error al asignar el proyecto:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo asignar el proyecto. Por favor, intenta de nuevo.",
+        });
+      }
+    }
   };
   // --- 1. ESTADOS ---
   const [loading, setLoading] = useState(false);
@@ -229,7 +296,7 @@ export default function ListaPlanificacion() {
 
         <Card>
           <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12} md={8}>
+            <Col xs={24} sm={12} md={6}>
               <Input
                 placeholder="Buscar por nombre, Ticket"
                 value={filters.search}
@@ -237,7 +304,7 @@ export default function ListaPlanificacion() {
                 onPressEnter={handleSearch} // Permite buscar con la tecla Enter
               />
             </Col>
-            <Col xs={24} sm={12} md={8}>
+            <Col xs={24} sm={12} md={6}>
               <Select
                 mode="multiple"
                 allowClear
@@ -267,10 +334,20 @@ export default function ListaPlanificacion() {
                   Limpiar
                 </Button>
                 <Button
+                  color="cyan"
+                  variant="solid"
                   onClick={handleCargaSolpedMasiva}
                   icon={<VerticalAlignTopOutlined />}
                 >
                   Carga Solped Masiva
+                </Button>
+                <Button
+                  onClick={handleCargaPO}
+                  color="danger"
+                  variant="solid"
+                  icon={<FullscreenExitOutlined />}
+                >
+                  Carga PO's
                 </Button>
               </Space>
             </Col>
