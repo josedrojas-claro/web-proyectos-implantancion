@@ -20,6 +20,7 @@ import {
 } from "@ant-design/icons";
 import { descargarPdfBitacora } from "../services/bitacoraFinalServices";
 import { descargarRdoExcel } from "../services/bitacoraFinalServices";
+import { getEstadoColor } from "../utils/colorUtils";
 import Swal from "sweetalert2";
 
 export default function ProyectoResumenCard({ proyecto }) {
@@ -174,7 +175,9 @@ export default function ProyectoResumenCard({ proyecto }) {
           <Flex vertical gap="small">
             <Space>
               <Typography.Text strong>Estado:</Typography.Text>
-              <Tag color="blue">{proyecto.estado.nombre}</Tag>
+              <Tag color={getEstadoColor(proyecto.estado?.nombre)}>
+                {proyecto.estado?.nombre}
+              </Tag>{" "}
             </Space>
             <Space align="start">
               <ReadOutlined style={{ color: "#595959", marginTop: "4px" }} />

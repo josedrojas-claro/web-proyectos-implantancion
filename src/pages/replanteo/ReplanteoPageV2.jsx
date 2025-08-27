@@ -2,13 +2,15 @@ import React, { useState, useCallback, useEffect } from "react";
 import MainLayout from "../../layout/MainLayout";
 import { useLocation, useNavigate } from "react-router-dom";
 import CargaMasivaServiciosReplanteo from "./components/CargaMasivaServiciosReplanteo";
+import CargaMasivaMaterialesReplanteo from "./components/CragaMasivaMaterialesReplanteo";
 import ListaServiciosReplanteo from "./components/ListaServiciosReplanteo";
+import ListaMaterialesReplanteo from "./components/ListaMaterialesReplanteo";
 import { fetchServiciosAsignadosByProyecto } from "../../services/serviciosServices";
 import { fetchMaterialesAsignadosByProyecto } from "../../services/materialesServices";
 import { fetchSupervisoresContratista } from "../../services/userServices";
-import { updateAsignarSupervisorContratista } from "../../services/proyectoServices";
+import { updateEstadoPostReplanteo } from "../../services/proyectoServices";
 import DialogAsignarSupervisor from "./components/DialogAsignarSupervisor";
-import { Button, Typography, Space, Row } from "antd";
+import { Button, Typography, Space, Row, Divider } from "antd";
 import { UserOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 
@@ -110,7 +112,7 @@ export default function ReplanteoPageV2() {
             id: proyecto.id,
             supervisorContrataId: supervisorSeleccionado.id,
           };
-          const response = await updateAsignarSupervisorContratista(data);
+          const response = await updateEstadoPostReplanteo(data);
 
           await Swal.fire({
             title: "¡Éxito!",
@@ -149,6 +151,16 @@ export default function ReplanteoPageV2() {
         proyectoId={proyecto?.id}
         onPlanificacionGuardada={cargarServicios}
       />
+      <ListaMaterialesReplanteo
+        materiales={materialesAsignados}
+        loading={loadingMateriales}
+        onUpdate={cargarMateriales}
+      />
+      <CargaMasivaMaterialesReplanteo
+        proyectoId={proyecto?.id}
+        onPlanificacionGuardada={cargarMateriales}
+      />
+      <Divider size="large" variant="solid" />
       <Row justify="center" align="middle" style={{ marginTop: 20 }}>
         <Space direction="vertical" align="center">
           <Button

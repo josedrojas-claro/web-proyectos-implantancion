@@ -27,9 +27,11 @@ import { fetchProyectosGenerales } from "../../services/proyectoServices";
 import PaginadorNumerado from "./components/PaginadorNumerado";
 import FiltroChips from "./components/FiltroChips";
 import FiltroBotones from "./components/FiltroBotones";
+import BotonDescargarExcel from "./components/BottonDescargaExcel";
 const PAGE_SIZE = 20;
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
+import { FileExcelOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { getEstadoColor } from "../../utils/colorUtils";
 
@@ -210,6 +212,17 @@ export default function ListaProyectosGenerales() {
           >
             Limpiar
           </Button>
+          <BotonDescargarExcel
+            filtros={{
+              search,
+              limit: rowsPerPage,
+              offset: page * rowsPerPage,
+              estados: estado.join(","),
+              tecnologias: tecnologia.join(","),
+              startDate,
+              endDate,
+            }}
+          />
         </Box>
 
         {/* Los componentes de filtro son los siguientes elementos. */}

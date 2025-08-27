@@ -18,6 +18,7 @@ export const getEstadoColor = (estado) => {
     "Con Correlativo": "#33691E",
     DTA: "#3E2723",
     "Alcances Preliminares": "#3F51B5", // Nuevo estado y color
+    "Gestion Reserva": "#6c3fb5ff",
     Cancelado: "#f02f21ff",
   };
 

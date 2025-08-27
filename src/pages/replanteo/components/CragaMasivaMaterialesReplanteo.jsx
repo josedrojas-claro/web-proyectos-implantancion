@@ -8,29 +8,29 @@ import {
   Typography,
   Alert,
   message,
+  List,
 } from "antd";
 import { CheckCircleOutlined, ExperimentOutlined } from "@ant-design/icons";
 import {
-  fetchServiciosPorArray,
-  createServiciosReplanteo,
-} from "../../../services/serviciosServices"; // Asegúrate de importar tu servicio
+  fetchMaterialesPorArray,
+  createMaterialesReplanteo,
+} from "../../../services/materialesServices";
 import Swal from "sweetalert2"; // Asegúrate de tener SweetAlert2 instalado
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
 
-// Columnas para la tabla de validación
 const columns = [
   {
-    title: "Código Servicio",
-    dataIndex: "servicio",
-    key: "servicio",
+    title: "Código Material",
+    dataIndex: "codigo",
+    key: "codigo",
   },
   {
-    title: "Descripción del Servicio",
-    dataIndex: "descripcionServicio",
-    key: "descripcionServicio",
-    render: (text) => text || <Text type="danger">Servicio no encontrado</Text>,
+    title: "Descripción del Material",
+    dataIndex: "descripcion",
+    key: "descripcion",
+    render: (text) => text || <Text type="danger">Material no encontrado</Text>,
   },
   {
     title: "Unidad de Medida",
@@ -43,12 +43,10 @@ const columns = [
     key: "cantidad",
   },
 ];
-
-const CargaMasivaServiciosReplanteo = ({
-  contratistaId,
+export default function CargaMasivaMaterialesReplanteo({
   proyectoId,
   onPlanificacionGuardada,
-}) => {
+}) {
   const [messageApi, contextHolder] = message.useMessage();
 
   const success = (text) => {
@@ -65,17 +63,11 @@ const CargaMasivaServiciosReplanteo = ({
     });
   };
 
-  // Recibe el contratistaId como prop
   const [loading, setLoading] = useState(false);
   const [inputText, setInputText] = useState("");
   const [tableData, setTableData] = useState([]);
 
-  // El cerebro de la operación: Parsea, Llama a la API y Une los datos
   const handleProcesar = async () => {
-    if (!contratistaId) {
-      message.error("Por favor, seleccione un contratista primero.");
-      return;
-    }
     if (inputText.trim() === "") {
       message.warning("El campo de texto está vacío.");
       return;
@@ -85,7 +77,7 @@ const CargaMasivaServiciosReplanteo = ({
     setTableData([]); // Limpia la tabla anterior
 
     try {
-      // 1. PARSEO: Convierte el texto en un array de [servicio, cantidad]
+      // 1. PARSEO: Convierte el texto en un array de [material, cantidad]
       const lineas = inputText.trim().split("\n");
       const datosParseados = lineas.map((linea) => {
         const columnas = linea.split(/\s+/); // Divide por tabulación o espacios
@@ -102,27 +94,24 @@ const CargaMasivaServiciosReplanteo = ({
         );
       }
 
-      // 2. LLAMADA A LA API: Extrae solo los códigos de servicio para enviar al backend
-      const codigosServicio = datosParseados.map((item) => item[0]);
-      const serviciosDesdeAPI = await fetchServiciosPorArray(
-        codigosServicio,
-        contratistaId
-      );
+      // 2. LLAMADA A LA API: Extrae solo los códigos de materiales para enviar al backend
+      const codigosMaterial = datosParseados.map((item) => item[0]);
+      const materialesDesdeAPI = await fetchMaterialesPorArray(codigosMaterial);
 
       // 3. UNIÓN DE DATOS: Combina los datos de la API con las cantidades del usuario
-      const mapaServiciosAPI = new Map(
-        serviciosDesdeAPI.map((s) => [s.servicio, s])
+      const mapaMaterialesAPI = new Map(
+        materialesDesdeAPI.map((s) => [s.codigo, s])
       );
 
       const datosFinales = datosParseados.map(([codigo, cantidad]) => {
-        const detallesServicio = mapaServiciosAPI.get(codigo);
+        const detallesMaterial = mapaMaterialesAPI.get(parseInt(codigo, 10)); // Convertimos a número para asegurar la coincidencia
         return {
           key: codigo, // Key única para la tabla
-          servicio: codigo,
+          codigo: codigo,
           cantidad: cantidad,
-          serviciosId: detallesServicio?.id || null,
-          descripcionServicio: detallesServicio?.descripcionServicio || null,
-          unidadMedida: detallesServicio?.unidadMedida || "N/A",
+          materialesId: detallesMaterial?.id || null,
+          descripcion: detallesMaterial?.descripcion || null,
+          unidadMedida: detallesMaterial?.unidadMedida || "N/A",
         };
       });
 
@@ -139,32 +128,26 @@ const CargaMasivaServiciosReplanteo = ({
     }
   };
 
-  const handleGuardarReplanteo = async () => {
-    // 1. Validar que tengamos los IDs necesarios
-    if (!proyectoId || !contratistaId) {
-      Swal.fire(
-        "Error",
-        "Falta el ID del proyecto o del contratista.",
-        "error"
-      );
+  const handleGuardarPlanificacion = async () => {
+    if (!proyectoId) {
+      Swal.fire("Error", "Falta el ID del proyecto", "error");
       return;
     }
 
     // 2. Validar que no haya servicios no encontrados en la tabla
-    const hayErrores = tableData.some((item) => !item.serviciosId);
+    const hayErrores = tableData.some((item) => !item.materialesId);
     if (hayErrores) {
       Swal.fire(
         "Error de Validación",
-        "La lista contiene servicios no encontrados o inválidos. Por favor, corríjalos antes de guardar.",
+        "La lista contiene materiales no encontrados o inválidos. Por favor, corríjalos antes de guardar.",
         "error"
       );
       return;
     }
 
-    // 3. Confirmación con el usuario usando Swal
     const confirmacion = await Swal.fire({
-      title: "¿Guardar Replanteo?",
-      text: `Se guardarán ${tableData.length} servicios en el proyecto. ¿Deseas continuar?`,
+      title: "¿Guardar Replanteo de Materiales?",
+      text: `Se guardarán ${tableData.length} materiales en el proyecto. ¿Deseas continuar?`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Sí, guardar",
@@ -178,20 +161,21 @@ const CargaMasivaServiciosReplanteo = ({
     setLoading(true);
 
     try {
-      // 4. Transformar los datos al formato que espera el backend
       const datosParaAPI = {
-        contratistaId: contratistaId,
-        servicios: tableData.map((item) => ({
-          serviciosId: item.serviciosId,
+        materiales: tableData.map((item) => ({
+          materialesId: item.materialesId,
           cantidadAsignada: item.cantidad,
         })),
       };
 
-      const response = await createServiciosReplanteo(datosParaAPI, proyectoId);
+      const response = await createMaterialesReplanteo(
+        datosParaAPI,
+        proyectoId
+      );
 
       await Swal.fire(
         "¡Éxito!",
-        response.message || "Replanteo guardado correctamente.",
+        response.message || "Planificación guardada correctamente.",
         "success"
       );
 
@@ -210,15 +194,55 @@ const CargaMasivaServiciosReplanteo = ({
     }
   };
 
+  const dataInstrucciones = [
+    <>
+      Copie y pegue los datos desde Excel. Use dos columnas:{" "}
+      <strong>Código de Material</strong> y <strong>Cantidad</strong>.
+    </>,
+    <>
+      <Text type="warning">
+        <strong>¡Atención!</strong>
+      </Text>{" "}
+      Valide que las cantidades de los materiales correspondan a los servicios
+      planificados o replanteados.
+      <br />
+      <Text type="secondary" style={{ fontSize: "12px" }}>
+        Ej: Si el servicio es "Instalar 100m de fibra", el material "Fibra
+        Óptica" debe ser 100.
+      </Text>
+    </>,
+    <>
+      Si no se asignarán materiales en esta etapa,{" "}
+      <strong>deje el campo de texto en blanco</strong>.
+    </>,
+  ];
+
   return (
     <Card style={{ marginTop: 10 }}>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <Title level={4}>Carga Rápida de Servicios</Title>
+        <Title level={4}>Carga Rápida de Materiales</Title>
         <Alert
-          message="Instrucciones"
-          description="Copie y pegue desde una hoja de cálculo (Excel, Google Sheets). Asegúrese de tener dos columnas: la primera con el código del servicio y la segunda con la cantidad. Deben estar separadas por una tabulación (copiado directo de Excel) o un espacio."
+          message="Instrucciones para la Carga de Materiales"
+          description={
+            <List
+              dataSource={dataInstrucciones}
+              renderItem={(item) => (
+                <List.Item style={{ padding: "8px 0", border: "none" }}>
+                  <List.Item.Meta
+                    avatar={
+                      <ExperimentOutlined
+                        style={{ fontSize: "16px", color: "#1890ff" }}
+                      />
+                    }
+                    description={item}
+                  />
+                </List.Item>
+              )}
+            />
+          }
           type="info"
           showIcon
+          style={{ border: "1px solid #1890ff" }} // Borde azul para info
         />
         <TextArea
           rows={10}
@@ -245,14 +269,14 @@ const CargaMasivaServiciosReplanteo = ({
             />
             <Button
               type="primary"
-              onClick={handleGuardarReplanteo}
+              onClick={handleGuardarPlanificacion}
               loading={loading}
               icon={<CheckCircleOutlined />}
               style={{ marginTop: "20px", width: "100%" }}
-              // Deshabilitamos el botón si hay algún servicio que no se encontró
-              disabled={tableData.some((item) => !item.serviciosId)}
+              // Deshabilitamos el botón si hay algún material que no se encontró
+              disabled={tableData.some((item) => !item.materialesId)}
             >
-              Guardar Replanteo
+              Guardar Planificación
             </Button>
           </Card>
         )}
@@ -260,6 +284,4 @@ const CargaMasivaServiciosReplanteo = ({
       {contextHolder}
     </Card>
   );
-};
-
-export default CargaMasivaServiciosReplanteo;
+}

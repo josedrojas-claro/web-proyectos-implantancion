@@ -2,24 +2,24 @@ import React, { useState } from "react";
 import { Table, Card, Typography, Tag, Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons"; // ✨ Añade un ícono
 import Swal from "sweetalert2";
-import { deleteServiciosReplanteo } from "../../../services/serviciosServices";
+import { deleteMaterialesReplanteo } from "../../../services/materialesServices";
 const { Title } = Typography;
 
 const columns = [
   {
     title: "Código",
-    dataIndex: ["Servicios", "servicio"],
+    dataIndex: ["material", "codigo"],
     key: "codigo",
   },
   {
     title: "Descripción",
-    dataIndex: ["Servicios", "descripcionServicio"],
+    dataIndex: ["material", "descripcion"],
     key: "descripcion",
   },
   {
-    title: "Planificada",
+    title: "Planificado",
     dataIndex: "cantidadPlanificada",
-    key: "cantidadPlanificada",
+    key: "planificada",
     render: (text) => <Tag color="blue">{text}</Tag>,
   },
   {
@@ -30,8 +30,8 @@ const columns = [
   },
 ];
 
-const ListaServiciosReplanteo = ({
-  servicios,
+const ListaMaterialesReplanteo = ({
+  materiales,
   loading,
   onUpdate,
   rowSeleccionActivate = true,
@@ -43,7 +43,7 @@ const ListaServiciosReplanteo = ({
     // Confirmación con Swal
     const confirmacion = await Swal.fire({
       title: "¿Estás seguro?",
-      text: `Se eliminarán ${selectedRowKeys.length} servicio(s) planificado(s). ¡Esta acción no se puede revertir!`,
+      text: `Se eliminarán ${selectedRowKeys.length} material(es) planificado(s). ¡Esta acción no se puede revertir!`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -59,7 +59,7 @@ const ListaServiciosReplanteo = ({
     setDeleting(true);
     try {
       // Llamamos al servicio de borrado en lote que ya creamos
-      const response = await deleteServiciosReplanteo({
+      const response = await deleteMaterialesReplanteo({
         ids: selectedRowKeys.map((id) => Number(id)),
       });
 
@@ -99,7 +99,7 @@ const ListaServiciosReplanteo = ({
         }}
       >
         <Title level={4} style={{ margin: 0 }}>
-          Servicios Ya Replanteados, valida informacion si es correcta
+          Materiales
         </Title>
         {/*  El botón de eliminar solo aparece si hay algo seleccionado */}
         {hasSelected && (
@@ -118,7 +118,7 @@ const ListaServiciosReplanteo = ({
       <Table
         {...(rowSeleccionActivate ? { rowSelection } : {})}
         columns={columns}
-        dataSource={servicios}
+        dataSource={materiales}
         loading={loading}
         rowKey="id"
         pagination={{ pageSize: 5 }}
@@ -128,4 +128,4 @@ const ListaServiciosReplanteo = ({
   );
 };
 
-export default ListaServiciosReplanteo;
+export default ListaMaterialesReplanteo;

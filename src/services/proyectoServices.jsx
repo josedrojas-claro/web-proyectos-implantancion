@@ -48,10 +48,10 @@ export const fetchListaProyectosRdoConci = async () => {
   return response.data;
 };
 
-///cargar supervisor contrasta
-export const updateAsignarSupervisorContratista = async (data) => {
+///actualizar data de de post replanteo
+export const updateEstadoPostReplanteo = async (data) => {
   const response = await apiClient.patch(
-    `/proyecto/cargar-supervisor-contrata`,
+    `/proyecto/actualizar-data-post-resplanteo`,
     data
   );
   return response.data;
@@ -69,6 +69,18 @@ export const fetchProyectosGenerales = async (params = {}) => {
   const queryString = new URLSearchParams(cleanParams).toString();
   const response = await apiClient.get(
     `/proyecto/proyectos-generales?${queryString}`
+  );
+  return response.data;
+};
+
+//FUNCION PROYECTOS GENERALES PARA EXPORTAR EXCEL
+export const fetchProyectosGeneralesExcel = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const response = await apiClient.get(
+    `/proyecto/proyectos-generales/exportexcel?${queryString}`,
+    {
+      responseType: "blob",
+    }
   );
   return response.data;
 };
@@ -184,5 +196,24 @@ export const updateCorrelativoProyecto = async (id, data) => {
 //funcion para traer correlativo
 export const fetchCorrelativoProyecto = async (id) => {
   const response = await apiClient.get(`/proyecto/${id}/correlativo`);
+  return response.data;
+};
+
+//lista de proyecto gestion reserva
+export const fetchListaProyectosGestionReserva = async (
+  limit,
+  offset,
+  search
+) => {
+  const response = await apiClient.get(
+    `/proyecto/lista-proyecto-gestion-reserva`,
+    {
+      params: {
+        limit,
+        offset,
+        search,
+      },
+    }
+  );
   return response.data;
 };

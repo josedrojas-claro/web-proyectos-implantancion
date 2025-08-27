@@ -71,3 +71,20 @@ export const deleteServiciosAsignados = async (data) => {
   });
   return response.data;
 };
+
+//funcion para borrar servicios replanteo
+export const deleteServiciosReplanteo = async (data) => {
+  const response = await apiClient.delete(
+    `/servicios-asignado/replanteo/array-bulk`,
+    {
+      data,
+    }
+  );
+  return response.data;
+};
+
+//funcion para editar valores de servicios asignados, mas especificamente los de replanteo
+export const updateServiciosAsignados = async (id, data) => {
+  const response = await apiClient.patch(`/servicios-asignado/${id}`, data);
+  return response.data;
+};

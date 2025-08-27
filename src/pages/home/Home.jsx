@@ -11,6 +11,7 @@ import ejecucionDiariaIcon from "../../assets/ejecucion.png";
 import rdoConciliacionIcon from "../../assets/wire.png";
 import proyectosIcon from "../../assets/metric.png";
 import reportesIcon from "../../assets/reporteNegocio.png";
+import reservaIcon from "../../assets/reserva.png";
 
 // Define los roles de ejemplo que podrías usar. ¡Asegúrate de que estos coincidan con los roles reales de tus usuarios!
 const ROLES = {
@@ -55,6 +56,18 @@ const features = [
       ROLES.coordinadorIng,
       ROLES.coordinadorSup,
     ], // Admin y Supervisor pueden ver replanteo
+  },
+  {
+    title: "Gestion Reserva",
+    icon: reservaIcon,
+    path: "/lista-proyectos-gestion-reserva",
+    allowedRoles: [
+      ROLES.admin,
+      ROLES.planificador,
+      ROLES.lider,
+      ROLES.coordinadorIng,
+      ROLES.coordinadorSup,
+    ],
   },
   {
     title: "Ejecución Diaria",

@@ -37,7 +37,7 @@ import {
   createMaterialPlantilla,
 } from "../../services/replanteoServices";
 import { fetchMateriales } from "../../services/materialesServices";
-import { updateAsignarSupervisorContratista } from "../../services/proyectoServices";
+import { updateEstadoPostReplanteo } from "../../services/proyectoServices";
 import { useAuthUser } from "../../services/authServices"; // Importa el hook para obtener el usuario autenticado
 import { createMaterialesAsignados } from "../../services/materialesServices";
 import { createServiciosAsignados } from "../../services/serviciosServices";
@@ -51,8 +51,10 @@ export default function ReplanteoPage() {
   const user = useAuthUser();
 
   const [supervisoresContratista, setSupervisoresContratista] = useState(null);
-  const [filtroSupervisoresContratista, setFiltroSupervisoresContratista] = useState("");
-  const [loadingSupervisoresContratista, setLoadingSupervisoresContratista] = useState(true);
+  const [filtroSupervisoresContratista, setFiltroSupervisoresContratista] =
+    useState("");
+  const [loadingSupervisoresContratista, setLoadingSupervisoresContratista] =
+    useState(true);
   const [openDialogSupervisor, setOpenDialogSupervisor] = useState(false);
   const [supervisorSeleccionado, setSupervisorSeleccionado] = useState(null);
 
@@ -69,10 +71,15 @@ export default function ReplanteoPage() {
   const [materialesCatalogo, setMaterialesCatalogo] = useState([]);
   const [filtroMaterial, setFiltroMaterial] = useState("");
   const [openAgregarMaterial, setOpenAgregarMaterial] = useState(false);
-  const [loadingMaterialesCatalogo, setLoadingMaterialesCatalogo] = useState(false);
+  const [loadingMaterialesCatalogo, setLoadingMaterialesCatalogo] =
+    useState(false);
   const [buscandoMaterial, setBuscandoMaterial] = useState(false);
 
-  const [alerta, setAlerta] = useState({ open: false, tipo: "success", mensaje: "" });
+  const [alerta, setAlerta] = useState({
+    open: false,
+    tipo: "success",
+    mensaje: "",
+  });
 
   const mostrarAlerta = (tipo, mensaje) => {
     setAlerta({ open: true, tipo, mensaje });
@@ -85,11 +92,12 @@ export default function ReplanteoPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [dataSupervisores, dataServicios, dataMateriales] = await Promise.all([
-          fetchSupervisoresContratista(),
-          fetchServiciosPlantilla(proyecto.id),
-          fetchMaterialesPlantilla(proyecto.id),
-        ]);
+        const [dataSupervisores, dataServicios, dataMateriales] =
+          await Promise.all([
+            fetchSupervisoresContratista(),
+            fetchServiciosPlantilla(proyecto.id),
+            fetchMaterialesPlantilla(proyecto.id),
+          ]);
 
         setSupervisoresContratista(dataSupervisores);
         setServicios(dataServicios);
@@ -109,7 +117,9 @@ export default function ReplanteoPage() {
     const setter = tipo === "servicio" ? setServicios : setMateriales;
     const lista = tipo === "servicio" ? servicios : materiales;
 
-    const actualizada = lista.map((item) => (item.id === id ? { ...item, cantidad: valor } : item));
+    const actualizada = lista.map((item) =>
+      item.id === id ? { ...item, cantidad: valor } : item
+    );
 
     setter(actualizada);
   };
@@ -121,7 +131,10 @@ export default function ReplanteoPage() {
   const buscarServicios = async () => {
     setBuscando(true);
     try {
-      const response = await fetchServiciosByContratista(proyecto.contratistaId, inputBusqueda);
+      const response = await fetchServiciosByContratista(
+        proyecto.contratistaId,
+        inputBusqueda
+      );
       setServiciosCatalogo(response);
       setFiltroServicio(inputBusqueda); // solo si lo estás usando para otros filtros locales
     } catch (error) {
@@ -195,7 +208,9 @@ export default function ReplanteoPage() {
   const materialesFiltrados = useMemo(
     () =>
       materialesCatalogo.filter((material) =>
-        `${material.codigo} ${material.descripcion}`.toLowerCase().includes(filtroMaterial.toLowerCase())
+        `${material.codigo} ${material.descripcion}`
+          .toLowerCase()
+          .includes(filtroMaterial.toLowerCase())
       ),
     [materialesCatalogo, filtroMaterial]
   );
@@ -277,7 +292,7 @@ export default function ReplanteoPage() {
         id: proyecto.id,
         supervisorContrataId: supervisorSeleccionado.id,
       };
-      await updateAsignarSupervisorContratista(data);
+      await updateEstadoPostReplanteo(data);
       mostrarAlerta("success", "Datos enviados correctamente");
       navigate("/home");
     } catch (error) {
@@ -287,15 +302,25 @@ export default function ReplanteoPage() {
 
   return (
     <MainLayout>
-      <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+      <Box
+        sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}
+      >
         <Typography variant="h7" gutterBottom>
           Favor llenar con los datos echos del Replanteo
         </Typography>
         <Typography variant="subtitle3" gutterBottom>
-          Proyecto: {proyecto ? proyecto.nombre : "No disponible"} ticket: {ticketCode}
+          Proyecto: {proyecto ? proyecto.nombre : "No disponible"} ticket:{" "}
+          {ticketCode}
         </Typography>
         <Box
-          sx={{ display: "flex", flexDirection: "row", gap: 1, mb: 2, flexWrap: "nowrap", justifyContent: "center" }}
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 1,
+            mb: 2,
+            flexWrap: "nowrap",
+            justifyContent: "center",
+          }}
         >
           <Button
             variant="contained"
@@ -342,13 +367,19 @@ export default function ReplanteoPage() {
         ) : null}
         <Divider sx={{ my: 1, width: "100%" }} />
 
-        <Typography variant="subtitle2">Plantillas precargadas de servicios y materiales</Typography>
+        <Typography variant="subtitle2">
+          Plantillas precargadas de servicios y materiales
+        </Typography>
         {loadingData ? (
           <CircularProgress />
         ) : error ? (
           <Alert severity="error">{error}</Alert>
         ) : (
-          <FormularioSerMate servicios={servicios} materiales={materiales} onCantidadChange={handleCantidadChange} />
+          <FormularioSerMate
+            servicios={servicios}
+            materiales={materiales}
+            onCantidadChange={handleCantidadChange}
+          />
         )}
       </Box>
 
@@ -367,7 +398,12 @@ export default function ReplanteoPage() {
       />
 
       {/* agregar serviocios */}
-      <Dialog open={openAgregarServicio} onClose={() => setOpenAgregarServicio(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={openAgregarServicio}
+        onClose={() => setOpenAgregarServicio(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Agregar Servicio desde Catálogo</DialogTitle>
         <DialogContent>
           <>
@@ -386,7 +422,12 @@ export default function ReplanteoPage() {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Button onClick={buscarServicios} variant="contained" size="small" disabled={buscando}>
+                    <Button
+                      onClick={buscarServicios}
+                      variant="contained"
+                      size="small"
+                      disabled={buscando}
+                    >
                       Buscar
                     </Button>
                   </InputAdornment>
@@ -409,7 +450,11 @@ export default function ReplanteoPage() {
                       <TableCell>{serv.servicio}</TableCell>
                       <TableCell>{serv.descripcionServicio}</TableCell>
                       <TableCell align="center">
-                        <Button variant="outlined" size="small" onClick={() => handleAgregarServicio(serv)}>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleAgregarServicio(serv)}
+                        >
                           Agregar
                         </Button>
                       </TableCell>
@@ -426,7 +471,12 @@ export default function ReplanteoPage() {
       </Dialog>
 
       {/* ///materiales */}
-      <Dialog open={openAgregarMaterial} onClose={() => setOpenAgregarMaterial(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={openAgregarMaterial}
+        onClose={() => setOpenAgregarMaterial(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Agregar Material desde Catálogo</DialogTitle>
         <DialogContent>
           {loadingMaterialesCatalogo ? (
@@ -469,7 +519,11 @@ export default function ReplanteoPage() {
                         <TableCell>{mat.codigo}</TableCell>
                         <TableCell>{mat.descripcion}</TableCell>
                         <TableCell align="center">
-                          <Button variant="outlined" size="small" onClick={() => handleAgregarMaterial(mat)}>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => handleAgregarMaterial(mat)}
+                          >
                             Agregar
                           </Button>
                         </TableCell>
@@ -492,7 +546,11 @@ export default function ReplanteoPage() {
         onClose={cerrarAlerta}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert onClose={cerrarAlerta} severity={alerta.tipo} sx={{ width: "100%" }}>
+        <Alert
+          onClose={cerrarAlerta}
+          severity={alerta.tipo}
+          sx={{ width: "100%" }}
+        >
           {alerta.mensaje}
         </Alert>
       </Snackbar>

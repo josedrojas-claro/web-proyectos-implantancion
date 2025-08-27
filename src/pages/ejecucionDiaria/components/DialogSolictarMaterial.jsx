@@ -14,7 +14,12 @@ import { useEffect, useState } from "react";
 import { fetchMaterialesByFiltro } from "../../../services/materialesServices";
 import MaterialSolicitudCard from "./MaterialSolicitudCard";
 
-export default function DialogSolicitarMaterial({ open, onClose, proyecto, materialesAsignados }) {
+export default function DialogSolicitarMaterial({
+  open,
+  onClose,
+  proyecto,
+  materialesAsignados,
+}) {
   const [materialesCatalogo, setMaterialesCatalogo] = useState([]);
   const [inputBusqueda, setInputBusqueda] = useState("");
   const [buscando, setBuscando] = useState(false);
@@ -43,7 +48,7 @@ export default function DialogSolicitarMaterial({ open, onClose, proyecto, mater
       <DialogTitle>Agregar Material desde Catálogo</DialogTitle>
       <DialogContent>
         <TextField
-          label="Buscar por nombre o código"
+          label="Buscar por código"
           variant="outlined"
           fullWidth
           sx={{ mb: 2 }}
@@ -55,7 +60,12 @@ export default function DialogSolicitarMaterial({ open, onClose, proyecto, mater
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <Button onClick={buscarMateriales} variant="contained" size="small" disabled={buscando}>
+                <Button
+                  onClick={buscarMateriales}
+                  variant="contained"
+                  size="small"
+                  disabled={buscando}
+                >
                   Buscar
                 </Button>
               </InputAdornment>
@@ -66,11 +76,17 @@ export default function DialogSolicitarMaterial({ open, onClose, proyecto, mater
         {buscando ? (
           <CircularProgress />
         ) : materialesCatalogo.length === 0 ? (
-          <Typography variant="body2">Favor marcar o buscar el material deseado.</Typography>
+          <Typography variant="body2">
+            Favor marcar o buscar el material deseado.
+          </Typography>
         ) : (
           materialesCatalogo.map((material) => {
-            const asignado = materialesAsignados.find((m) => m.materialesId === material.id);
-            const cantidadYaAsignada = asignado ? parseFloat(asignado.cantidadAsignado) : 0;
+            const asignado = materialesAsignados.find(
+              (m) => m.materialesId === material.id
+            );
+            const cantidadYaAsignada = asignado
+              ? parseFloat(asignado.cantidadAsignado)
+              : 0;
 
             return (
               <MaterialSolicitudCard

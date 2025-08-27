@@ -7,6 +7,9 @@ import ReplanteoPage from "../pages/replanteo/ReplanteoPage";
 import ListaProyectosReplanteo from "../pages/replanteo/ListaProyectosReplanteo";
 import ListaProyectosEjecucion from "../pages/ejecucionDiaria/ListaProyectosEjecucion";
 import ReplanteoPageV2 from "../pages/replanteo/ReplanteoPageV2";
+//gestion reserva
+import ListaProyectoGestionReserva from "../pages/gestionReserva/listaProyectoGestioReserva";
+import GestionReserva from "../pages/gestionReserva/gestionReserva";
 //ejecucionDiaria
 import EjecucionDiaria from "../pages/ejecucionDiaria/EjecucionDiaria";
 import BitacoraFinal from "../pages/ejecucionDiaria/BitacoraFinal";
@@ -62,7 +65,17 @@ const appRoutes = [
     element: <ReplanteoPageV2 />,
     isPrivate: true,
   },
-
+  //gestion reserva
+  {
+    path: "/lista-proyectos-gestion-reserva",
+    element: <ListaProyectoGestionReserva />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-gestion-reserva/gestion-reserva/:ticketCode",
+    element: <GestionReserva />,
+    isPrivate: true,
+  },
   //ejecucionDiaria
   {
     path: "/lista-proyectos-ejecucion",
