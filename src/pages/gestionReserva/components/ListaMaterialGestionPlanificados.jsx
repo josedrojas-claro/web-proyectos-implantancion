@@ -1,18 +1,25 @@
 import React from "react";
 import { Table, Card, Typography, Tag, Button } from "antd";
 import Swal from "sweetalert2";
-import { updateServiciosAsignados } from "../../../services/serviciosServices";
+import { updateMaterialesAsignados } from "../../../services/materialesServices";
+
 const { Title, Text } = Typography;
-const ListaServiciosGestion = ({ servicios, loading, onUpdate, userRole }) => {
+
+const ListaMaterialesGestionPlanificados = ({
+  materiales,
+  loading,
+  onUpdate,
+  userRole,
+}) => {
   const columns = [
     {
       title: "Código",
-      dataIndex: ["Servicios", "servicio"],
+      dataIndex: ["material", "codigo"],
       key: "codigo",
     },
     {
       title: "Descripción",
-      dataIndex: ["Servicios", "descripcionServicio"],
+      dataIndex: ["material", "descripcion"],
       key: "descripcion",
     },
     {
@@ -29,11 +36,10 @@ const ListaServiciosGestion = ({ servicios, loading, onUpdate, userRole }) => {
     },
     {
       title: "Cantidad Asignada",
-      dataIndex: "cantidadAsignada",
-      key: "cantidadAsignada",
+      dataIndex: "cantidadAsignado",
+      key: "cantidadAsignado",
       render: (text) => <Tag color="blue-inverse">{text}</Tag>,
     },
-    // Solo muestra la columna de acciones si el userRole es permitido
     ...(["admin", "coordinador-ing", "planificador"].includes(userRole)
       ? [
           {
@@ -57,8 +63,8 @@ const ListaServiciosGestion = ({ servicios, loading, onUpdate, userRole }) => {
       html: `
       <p>Se asignará la cantidad del replanteo por defecto. Puedes modificarla si es necesario.</p>
       <div style="margin-top: 1rem; text-align: left; background-color: #f7f7f7; padding: 10px; border-radius: 5px;">
-        <p><strong>Código:</strong> ${record.Servicios.servicio}</p>
-        <p><strong>Descripción:</strong> ${record.Servicios.descripcionServicio}</p>
+        <p><strong>Código:</strong> ${record.material.codigo}</p>
+        <p><strong>Descripción:</strong> ${record.material.descripcion}</p>
         <p><strong>Cantidad Replanteo (Sugerida):</strong> ${record.cantidadReplanteo}</p>
       </div>
     `,
@@ -93,8 +99,8 @@ const ListaServiciosGestion = ({ servicios, loading, onUpdate, userRole }) => {
 
           // 3. Preparamos los datos y llamamos al servicio de actualización
           // El objeto que enviamos ahora modifica 'cantidadAsignada'
-          const data = { cantidadAsignada: nuevaCantidad };
-          await updateServiciosAsignados(record.id, data);
+          const data = { cantidadAsignado: nuevaCantidad };
+          await updateMaterialesAsignados(record.id, data);
 
           Swal.fire(
             "¡Actualizado!",
@@ -132,19 +138,18 @@ const ListaServiciosGestion = ({ servicios, loading, onUpdate, userRole }) => {
         }}
       >
         <Title level={4} style={{ margin: 0 }}>
-          Valide Lista de Servicios Replanteados vs Planificados
+          Valide Lista de Materiales Replanteados vs Planificados
         </Title>
         <Text type="secondary" style={{ marginTop: 0 }}>
-          Revise los servicios. Si no realiza cambios, la cantidad de la
+          Revise los materiales. Si no realiza cambios, la cantidad de la
           Planificación se asignará por defecto. Esta validación es clave para
-          aprobar adicionales fuera de lo planificado, si Cantidad Asignada es
-          distinta de 0 quiere decir que si se le asigno la cantidad adicional.
+          aprobar adicionales fuera de lo planificado.
         </Text>
         {/* El botón de eliminar solo aparece si hay algo seleccionado */}
       </div>
       <Table
         columns={columns}
-        dataSource={servicios}
+        dataSource={materiales}
         loading={loading}
         rowKey="id"
         pagination={{ pageSize: 5 }}
@@ -154,4 +159,4 @@ const ListaServiciosGestion = ({ servicios, loading, onUpdate, userRole }) => {
   );
 };
 
-export default ListaServiciosGestion;
+export default ListaMaterialesGestionPlanificados;

@@ -276,7 +276,7 @@ export default function CargaMasivaMaterialesReplanteo({
               // Deshabilitamos el botón si hay algún material que no se encontró
               disabled={tableData.some((item) => !item.materialesId)}
             >
-              Guardar Planificación
+              Guardar Replanteo
             </Button>
           </Card>
         )}

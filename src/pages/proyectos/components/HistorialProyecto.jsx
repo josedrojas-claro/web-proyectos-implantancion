@@ -6,11 +6,9 @@ import {
   BranchesOutlined,
   CommentOutlined,
 } from "@ant-design/icons";
-import dayjs from "dayjs";
-import "dayjs/locale/es";
-dayjs.locale("es");
-import { getEstadoColor } from "../../../utils/colorUtils";
 
+import { getEstadoColor } from "../../../utils/colorUtils";
+import { formatToNicaragua } from "../../../utils/formatToNicaragua";
 import { fetchHistorialProyectos } from "../../../services/proyectoServices";
 
 export default function HistorialProyecto({ proyectoId }) {
@@ -86,7 +84,7 @@ export default function HistorialProyecto({ proyectoId }) {
                   </Typography.Text>
                   <Typography.Text type="secondary">
                     <ClockCircleOutlined style={{ marginRight: 4 }} />{" "}
-                    {dayjs(item.createdAt).format("D MMMM YYYY, hh:mm a")}
+                    {formatToNicaragua(item.createdAt)}
                   </Typography.Text>
                 </Space>
               </Space>

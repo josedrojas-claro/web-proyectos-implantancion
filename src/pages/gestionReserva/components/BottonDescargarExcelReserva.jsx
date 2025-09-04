@@ -3,7 +3,7 @@ import { Button } from "antd";
 import { FileExcelOutlined } from "@ant-design/icons";
 import { obtenerExcelPlanificacion } from "../../../services/materialesServices"; // Ajusta la ruta
 import Swal from "sweetalert2";
-const BottonExcelReserva = ({ proyectoId }) => {
+const BottonExcelReserva = ({ proyectoId, onRefresh }) => {
   const handleDownload = async () => {
     // 2. Muestra la alerta de "cargando" ANTES de iniciar la petición
     Swal.fire({
@@ -25,13 +25,16 @@ const BottonExcelReserva = ({ proyectoId }) => {
 
       const link = document.createElement("a");
       link.href = fileUrl;
-      link.setAttribute("download", "reporte_proyectos.xlsx");
+      link.setAttribute("download", "materiales_.xlsx");
       document.body.appendChild(link);
 
       link.click();
       link.parentNode.removeChild(link);
 
       URL.revokeObjectURL(fileUrl);
+      if (onRefresh) {
+        onRefresh();
+      }
     } catch (error) {
       console.error("Error al descargar el archivo:", error);
 
@@ -47,9 +50,9 @@ const BottonExcelReserva = ({ proyectoId }) => {
     <Button
       icon={<FileExcelOutlined />}
       onClick={handleDownload}
-      style={{ maxWidth: 200 }}
+      style={{ maxWidth: 200, marginBottom: 16 }}
     >
-      Exportar a Excel
+      Exportar Excel-Reserva
     </Button>
   );
 };

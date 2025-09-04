@@ -111,6 +111,7 @@ export default function CargaMasivaMateriales({
           materialesId: detallesMaterial?.id || null,
           descripcion: detallesMaterial?.descripcion || null,
           unidadMedida: detallesMaterial?.unidadMedida || "N/A",
+          isContratista: true,
         };
       });
 

@@ -19,6 +19,7 @@ export const getEstadoColor = (estado) => {
     DTA: "#3E2723",
     "Alcances Preliminares": "#3F51B5", // Nuevo estado y color
     "Gestion Reserva": "#6c3fb5ff",
+    "Gestion Reserva-Retiro": "#8460beff",
     Cancelado: "#f02f21ff",
   };
 

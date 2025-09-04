@@ -96,3 +96,139 @@ export const obtenerExcelPlanificacion = async (proyectoId) => {
   );
   return response.data;
 };
+
+export const sincronizarInventario = async (file) => {
+  // 1. Crear un objeto FormData. Es la forma estándar de enviar archivos.
+  const formData = new FormData();
+
+  formData.append("inventario", file);
+
+  const response = await apiClient.post("/inventario-material/sync", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+};
+
+//funcion para mostar inventario por codigo de material
+export const fetchInventarioPorCodigo = async (codigo) => {
+  const response = await apiClient.get(`/inventario-material/stock/${codigo}`);
+  return response.data;
+};
+
+//get materiales para gestion de replanteo
+export const fetchMaterialesGestionReplanteo = async (proyectoId) => {
+  const response = await apiClient.get(
+    `/materiales-asignado/material-gestion-reserva/${proyectoId}`
+  );
+  return response.data;
+};
+
+//get materiales para vs de replanteados vs planificados
+export const fetchMaterialesReplanteadosVsPlanificados = async (proyectoId) => {
+  const response = await apiClient.get(
+    `/materiales-asignado/material-gestion-reserva-planificados-vs-replanteados/${proyectoId}`
+  );
+  return response.data;
+};
+
+//funcion para cargar el retiro de materiales
+export const createMaterialGestionReserva = async (retiros) => {
+  const response = await apiClient.post(
+    `/materiales-asignado/material-gestion-reserva`,
+    { retiros }
+  );
+  return response.data;
+};
+
+//funcion para ver todo el inventario para reasignar
+export const fetchInventarioParaReasignar = async ({
+  limit,
+  offset,
+  search,
+} = {}) => {
+  const response = await apiClient.get(
+    `/inventario-material/stock-para-reasignar`,
+    {
+      params: {
+        limit,
+        offset,
+        search,
+      },
+    }
+  );
+  return response.data;
+};
+
+//funcion para consultar fecha de sincronizacion
+export const fetchFechaSincronizacion = async () => {
+  const response = await apiClient.get(
+    `/inventario-material/fecha-ultima-async`
+  );
+  return response.data;
+};
+
+//funcion para reasingar material desde la gestion de reserva segun inventario
+export const reasignarMaterialDesdeInventario = async (id, data) => {
+  const response = await apiClient.patch(
+    `/materiales-asignado/reasignar-material/${id}`,
+    data
+  );
+  return response.data;
+};
+
+//funcion para realizar rollback
+export const rollbackMaterialGestionReserva = async (id) => {
+  const response = await apiClient.patch(
+    `/materiales-asignado/rollback-material/${id}`
+  );
+  return response.data;
+};
+
+//funcion para enviar un materiaal a asignar al contratista
+export const asignarMaterialContratista = async (data) => {
+  const response = await apiClient.post(
+    `/materiales-asignado/asignar-materiales-contratista`,
+    data
+  );
+  return response.data;
+};
+
+//funcion para ver la lista de reserva por proyecto esto es solo para los materiales
+export const fetchMaterialesReservaPorProyecto = async (proyectoId) => {
+  const response = await apiClient.get(`/reservas/by-proyecto/${proyectoId}`);
+  return response.data;
+};
+
+//funcion para actualizar los datos de la reserva
+export const updateDataReserva = async (id, data) => {
+  const response = await apiClient.patch(`/reservas/${id}`, data);
+  return response.data;
+};
+
+//funcion para editar valores de lo servicios asignados se usara para hacer el vs  de planificado vs replanteado
+export const updateMaterialesAsignados = async (id, data) => {
+  const response = await apiClient.patch(`/materiales-asignado/${id}`, data);
+  return response.data;
+};
+
+//funcion para descargar tabla con reserva o con materiales de contratista
+export const obtenerExcelReservaContratisa = async (proyectoId) => {
+  const response = await apiClient.get(
+    `/materiales-asignado/excel-materiales-reserva-contratista/${proyectoId}`,
+    {
+      responseType: "blob",
+    }
+  );
+  return response.data;
+};
+
+//funcion para confirmar material y enviar a retirar
+export const confirmarEnvioARetiro = async (proyectoId) => {
+  const response = await apiClient.post(
+    `/materiales-asignado/proyectos/${proyectoId}/confirmar-reserva-retiro`
+  );
+  return response.data;
+};
