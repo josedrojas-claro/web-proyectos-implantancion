@@ -217,3 +217,11 @@ export const fetchListaProyectosGestionReserva = async (
   );
   return response.data;
 };
+
+//funcion para carga masiva de correlativo
+export const updateCorrelativoMasivo = async (data) => {
+  const response = await apiClient.patch(`/proyecto/carga-masiva-correlativo`, {
+    data,
+  });
+  return response.data;
+};

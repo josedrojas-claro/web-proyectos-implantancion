@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Collapse,
   Typography,
@@ -8,11 +8,21 @@ import {
   Space,
   notification,
   Empty,
+  Modal,
+  Form,
+  Input,
 } from "antd";
-import { CheckCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  InfoCircleOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import ListaServiciosUsados from "./ListaServiciosUsados";
 import ListaMaterialesUsados from "./ListaMaterialesUsados";
-import { aprobarRechazarEjecucionDiaria } from "../../../services/ejecucionDiariaServices";
+import {
+  aprobarRechazarEjecucionDiaria,
+  updateComentario,
+} from "../../../services/ejecucionDiariaServices";
 import Swal from "sweetalert2";
 const { Title, Text, Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -70,6 +80,68 @@ export default function EjecucionDiariaList({ ejecuciones, user, refetch }) {
     }
   };
 
+  const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+
+  const handleEditarComentario = (item) => {
+    setEditingItem(item);
+    form.setFieldsValue({
+      comentario: item.comentario,
+    });
+    setIsModalVisible(true);
+  };
+
+  // --- 2. Función de actualización modificada ---
+  const handleUpdateComentario = async (values) => {
+    // Muestra una alerta de "cargando" inmediatamente
+    Swal.fire({
+      title: "Actualizando Comentario...",
+      text: "Por favor, espera.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    try {
+      // Llama a tu servicio API
+      const response = await updateComentario(editingItem.id, {
+        comentario: values.comentario,
+      });
+
+      // Cierra el modal de Ant Design
+      setIsModalVisible(false);
+      setEditingItem(null);
+
+      // Cierra la alerta de carga y muestra el mensaje de éxito
+      Swal.fire({
+        icon: "success",
+        title: "¡Actualizado!",
+        text: response.message || "El comentario se guardó correctamente.",
+        timer: 2000, // Cierra automáticamente después de 2 segundos
+        showConfirmButton: false,
+      });
+
+      if (refetch) refetch();
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      const errorMessage =
+        error.response?.data?.message || "No se pudo actualizar el comentario.";
+      // Cierra la alerta de carga y muestra el mensaje de error
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: errorMessage,
+      });
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setEditingItem(null);
+  };
+
   return (
     <div style={{ width: "100%" }}>
       {contextHolder}
@@ -122,34 +194,38 @@ export default function EjecucionDiariaList({ ejecuciones, user, refetch }) {
                 >
                   {item.comentario}
                 </Paragraph>
+                {item.estado === "pendiente" && (
+                  <Button
+                    icon={<EditOutlined />}
+                    onClick={() => handleEditarComentario(item)}
+                    style={{ width: 200 }}
+                  >
+                    Editar Comentario
+                  </Button>
+                )}
                 <Divider />
                 <ListaServiciosUsados ejecucionId={item.id} />
                 <Divider />
                 <ListaMaterialesUsados ejecucionId={item.id} />
                 <Divider />
-                {
-                  item.estado === "pendiente" ? (
-                    <Paragraph>
-                      <Text underline type="warning">
-                        Pendiente de Aprobar
-                      </Text>
-                    </Paragraph>
-                  ) : (
-                    <Paragraph>
-                      <Text strong>Comentario Supervisor: </Text>
+                {item.estado === "pendiente" ? (
+                  <Paragraph>
+                    <Text underline type="warning">
+                      Pendiente de Aprobar
+                    </Text>
+                  </Paragraph>
+                ) : (
+                  <Paragraph>
+                    <Text strong>Comentario Supervisor: </Text>
 
-                      {item.motivoEstado || "Sin comentario"}
-                    </Paragraph>
-                  ) // Muestra el estado normal si no es "pendiente"
-                }
-
+                    {item.motivoEstado || "Sin comentario"}
+                  </Paragraph>
+                )}
                 {["admin", "supervisor", "lider"].includes(user.role) && (
-                  // ✨ 5. 'Stack' de MUI se convierte en 'Space' de AntD.
                   <Space style={{ marginTop: 16 }}>
                     <Button
                       type="primary"
                       onClick={() => handleCambioEstado(item.id, "aprobada")}
-                      // AntD no tiene un color 'success' por defecto, se puede estilizar si se desea
                       style={{
                         backgroundColor: "#52c41a",
                         borderColor: "#52c41a",
@@ -170,6 +246,35 @@ export default function EjecucionDiariaList({ ejecuciones, user, refetch }) {
           })}
         </Collapse>
       )}
+      <Modal
+        title="Editar Comentario"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        // --- 3. El footer ahora es más simple ---
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            Cancelar
+          </Button>,
+          <Button key="submit" type="primary" onClick={() => form.submit()}>
+            Actualizar
+          </Button>,
+        ]}
+      >
+        <Form form={form} layout="vertical" onFinish={handleUpdateComentario}>
+          <Form.Item
+            name="comentario"
+            label="Comentario"
+            rules={[
+              {
+                required: true,
+                message: "El comentario no puede estar vacío.",
+              },
+            ]}
+          >
+            <Input.TextArea rows={8} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

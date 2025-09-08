@@ -1,6 +1,13 @@
 // src/components/MyAppBar.jsx
 import React from "react";
-import { AppBar, Toolbar, Typography, Button, Box, useMediaQuery } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  useMediaQuery,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArticleIcon from "@mui/icons-material/Article";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
@@ -29,20 +36,32 @@ export default function MyAppBar({ toggleDrawer }) {
 
         {!isMobile && (
           <Box sx={{ display: "flex", gap: 1 }}>
-            <Button color="inherit" startIcon={<HomeIcon />} onClick={() => navigate("/home")}>
+            <Button
+              color="inherit"
+              startIcon={<HomeIcon />}
+              onClick={() => navigate("/home")}
+            >
               Home
             </Button>
-            <Button color="inherit" startIcon={<ArticleIcon />} onClick={() => navigate("/lista-proyectos-generales")}>
+            <Button
+              color="inherit"
+              startIcon={<ArticleIcon />}
+              onClick={() => navigate("/lista-proyectos-generales")}
+            >
               Proyectos
             </Button>
 
-            <Button color="inherit" startIcon={<NoteAltIcon />} onClick={() => navigate("/lista-proyectos-ejecucion")}>
+            <Button
+              color="inherit"
+              startIcon={<NoteAltIcon />}
+              onClick={() => navigate("/lista-proyectos-ejecucion")}
+            >
               Ejecución Diaria
             </Button>
             <Button
               color="inherit"
               startIcon={<DocumentScannerIcon />}
-              onClick={() => navigate("/lista-proyectos-rdo-conciliacion-materiales")}
+              onClick={() => navigate("/lista-proyectos-gestion-reserva")}
             >
               RDO
             </Button>

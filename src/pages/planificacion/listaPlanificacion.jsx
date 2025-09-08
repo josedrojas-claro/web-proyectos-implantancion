@@ -11,6 +11,7 @@ import {
   Col,
   Tag,
   Modal,
+  Descriptions,
 } from "antd";
 import {
   SearchOutlined,
@@ -18,13 +19,24 @@ import {
   EyeOutlined,
   VerticalAlignTopOutlined,
   FullscreenExitOutlined,
+  FileTextOutlined,
+  CheckCircleOutlined,
+  EnvironmentOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  CodeOutlined,
+  BuildOutlined,
+  LaptopOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import { getEstadoColor } from "../../utils/colorUtils";
 import MainLayout from "../../layout/MainLayout";
+import BottonCargaCorrelativoMasiva from "./components/BottonCargaCorrelativoMasivo";
 import { fetchProyectosEnPlanificacion } from "../../services/proyectoServices";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { cambiarEstadoProyecto } from "../../services/proyectoServices";
+import { formatToNicaragua } from "../../utils/formatToNicaragua";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -282,11 +294,16 @@ export default function ListaPlanificacion() {
   const handleVerDetalles = (proyecto) => {
     setProyectoSeleccionado(proyecto);
     setIsModalVisible(true);
+    console.log(proyecto);
   };
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setProyectoSeleccionado(null);
+  };
+
+  const handleReloadTable = () => {
+    handleSearch();
   };
 
   return (
@@ -333,13 +350,14 @@ export default function ListaPlanificacion() {
                 >
                   Limpiar
                 </Button>
+                <BottonCargaCorrelativoMasiva update={handleReloadTable} />
                 <Button
                   color="cyan"
                   variant="solid"
                   onClick={handleCargaSolpedMasiva}
                   icon={<VerticalAlignTopOutlined />}
                 >
-                  Carga Solped Masiva
+                  Carga Solpeds
                 </Button>
                 <Button
                   onClick={handleCargaPO}
@@ -370,16 +388,107 @@ export default function ListaPlanificacion() {
       </Space>
       {proyectoSeleccionado && (
         <Modal
-          title={`Detalles del Proyecto: ${proyectoSeleccionado.nombre}`}
-          visible={isModalVisible}
+          title={`Detalles del Proyecto`}
+          open={isModalVisible}
           onOk={handleCloseModal}
           onCancel={handleCloseModal}
           width={1000}
+          footer={[
+            // Un solo botón "Cerrar" es más limpio para un modal de solo lectura
+            <Button key="back" onClick={handleCloseModal}>
+              Cerrar
+            </Button>,
+          ]}
         >
-          {/* Aquí pones el contenido del modal, por ejemplo un componente <DetallesProyecto /> */}
-          <p>Ticket: {proyectoSeleccionado.ticketCode}</p>
-          <p>Estado: {proyectoSeleccionado.estado?.nombre}</p>
-          {/* ... más detalles ... */}
+          <Descriptions bordered column={2}>
+            <Descriptions.Item
+              label={
+                <>
+                  <FileTextOutlined /> Proyecto
+                </>
+              }
+            >
+              {proyectoSeleccionado.nombre}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  <FileTextOutlined /> Ticket Code
+                </>
+              }
+            >
+              {proyectoSeleccionado.ticketCode}
+            </Descriptions.Item>
+            <Descriptions.Item label="Estado">
+              {proyectoSeleccionado.estado?.nombre}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  <EnvironmentOutlined /> Sitio
+                </>
+              }
+            >
+              {proyectoSeleccionado.Sitios?.nombre_sitio}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  <EnvironmentOutlined /> Municipio
+                </>
+              }
+            >
+              {proyectoSeleccionado.Sitios?.Municipio?.municipio}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  <UserOutlined /> Planificador
+                </>
+              }
+            >
+              {proyectoSeleccionado.Planificador?.UserData?.nombre}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  <TeamOutlined /> Contratista
+                </>
+              }
+            >
+              {proyectoSeleccionado.Contratistas?.nombre_contratista}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  <CalendarOutlined /> Fecha Planificación
+                </>
+              }
+            >
+              {formatToNicaragua(proyectoSeleccionado.fechaInicio)}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  <LaptopOutlined /> Tecnología
+                </>
+              }
+            >
+              {proyectoSeleccionado.tecnologia}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  <CodeOutlined /> Código Ingeniería
+                </>
+              }
+              span={2}
+            >
+              {" "}
+              {/* `span={2}` para que ocupe las dos columnas */}
+              {proyectoSeleccionado.CodigosIngenieria.codigo}
+            </Descriptions.Item>
+          </Descriptions>
         </Modal>
       )}
     </MainLayout>

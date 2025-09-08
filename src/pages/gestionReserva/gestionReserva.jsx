@@ -7,6 +7,7 @@ import ListaMaterialesGestion from "./components/ListaMaterialGestion";
 import ListaMaterialesGestionPlanificados from "./components/ListaMaterialGestionPlanificados";
 import BottonDescargarExcelMaterialFinal from "./components/BottonDescargarExcelMaterialFinal";
 import BotonConfirmaRetiro from "./components/BottonConfirmaRetiro";
+import BottonCambioEstado from "./components/BottonCambioEstado";
 import { fetchServiciosAsignadosByProyecto } from "../../services/serviciosServices";
 import {
   fetchMaterialesGestionReplanteo,
@@ -133,6 +134,12 @@ export default function GestionReserva() {
         {proyecto.estado?.nombre === "Gestion Reserva-Retiro" && (
           <BottonDescargarExcelMaterialFinal proyectoId={proyecto.id} />
         )}
+        {["admin", "coordinador-sup", "lider", "supervisor"].includes(
+          userRole
+        ) &&
+          proyecto.estado?.nombre === "Gestion Reserva-Retiro" && (
+            <BottonCambioEstado proyectoSeleccionado={proyecto} />
+          )}
       </Space>
     </MainLayout>
   );

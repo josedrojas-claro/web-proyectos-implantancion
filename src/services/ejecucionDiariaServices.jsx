@@ -53,3 +53,12 @@ export const aprobarRechazarEjecucionDiaria = async (ejecucionId, data) => {
 
   return response.data;
 };
+
+//funcion para actualizar bitacora de ejecucion comentario
+export const updateComentario = async (ejecucionId, data) => {
+  const response = await apiClient.patch(
+    `/ejecucion-diaria/editar-comentario/${ejecucionId}`,
+    data
+  );
+  return response.data;
+};
