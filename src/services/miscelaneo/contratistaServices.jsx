@@ -5,17 +5,28 @@ export const fetchContratista = async () => {
   return response.data;
 };
 
-export const createSitio = async (data) => {
+export const fetchListaContratista = async ({ limit, offset, search } = {}) => {
+  const response = await apiClient.get("/contratista/lista-completa", {
+    params: {
+      limit,
+      offset,
+      search,
+    },
+  });
+  return response.data; // This will return the object with { totalItems, data, ... }
+};
+
+export const createContratista = async (data) => {
   const response = await apiClient.post("/contratista", data);
   return response.data;
 };
 
-export const deleteSitio = async (id) => {
+export const deleteContratista = async (id) => {
   const response = await apiClient.delete(`/contratista/${id}`);
   return response.data;
 };
 
-export const updateSitio = async (id, data) => {
+export const updateContratista = async (id, data) => {
   const response = await apiClient.patch(`/contratista/${id}`, data);
   return response.data;
 };

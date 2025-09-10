@@ -34,8 +34,8 @@ export default function MyDrawer({ open, toggleDrawer }) {
     { label: "Página Principal", path: "/home", icon: <HomeIcon /> },
     { label: "Servicios", path: "/servicios", icon: <ConstructionIcon /> },
     { label: "Materiales", path: "/materiales", icon: <WarehouseIcon /> },
-    { label: "Sitios", path: "/sitios", icon: <LocationOnIcon /> },
-    { label: "Contratistas", path: "/contratistas", icon: <GroupIcon /> },
+    { label: "Sitios", path: "/lista-sitios", icon: <LocationOnIcon /> },
+    { label: "Contratistas", path: "/lista-contratistas", icon: <GroupIcon /> },
     // El ítem de Configuración solo se añade al arreglo si el rol del usuario es 'admin'
     ...(user?.role === "admin"
       ? [

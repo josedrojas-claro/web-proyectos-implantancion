@@ -12,6 +12,7 @@ import rdoConciliacionIcon from "../../assets/wire.png";
 import proyectosIcon from "../../assets/metric.png";
 import reportesIcon from "../../assets/reporteNegocio.png";
 import reservaIcon from "../../assets/reserva.png";
+import planificacionIcon from "../../assets/dta.png";
 
 // Define los roles de ejemplo que podrías usar. ¡Asegúrate de que estos coincidan con los roles reales de tus usuarios!
 const ROLES = {
@@ -34,7 +35,7 @@ const features = [
   },
   {
     title: "Planificacion",
-    icon: "src/assets/dta.png",
+    icon: planificacionIcon,
     path: "/lista-proyectos-planificacion",
     allowedRoles: [ROLES.admin, ROLES.planificador, ROLES.coordinadorIng], // Solo el administrador puede asignar supervisores
   },

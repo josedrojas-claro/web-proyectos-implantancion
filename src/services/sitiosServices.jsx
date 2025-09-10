@@ -19,3 +19,16 @@ export const updateSitio = async (id, data) => {
   const response = await apiClient.patch(`/sitios/${id}`, data);
   return response.data;
 };
+
+//lista sitios con paguinacion
+export const fecthListaSitios = async ({ limit, offset, search } = {}) => {
+  const response = await apiClient.get("/sitios/lista-sitios", {
+    params: {
+      limit,
+      offset,
+      search,
+    },
+  });
+
+  return response.data;
+};

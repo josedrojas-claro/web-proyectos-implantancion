@@ -80,7 +80,7 @@ export default function CargaMasivaMateriales({
       const lineas = inputText.trim().split("\n");
       const datosParseados = lineas.map((linea) => {
         const columnas = linea.split(/\s+/); // Divide por tabulación o espacios
-        return [columnas[0], parseInt(columnas[1], 10)];
+        return [columnas[0], parseFloat(columnas[1])];
       });
 
       // Valida que los datos parseados sean correctos

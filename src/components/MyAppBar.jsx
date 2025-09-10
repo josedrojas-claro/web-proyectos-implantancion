@@ -61,7 +61,9 @@ export default function MyAppBar({ toggleDrawer }) {
             <Button
               color="inherit"
               startIcon={<DocumentScannerIcon />}
-              onClick={() => navigate("/lista-proyectos-gestion-reserva")}
+              onClick={() =>
+                navigate("/lista-proyectos-rdo-conciliacion-materiales")
+              }
             >
               RDO
             </Button>
