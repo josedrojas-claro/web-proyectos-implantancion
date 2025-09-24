@@ -232,3 +232,14 @@ export const confirmarEnvioARetiro = async (proyectoId) => {
   );
   return response.data;
 };
+
+//funcion para hacer borrado de del amacen seleccioando
+export const deleteAlmacenSeleccionado = async (
+  idAlmacen,
+  materialAsignadoId
+) => {
+  const response = await apiClient.delete(
+    `/materiales-asignado/borrado-de-almacen/${idAlmacen}/${materialAsignadoId}`
+  );
+  return response.data;
+};

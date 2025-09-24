@@ -111,3 +111,16 @@ export const subirExcelSapConPo = async (file) => {
     throw error;
   }
 };
+
+//funcion para ver la lsita de po por proyecto
+export const getListaPo = async (proyectoId) => {
+  try {
+    const response = await apiClient.get(
+      `/orden-compra/by-proyecto/${proyectoId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("No se obtiene data:", error);
+    throw error;
+  }
+};

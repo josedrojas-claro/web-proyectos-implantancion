@@ -16,6 +16,7 @@ import {
   RetweetOutlined,
   RollbackOutlined,
   SwapOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 
 const { Text } = Typography;
@@ -27,6 +28,7 @@ const ModalAsignacionRetiros = ({
   onReasignar,
   onAsignarContratista,
   onRollbackMaterial,
+  onDelete,
   stockDisponible,
   materialInfo,
 }) => {
@@ -213,8 +215,8 @@ const ModalAsignacionRetiros = ({
         </Col>
         <Col>
           <Button
-            danger
-            type="primary"
+            color="purple"
+            variant="solid"
             icon={<RetweetOutlined />}
             onClick={onReasignar}
           >
@@ -230,6 +232,16 @@ const ModalAsignacionRetiros = ({
             onClick={onAsignarContratista}
           >
             Suministro Contratista
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            danger
+            type="primary"
+            icon={<DeleteOutlined />}
+            onClick={onDelete}
+          >
+            Limpiar
           </Button>
         </Col>
       </Row>

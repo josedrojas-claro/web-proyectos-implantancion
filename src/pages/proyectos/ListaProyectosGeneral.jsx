@@ -225,10 +225,6 @@ export default function ListaProyectosGenerales() {
           />
         </Box>
 
-        {/* Los componentes de filtro son los siguientes elementos. */}
-        {/* Ya no necesitas los <Divider /> manuales entre ellos. */}
-
-        {/* Filtro para estados */}
         <FiltroChips
           value={estadoInput}
           onChange={(newValue) => setEstadoInput(newValue)}

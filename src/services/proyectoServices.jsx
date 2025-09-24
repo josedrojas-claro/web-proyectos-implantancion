@@ -225,3 +225,12 @@ export const updateCorrelativoMasivo = async (data) => {
   });
   return response.data;
 };
+
+//funcion dinamica para hacer el cambio de estado de rdo a conciliacion de material y/o pendiente planificacion
+//validara los adicionales creara tickets
+export const cambioEstadoRdoDinamico = async (proyectoId) => {
+  const response = await apiClient.post(
+    `/proyecto/cambio-estado-dinamico-rdo-pendientePlani-conciliacion/${proyectoId}`
+  );
+  return response.data;
+};

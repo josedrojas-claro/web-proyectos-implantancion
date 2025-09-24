@@ -11,7 +11,7 @@ import {
 
 const { Title } = Typography;
 
-const FormularioCorrelativo = ({ proyecto, onSuccess }) => {
+const FormularioCorrelativo = ({ proyecto, onSuccess, viewBotton = true }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -86,7 +86,11 @@ const FormularioCorrelativo = ({ proyecto, onSuccess }) => {
 
   return (
     <Card style={{ marginTop: "20px" }}>
-      <Title level={4}>Asignar o Actualizar Correlativo</Title>
+      {viewBotton ? (
+        <Title level={4}>Asignar o Actualizar Correlativo</Title>
+      ) : (
+        <Title level={4}>Correlativo</Title>
+      )}
       {loadingData ? (
         <Spin tip="Cargando datos del correlativo..." />
       ) : (
@@ -114,20 +118,21 @@ const FormularioCorrelativo = ({ proyecto, onSuccess }) => {
                 <input type="date" className="native-datepicker" />
               </Form.Item>
             </Col>
-
-            <Col xs={24} sm={6}>
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  icon={<SaveOutlined />}
-                  style={{ width: "100%" }}
-                >
-                  Guardar
-                </Button>
-              </Form.Item>
-            </Col>
+            {viewBotton ? (
+              <Col xs={24} sm={6}>
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    icon={<SaveOutlined />}
+                    style={{ width: "100%" }}
+                  >
+                    Guardar
+                  </Button>
+                </Form.Item>
+              </Col>
+            ) : null}
           </Row>
         </Form>
       )}

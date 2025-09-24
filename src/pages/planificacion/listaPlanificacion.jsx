@@ -104,6 +104,15 @@ export default function ListaPlanificacion() {
               Ver Data
             </Button>
           );
+        } else if (estado === "Pendiente Planificación") {
+          actionButton = (
+            <Button
+              size="small"
+              onClick={() => handleVerPendientePlani(record)}
+            >
+              Validar
+            </Button>
+          );
         } else if (estado === "Con PO") {
           actionButton = (
             <Button size="small" onClick={() => handleAsignar(record)}>
@@ -146,6 +155,15 @@ export default function ListaPlanificacion() {
   const handleVerSolped = (proyectoSeleccionado) => {
     navigate(
       `/lista-proyectos-planificacion/ver-solpeds/${proyectoSeleccionado.ticketCode}`,
+      {
+        state: { proyectoSeleccionado },
+      }
+    );
+  };
+
+  const handleVerPendientePlani = (proyectoSeleccionado) => {
+    navigate(
+      `/lista-proyectos-planificacion/pendiente-planificacion/${proyectoSeleccionado.ticketCode}`,
       {
         state: { proyectoSeleccionado },
       }

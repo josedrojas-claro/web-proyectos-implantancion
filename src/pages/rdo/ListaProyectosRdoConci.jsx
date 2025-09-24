@@ -46,7 +46,9 @@ export default function ListaProyectosRdoConci() {
 
   // filtrar proyectos por nombre
   const proyectosFiltrados = proyectos.filter(
-    (proy) => proy.nombre.toLowerCase().includes(filtro.toLowerCase()) || String(proy.ticketCode).includes(filtro)
+    (proy) =>
+      proy.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+      String(proy.ticketCode).includes(filtro)
   );
 
   //variables para manejar el dialog de detalles
@@ -61,9 +63,12 @@ export default function ListaProyectosRdoConci() {
 
   //funcion para navegar a la página de RDo
   const cargarPageRDO = (proyecto) => {
-    navigate(`/lista-proyectos-rdo-conciliacion-materiales/rdo/${proyecto.ticketCode}`, {
-      state: { proyecto },
-    });
+    navigate(
+      `/lista-proyectos-rdo-conciliacion-materiales/rdo/${proyecto.ticketCode}`,
+      {
+        state: { proyecto },
+      }
+    );
   };
 
   return (
@@ -99,16 +104,26 @@ export default function ListaProyectosRdoConci() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>#</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  #
+                </TableCell>
                 <TableCell>Ticket</TableCell>
                 <TableCell>Nombre del Proyecto</TableCell>
 
                 {/* Ocultar en móviles */}
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Contratista</TableCell>
-                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Tecnología</TableCell>
-                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Supervisado por:</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  Contratista
+                </TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Tecnología
+                </TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  Supervisado por:
+                </TableCell>
 
-                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>%Ejecución</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  %Ejecución
+                </TableCell>
                 <TableCell>Detalles</TableCell>
               </TableRow>
             </TableHead>
@@ -116,22 +131,29 @@ export default function ListaProyectosRdoConci() {
             <TableBody>
               {proyectosFiltrados.map((proyecto, index) => (
                 <TableRow key={proyecto.id}>
-                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{index + 1}</TableCell>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {index + 1}
+                  </TableCell>
                   <TableCell>{proyecto.ticketCode}</TableCell>
                   <TableCell>{proyecto.nombre}</TableCell>
 
                   <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                     {proyecto.Contratistas.nombre_contratista}
                   </TableCell>
-                  <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>{proyecto.tecnologia}</TableCell>
                   <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
-                    {proyecto.Supervisor.UserData.nombre}
+                    {proyecto.tecnologia}
+                  </TableCell>
+                  <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {proyecto.Supervisor?.UserData?.nombre ?? "N/A"}
                   </TableCell>
 
                   <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                     {proyecto.EjecucionDiaria?.length > 0 ? (
                       <Typography variant="body2">
-                        {Math.round(proyecto.EjecucionDiaria[0].porcenEjecucion * 100)}%
+                        {Math.round(
+                          proyecto.EjecucionDiaria[0].porcenEjecucion * 100
+                        )}
+                        %
                       </Typography>
                     ) : (
                       <Typography variant="body2" color="text.disabled">
@@ -141,7 +163,11 @@ export default function ListaProyectosRdoConci() {
                   </TableCell>
 
                   <TableCell>
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="flex-start">
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      spacing={1}
+                      alignItems="flex-start"
+                    >
                       <Button
                         size="small"
                         variant="contained"
@@ -156,7 +182,10 @@ export default function ListaProyectosRdoConci() {
                         color="success"
                         startIcon={<FormatListBulletedAddIcon />}
                         sx={{
-                          display: proyecto.estado?.nombre === "RDO" ? "none" : "inline-flex",
+                          display:
+                            proyecto.estado?.nombre === "RDO"
+                              ? "none"
+                              : "inline-flex",
                         }}
                         onClick={() => cargarPageRDO(proyecto)}
                       >
@@ -172,7 +201,12 @@ export default function ListaProyectosRdoConci() {
       )}
 
       {/* // Dialogo para ver detalles del proyecto */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Detalles del Proyecto</DialogTitle>
         <DialogContent dividers>
           {proyectoSeleccionado ? (
@@ -205,7 +239,9 @@ export default function ListaProyectosRdoConci() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Rubro
                     </Typography>
-                    <Typography>{proyectoSeleccionado.CodigosIngenieria?.codigo || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.CodigosIngenieria?.codigo || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -220,19 +256,25 @@ export default function ListaProyectosRdoConci() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Nombre Sitio
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.nombre_sitio || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.nombre_sitio || "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Nemonico
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.nemonico || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.nemonico || "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Municipio
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.Municipio?.municipio || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.Municipio?.municipio || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -247,37 +289,56 @@ export default function ListaProyectosRdoConci() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Contratista
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Contratistas?.nombre_contratista || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Contratistas?.nombre_contratista ||
+                        "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Planificador
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Planificador?.UserData?.nombre || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Planificador?.UserData?.nombre ||
+                        "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Estado
                     </Typography>
-                    <Typography>{proyectoSeleccionado.estado?.nombre || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.estado?.nombre || "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Asignado a
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Supervisor.UserData.nombre}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Supervisor?.UserData?.nombre ??
+                        "N/A"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Supervisor Contratista
                     </Typography>
-                    <Typography>{proyectoSeleccionado.SupervisorContratista.UserData.nombre}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.SupervisorContratista?.UserData
+                        ?.nombre ?? "N/A"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Recibido por
                     </Typography>
-                    <Typography>{proyectoSeleccionado.BitacoraFinalProyecto?.[0]?.nombreOperaciones}</Typography>
+                    <Typography>
+                      {
+                        proyectoSeleccionado.BitacoraFinalProyecto?.[0]
+                          ?.nombreOperaciones
+                      }
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -292,13 +353,19 @@ export default function ListaProyectosRdoConci() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Fecha Inicio
                     </Typography>
-                    <Typography>{new Date(proyectoSeleccionado.fechaInicio).toLocaleDateString("es-NI")}</Typography>
+                    <Typography>
+                      {new Date(
+                        proyectoSeleccionado.fechaInicio
+                      ).toLocaleDateString("es-NI")}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Descripción
                     </Typography>
-                    <Typography>{proyectoSeleccionado.descripcion || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.descripcion || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>

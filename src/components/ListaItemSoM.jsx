@@ -1,10 +1,18 @@
 import { Box, Paper, TextField, Typography } from "@mui/material";
 
-export default function ListaItemSoM({ tipo, items, onCantidadChange, tipoFormulario }) {
+export default function ListaItemSoM({
+  tipo,
+  items,
+  onCantidadChange,
+  tipoFormulario,
+}) {
   return (
     <>
       {items.map((item, index) => {
-        const data = tipo === "servicio" ? item.Servicios || item.servicio : item.Materiales || item.material;
+        const data =
+          tipo === "servicio"
+            ? item.Servicios || item.servicio
+            : item.Materiales || item.material;
 
         const cantidad =
           tipoFormulario === "replanteo"
@@ -13,7 +21,10 @@ export default function ListaItemSoM({ tipo, items, onCantidadChange, tipoFormul
             ? item.cantidadAsignado || item.cantidadAsignada
             : item.cantidad;
 
-        const cantidadAsignada = tipo === "servicio" ? item.cantidadAsignada ?? 0 : item.cantidadAsignado || 0;
+        const cantidadAsignada =
+          tipo === "servicio"
+            ? item.cantidadAsignada ?? 0
+            : item.cantidadAsignado || 0;
         const cantidadEjecutada = item.cantidadEjecutada ?? 0;
         const diferencia = cantidadAsignada - cantidadEjecutada;
 
@@ -32,16 +43,27 @@ export default function ListaItemSoM({ tipo, items, onCantidadChange, tipoFormul
           >
             <Typography variant="subtitle2">
               <strong>{index + 1}.</strong>{" "}
-              {tipo === "servicio" ? `Servicio: ${data?.servicio || data?.descripcion}` : `Material: ${data?.codigo}`}
+              {tipo === "servicio"
+                ? `Servicio: ${data?.servicio || data?.descripcion}`
+                : `Material: ${data?.codigo}`}
             </Typography>
 
             <Typography variant="caption" color="text.secondary">
               {tipo === "servicio"
-                ? `Descripción: ${data?.descripcionServicio || data?.descripcion}`
+                ? `Descripción: ${
+                    data?.descripcionServicio || data?.descripcion
+                  }`
                 : `Descripción: ${data?.descripcion}`}
             </Typography>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mt: 1,
+              }}
+            >
               <TextField
                 size="small"
                 type="number"
@@ -49,12 +71,20 @@ export default function ListaItemSoM({ tipo, items, onCantidadChange, tipoFormul
                 sx={{ maxWidth: 100 }}
                 value={cantidad || ""}
                 onChange={(e) => {
-                  const value = Math.max(0, Number(e.target.value));
-                  onCantidadChange(tipo, item.id, value);
+                  const inputValue = e.target.value;
+
+                  if (
+                    (/^\d*\.?\d*$/.test(inputValue) &&
+                      parseFloat(inputValue) >= 0) ||
+                    inputValue === ""
+                  ) {
+                    onCantidadChange(tipo, item.id, inputValue);
+                  }
                 }}
               />
 
-              {(tipoFormulario === "Replanteo" || tipoFormulario === "Ejecucion") && (
+              {(tipoFormulario === "Replanteo" ||
+                tipoFormulario === "Ejecucion") && (
                 <Box sx={{ display: "flex", gap: 4 }}>
                   <Box>
                     <Typography variant="caption" color="text.secondary">

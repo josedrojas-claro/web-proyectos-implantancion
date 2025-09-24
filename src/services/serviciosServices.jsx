@@ -88,3 +88,13 @@ export const updateServiciosAsignados = async (id, data) => {
   const response = await apiClient.patch(`/servicios-asignado/${id}`, data);
   return response.data;
 };
+
+///funcion para realizar cambio de servicio uno por otro en la etapa de servicios asigandos,
+// se pudria usar el enpoint anterior pero este esta echo para tener los serviciosEjecucion la actualizacion
+export const updateServiciosAsignadosEjecucion = async (id, serviciosId) => {
+  const response = await apiClient.patch(
+    `/servicios-asignado/cambiar-servicio/${id}`,
+    { serviciosId }
+  );
+  return response.data;
+};

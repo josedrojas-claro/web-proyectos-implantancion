@@ -96,6 +96,11 @@ export default function GestionReserva() {
     cargarMateriales();
     cargarMaterialesPlanificados();
   };
+
+  const cargarMaterialesGeneral = () => {
+    cargarMateriales();
+    cargarMaterialesPlanificados();
+  };
   return (
     <MainLayout>
       <h2>Gestión de Reserva</h2>
@@ -109,7 +114,7 @@ export default function GestionReserva() {
       <ListaMaterialesGestion
         materiales={materialesAsignados}
         loading={loadingMateriales}
-        onUpdate={cargarMateriales}
+        onUpdate={cargarMaterialesGeneral}
         proyectoId={proyecto.id}
         userRole={userRole}
       />

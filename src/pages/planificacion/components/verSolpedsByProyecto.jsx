@@ -20,7 +20,10 @@ import {
 
 const { Title } = Typography;
 
-export default function VerSolpedsByProyecto({ proyectoId }) {
+export default function VerSolpedsByProyecto({
+  proyectoId,
+  viewBotton = true,
+}) {
   // ✨ 1. Recibe la prop onUpdate
   const [solpeds, setSolpeds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -106,29 +109,33 @@ export default function VerSolpedsByProyecto({ proyectoId }) {
         <Tag color={moneda === "USD" ? "green" : "blue"}>{moneda}</Tag>
       ),
     },
-    {
-      title: "Acciones",
-      key: "acciones",
-      render: (_, record) => (
-        <Space size="middle">
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => showEditModal(record)}
-            size="small"
-          >
-            Editar
-          </Button>
-          <Button
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.id)}
-            size="small"
-            danger
-          >
-            Borrar
-          </Button>
-        </Space>
-      ),
-    },
+    ...(viewBotton
+      ? [
+          {
+            title: "Acciones",
+            key: "acciones",
+            render: (_, record) => (
+              <Space size="middle">
+                <Button
+                  icon={<EditOutlined />}
+                  onClick={() => showEditModal(record)}
+                  size="small"
+                >
+                  Editar
+                </Button>
+                <Button
+                  icon={<DeleteOutlined />}
+                  onClick={() => handleDelete(record.id)}
+                  size="small"
+                  danger
+                >
+                  Borrar
+                </Button>
+              </Space>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (

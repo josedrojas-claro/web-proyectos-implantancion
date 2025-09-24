@@ -1,7 +1,11 @@
 import React from "react";
 import { Box, Typography, Stack, Grid, Divider } from "@mui/material";
 
-export default function CardMaterialResumen({ item, index, role }) {
+export default function CardMaterialResumen({
+  item,
+  index,
+  //  role
+}) {
   return (
     <Box
       sx={{
@@ -45,6 +49,14 @@ export default function CardMaterialResumen({ item, index, role }) {
 
       {/* Métricas */}
       <Grid container spacing={2} mt={1}>
+        <Grid item xs={3}>
+          <Typography variant="caption" color="text.secondary">
+            Planificado
+          </Typography>
+          <Typography variant="body2">{item.cantidadPlanificada}</Typography>
+        </Grid>
+        <Divider orientation="vertical" variant="middle" flexItem />
+
         <Grid item xs={3}>
           <Typography variant="caption" color="text.secondary">
             Replanteado
@@ -93,9 +105,9 @@ export default function CardMaterialResumen({ item, index, role }) {
             {item.diferencia.toFixed(2)}
           </Typography>
         </Grid>
-        <Divider orientation="vertical" variant="middle" flexItem />
+        {/* <Divider orientation="vertical" variant="middle" flexItem /> */}
 
-        {!["contratista", "contratista-lider", "supervisor"].includes(role) && (
+        {/* {!["contratista", "contratista-lider", "supervisor"].includes(role) && (
           <Grid item xs={3}>
             <Typography variant="caption" color="text.secondary">
               Costo Ejecutado
@@ -104,7 +116,7 @@ export default function CardMaterialResumen({ item, index, role }) {
               {item.precioTotal.toFixed(2)} {item.material.moneda}
             </Typography>
           </Grid>
-        )}
+        )} */}
       </Grid>
     </Box>
   );

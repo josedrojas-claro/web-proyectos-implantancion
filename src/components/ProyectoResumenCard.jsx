@@ -19,7 +19,10 @@ import {
   DownloadOutlined,
 } from "@ant-design/icons";
 import { descargarPdfBitacora } from "../services/bitacoraFinalServices";
-import { descargarRdoExcel } from "../services/bitacoraFinalServices";
+import {
+  descargarRdoExcel,
+  descargarExcelPrevioPlanificacion,
+} from "../services/bitacoraFinalServices";
 import { getEstadoColor } from "../utils/colorUtils";
 import Swal from "sweetalert2";
 
@@ -93,6 +96,40 @@ export default function ProyectoResumenCard({ proyecto }) {
     }
   };
 
+  //funcion para descargar el rdo en excel de los proyecto previo a planifcacion
+  const handleDescargarRdoPrevioPlanificacion = async () => {
+    Swal.fire({
+      title: "Generando archivo previo planificar",
+      text: "Por favor, espera mientras preparamos tu archivo...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    setIsDownloading(true);
+    try {
+      await descargarExcelPrevioPlanificacion(proyecto.id);
+      Swal.fire({
+        icon: "success",
+        title: "¡Descarga Exitosa!",
+        text: "Tu archivo se ha descargado correctamente.",
+        timer: 2000, // Close automatically after 2 seconds
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      // 5. Show an error message if anything fails
+      console.error("Error al descargar el archivo:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error en la Descarga",
+        text: "No se pudo generar el archivo. Por favor, intenta de nuevo.",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const estadosDescargaConPo = [
     "En RDO",
     "En Conciliación de Materiales",
@@ -100,6 +137,7 @@ export default function ProyectoResumenCard({ proyecto }) {
     "Liquidacion",
     "DTA",
     "Validacion Documentos",
+    "Pendiente Planificación",
   ];
 
   const estadosDescargaSinPo = [
@@ -195,16 +233,25 @@ export default function ProyectoResumenCard({ proyecto }) {
             <>
               <Divider style={{ margin: "8px 0" }} />
               <Flex justify="center">
+                {proyecto.estado.nombre !== "Pendiente Planificación" && (
+                  <Button
+                    type="primary"
+                    icon={<DownloadOutlined />}
+                    onClick={handleDescargar}
+                    size="middle"
+                    loading={isDownloading}
+                  >
+                    Descargar Bitácora
+                  </Button>
+                )}
                 <Button
-                  type="primary"
-                  icon={<DownloadOutlined />}
-                  onClick={handleDescargar}
-                  size="middle"
+                  onClick={
+                    proyecto.estado.nombre === "Pendiente Planificación"
+                      ? handleDescargarRdoPrevioPlanificacion
+                      : handleDescargarRdo
+                  }
                   loading={isDownloading}
                 >
-                  Descargar Bitácora
-                </Button>
-                <Button onClick={handleDescargarRdo} loading={isDownloading}>
                   Descargar RDO
                 </Button>
               </Flex>

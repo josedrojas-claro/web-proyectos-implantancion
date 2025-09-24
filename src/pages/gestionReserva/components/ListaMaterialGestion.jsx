@@ -30,6 +30,7 @@ import {
   rollbackMaterialGestionReserva,
   asignarMaterialContratista,
   fetchMaterialesReservaPorProyecto,
+  deleteAlmacenSeleccionado,
 } from "../../../services/materialesServices";
 
 const { Title, Text } = Typography;
@@ -393,13 +394,60 @@ const ListaMaterialesGestion = ({
           } catch (error) {
             Swal.fire(
               "Error",
-              `No se pudo quitar la asignación. ${error.message || ""}`,
+              `No se pudo quitar la asignación. ${error.message.message || ""}`,
               "error"
             );
           }
         }
       });
     }
+  };
+  const deleteSeleccionAlmacen = async () => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará el almacén o suministro seleccionado. ¿Deseas continuar?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Eliminando...",
+          didOpen: () => Swal.showLoading(),
+        });
+        try {
+          let materialAlmacen = 0;
+          if (
+            materialSeleccionado.RetirosMaterial &&
+            materialSeleccionado.RetirosMaterial.length > 0 &&
+            materialSeleccionado.RetirosMaterial[0].id !== null
+          ) {
+            materialAlmacen = materialSeleccionado.RetirosMaterial[0].id;
+          }
+
+          const response = await deleteAlmacenSeleccionado(
+            materialAlmacen,
+            materialSeleccionado.id
+          );
+
+          console.log(response);
+          Swal.fire(
+            "¡Eliminado!",
+            response.message || "El almacén/suministro ha sido eliminado.",
+            "success"
+          );
+          onUpdate && onUpdate();
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            error.message.message ||
+              "No se pudo eliminar el almacén/suministro.",
+            "error"
+          );
+        }
+      }
+    });
   };
 
   const [fechaSincronizacion, setFechaSincronizacion] = useState(null);
@@ -579,6 +627,7 @@ const ListaMaterialesGestion = ({
           onConfirm={handleConfirmarRetiros}
           onAsignarContratista={handleAsignarContratista}
           onRollbackMaterial={handleRollbackMaterial}
+          onDelete={deleteSeleccionAlmacen}
           stockDisponible={stockActual}
           materialInfo={materialSeleccionado}
         />

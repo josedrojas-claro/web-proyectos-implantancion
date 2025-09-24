@@ -1,64 +1,81 @@
 import React, { useEffect, useState } from "react";
 import MainLayout from "../../layout/MainLayout";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Box, Typography, Stack, Button } from "@mui/material";
+import {
+  Layout,
+  Typography,
+  Space,
+  Button,
+  Row,
+  Col,
+  Card,
+  Statistic,
+  Flex,
+  Divider,
+} from "antd";
 import ProyectoResumenCard from "../../components/ProyectoResumenCard";
-import CardServicioResumen from "../../components/CardServicioResumen";
-import CardMaterialResumen from "../../components/CardMaterialResumen";
+import ItemResumen from "../../components/CardItemResumen";
+
 import { fetchServiciosAsignadosByProyecto } from "../../services/serviciosServices";
 import { fetchMaterialesAsignadosByProyecto } from "../../services/materialesServices";
 import { useAuthUser } from "../../services/authServices";
 import Swal from "sweetalert2";
-import { cambioEstadoLiquidacion } from "../../services/bitacoraFinalServices";
+import { cambioEstadoRdoDinamico } from "../../services/proyectoServices";
+
+const { Title, Text } = Typography;
+const { Content } = Layout;
 
 export default function RdoPage() {
+  // --- Toda tu lógica de React (hooks, estados, funciones) se mantiene igual ---
   const location = useLocation();
   const proyecto = location.state?.proyecto;
   const navigate = useNavigate();
-
   const user = useAuthUser();
-
-  //variable para manejar el cambio de estado del proyecto
   const [loadingNuevoEstado, setLoadingNuevoEstado] = useState(false);
-
-  //funciones para traer data de servicios asigandos
   const [servicios, setServicios] = useState([]);
-  //funciones para traer data de materiales asignados
   const [materiales, setMateriales] = useState([]);
+
   useEffect(() => {
-    const cargarServicios = async () => {
+    // Esta lógica de carga de datos no cambia
+    const cargarDatos = async () => {
       try {
-        const data = await fetchServiciosAsignadosByProyecto(proyecto.id);
-        setServicios(data);
+        const [serviciosData, materialesData] = await Promise.all([
+          fetchServiciosAsignadosByProyecto(proyecto.id),
+          fetchMaterialesAsignadosByProyecto(proyecto.id),
+        ]);
+        setServicios(serviciosData);
+        setMateriales(materialesData);
       } catch (error) {
-        console.error("Error al cargar los servicios: ", error);
+        console.error("Error al cargar datos:", error);
       }
     };
-    const cargarMateriales = async () => {
-      try {
-        const data = await fetchMaterialesAsignadosByProyecto(proyecto.id);
-        setMateriales(data);
-      } catch (error) {
-        console.error("Error al cargar los materiales: ", error);
-      }
-    };
-    cargarServicios();
-    cargarMateriales();
+    cargarDatos();
   }, [proyecto.id]);
 
   //funcion para cambio de estado
   // Función para realizar el cambio de estado del proyecto
   const cambioEstado = async () => {
+    let comentario;
+    let textBotton;
+    if (proyecto.havePo) {
+      comentario =
+        "Este proyecto pasará de RDO a 'Conciliacion de Materiales'. Valida la informacion antes de hacer el cambio";
+      textBotton = "Si, enviar a Conciliacion";
+    } else {
+      comentario =
+        "Este proyecto pasará de RDO a 'Pendiente planificacion'. No podrás revertir este cambio fácilmente";
+      textBotton = "Si, enviar a planificación";
+    }
     try {
       // Confirmación al usuario
       const result = await Swal.fire({
         title: "¿Estás seguro?",
-        text: "Este proyecto pasará de RDO a 'En planificación'. No podrás revertir este cambio fácilmente.",
+        text: comentario,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Sí, enviar a planificación",
+        confirmButtonText: textBotton,
         cancelButtonText: "Cancelar",
       });
 
@@ -66,12 +83,14 @@ export default function RdoPage() {
 
       // Cambio de estado
       setLoadingNuevoEstado(true);
-      const response = await cambioEstadoLiquidacion(proyecto.id);
+      const response = await cambioEstadoRdoDinamico(proyecto.id);
 
       // Mensaje de éxito con auto cierre y navegación al cerrar
       await Swal.fire({
         title: "¡Éxito!",
-        text: response.message || "El estado del proyecto ha sido actualizado.",
+        text:
+          response.message.message ||
+          "El estado del proyecto ha sido actualizado.",
         icon: "success",
         timer: 3000,
         timerProgressBar: true,
@@ -87,7 +106,9 @@ export default function RdoPage() {
       console.error("Error al cambiar estado del proyecto:", error);
       await Swal.fire({
         title: "Error",
-        text: error?.response?.data?.message || "Error al cambiar el estado del proyecto.",
+        text:
+          error?.response?.data?.message ||
+          "Error al cambiar el estado del proyecto.",
         icon: "error",
       });
     } finally {
@@ -118,63 +139,96 @@ export default function RdoPage() {
   const sumaTotal = totalPrecioEjecutadoServicio + totalPrecioEjecutadoMaterial;
   return (
     <MainLayout>
-      <Stack alignItems={"center"}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
-          Generador de RDO
-        </Typography>
-      </Stack>
-      <Stack direction="column" spacing={2} alignItems={"center"}>
-        {/* Box 1 datos generales del proyecto */}
-        <ProyectoResumenCard proyecto={proyecto} />
-        <Stack direction={{ xs: "column", md: "row" }} spacing={2} useFlexGap flexWrap="wrap">
-          {["admin", "planificador"].includes(user.role) && (
-            <Button variant="contained" color="warning" size="small" sx={{ width: 200 }} onClick={cambioEstado}>
-              {loadingNuevoEstado ? "Cargando..." : "Cambio de estado"}
-            </Button>
-          )}
-        </Stack>
-        <Stack direction={{ xs: "column", md: "row" }} spacing={2} useFlexGap flexWrap="wrap">
-          {/* Lista de Servicios Asignados */}
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Servicios
-            </Typography>
-            <Stack spacing={2}>
-              {servicios.map((item, index) => (
-                <CardServicioResumen key={item.id || index} item={item} index={index} role={user.role} />
-              ))}
-              {/* Mostrar el total ejecutado al final */}
-              {["admin", "planificador"].includes(user.role) && (
-                <Typography variant="h7" align="center" sx={{ mt: 2, textAlign: "center" }}>
-                  Total Servicios: {totalPrecioEjecutadoServicio.toFixed(2)} USD
-                </Typography>
-              )}
-            </Stack>
-          </Box>
+      <Layout>
+        <Content style={{ padding: "24px" }}>
+          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            {/* --- Encabezado de la Página --- */}
+            <Title level={3} style={{ textAlign: "center" }}>
+              Generador de RDO
+            </Title>
 
-          {/* espacio para los materiales */}
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Materiales
-            </Typography>
-            <Stack spacing={2}>
-              {materiales.map((item, index) => (
-                <CardMaterialResumen key={item.id || index} item={item} index={index} role={user.role} />
-              ))}
-              {["admin", "planificador"].includes(user.role) && (
-                <Typography variant="h7" align="center" sx={{ mt: 2, textAlign: "center" }}>
-                  Total Materiales: {totalPrecioEjecutadoMaterial.toFixed(2)} USD
-                </Typography>
+            {/* --- Resumen del Proyecto --- */}
+            <Flex justify="center">
+              <ProyectoResumenCard proyecto={proyecto} />
+            </Flex>
+            {/* --- Botón de Acción --- */}
+            <div style={{ textAlign: "center" }}>
+              {["admin", "planificador", "lider", "supervisor"].includes(
+                user.role
+              ) && (
+                <Button
+                  type="primary"
+                  danger
+                  onClick={cambioEstado}
+                  loading={loadingNuevoEstado} // AntD usa 'loading' para mostrar el spinner
+                  style={{ minWidth: "200px", width: "200px" }}
+                >
+                  Cambio de estado
+                </Button>
               )}
-            </Stack>
-          </Box>
-          {["admin", "planificador"].includes(user.role) && (
-            <Typography variant="h5" align="center" sx={{ width: "100%", textAlign: "center", mt: 2 }}>
-              Total General: {sumaTotal.toFixed(2)} USD
-            </Typography>
-          )}
-        </Stack>
-      </Stack>
+            </div>
+
+            <Divider />
+
+            {/* --- Listas de Servicios y Materiales --- */}
+            <Row gutter={[24, 24]}>
+              <Col xs={24} lg={12}>
+                <Card title="Servicios">
+                  <ItemResumen
+                    dataSource={servicios}
+                    tipo="Servicio"
+                    role={user.role}
+                  />
+                  {["admin", "planificador"].includes(user.role) && (
+                    <Statistic
+                      title="Total Servicios (USD)"
+                      value={totalPrecioEjecutadoServicio}
+                      precision={2}
+                      style={{ textAlign: "right", marginTop: "16px" }}
+                    />
+                  )}
+                </Card>
+              </Col>
+
+              <Col xs={24} lg={12}>
+                <Card title="Materiales">
+                  <ItemResumen
+                    dataSource={materiales}
+                    tipo="Material"
+                    role={user.role}
+                  />
+                  {["admin", "planificador"].includes(user.role) && (
+                    <Statistic
+                      title="Total Materiales (USD)"
+                      value={totalPrecioEjecutadoMaterial}
+                      precision={2}
+                      style={{ textAlign: "right", marginTop: "16px" }}
+                    />
+                  )}
+                </Card>
+              </Col>
+            </Row>
+
+            {/* --- Total General --- */}
+            {["admin", "planificador"].includes(user.role) && (
+              <Card style={{ backgroundColor: "#1890ff", color: "white" }}>
+                <Statistic
+                  title={
+                    <Text style={{ color: "white" }}>Total General (USD)</Text>
+                  }
+                  value={sumaTotal}
+                  precision={2}
+                  valueStyle={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: "28px",
+                  }}
+                />
+              </Card>
+            )}
+          </Space>
+        </Content>
+      </Layout>
     </MainLayout>
   );
 }
