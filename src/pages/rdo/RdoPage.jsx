@@ -178,6 +178,7 @@ export default function RdoPage() {
                     dataSource={servicios}
                     tipo="Servicio"
                     role={user.role}
+                    contratistaId={proyecto.contratistaId}
                   />
                   {["admin", "planificador"].includes(user.role) && (
                     <Statistic

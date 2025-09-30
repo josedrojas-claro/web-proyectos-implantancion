@@ -234,3 +234,18 @@ export const cambioEstadoRdoDinamico = async (proyectoId) => {
   );
   return response.data;
 };
+
+//funcion para traer la lista de proyectos de conciliacion de materiales
+export const listaProyectosConciliacion = async (limit, offset, search) => {
+  const response = await apiClient.get(
+    `/proyecto/proyectos-en-conciliacion-materiales`,
+    {
+      params: {
+        limit,
+        offset,
+        search,
+      },
+    }
+  );
+  return response.data;
+};

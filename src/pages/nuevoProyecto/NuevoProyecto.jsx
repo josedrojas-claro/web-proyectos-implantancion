@@ -77,7 +77,7 @@ export default function NuevoProyecto() {
 
       if (response?.message && response?.data?.ticketCode) {
         Swal.fire({
-          title: "✅ Registro de ticket",
+          title: `✅ Registro de ticket: ${response.data.ticketCode}`,
           html: `<strong>${response.message}</strong><br/>Código generado: <code>${response.data.ticketCode}</code>`,
           icon: "success",
           confirmButtonText: "Aceptar",

@@ -20,12 +20,10 @@ import {
   VerticalAlignTopOutlined,
   FullscreenExitOutlined,
   FileTextOutlined,
-  CheckCircleOutlined,
   EnvironmentOutlined,
   UserOutlined,
   CalendarOutlined,
   CodeOutlined,
-  BuildOutlined,
   LaptopOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
@@ -389,12 +387,12 @@ export default function ListaPlanificacion() {
             </Col>
           </Row>
         </Card>
-
         <Table
           columns={columns}
           dataSource={proyectosData.proyectos}
           rowKey="id"
           loading={loading}
+          bordered
           pagination={{
             current: filters.page,
             pageSize: filters.limit,

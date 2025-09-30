@@ -94,7 +94,7 @@ export const obtenerExcelPlanificacion = async (proyectoId) => {
       responseType: "blob",
     }
   );
-  return response.data;
+  return response;
 };
 
 export const sincronizarInventario = async (file) => {
@@ -208,6 +208,15 @@ export const updateDataReserva = async (id, data) => {
   return response.data;
 };
 
+//funcion para camiar o editar la reserva para x proyecto
+export const crearYAsignarReservaApi = async (materialAsignadoId, data) => {
+  const response = await apiClient.post(
+    `/reservas/crear-y-asignar-reserva/${materialAsignadoId}`,
+    data
+  );
+  return response.data;
+};
+
 //funcion para editar valores de lo servicios asignados se usara para hacer el vs  de planificado vs replanteado
 export const updateMaterialesAsignados = async (id, data) => {
   const response = await apiClient.patch(`/materiales-asignado/${id}`, data);
@@ -222,7 +231,7 @@ export const obtenerExcelReservaContratisa = async (proyectoId) => {
       responseType: "blob",
     }
   );
-  return response.data;
+  return response;
 };
 
 //funcion para confirmar material y enviar a retirar
@@ -242,4 +251,47 @@ export const deleteAlmacenSeleccionado = async (
     `/materiales-asignado/borrado-de-almacen/${idAlmacen}/${materialAsignadoId}`
   );
   return response.data;
+};
+
+//funcion para etapa de conciliacion de materiales
+//get materiales para gestion de replanteo
+export const fetchMaterialesConciliacion = async (proyectoId) => {
+  const response = await apiClient.get(
+    `/materiales-asignado/material-gestion-reserva-vs-ejecutado/${proyectoId}`
+  );
+  return response.data;
+};
+
+//funcion para descargar excel de conciliacion
+export const descargarExcelFormatoConciliacion = async (proyectoId) => {
+  const response = await apiClient.get(
+    `/materiales-asignado/formato-conciliacion-materiales/${proyectoId}`,
+    {
+      responseType: "blob", // MUY IMPORTANTE
+    }
+  );
+
+  // Crear un link temporal y simular click
+  const blob = new Blob([response.data], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+
+  // Recuperar nombre de Content-Disposition si quieres
+  const contentDisposition = response.headers["content-disposition"];
+  let fileName = "rdo.xlsx";
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+    if (match && match[1]) {
+      fileName = decodeURIComponent(match[1]);
+    }
+  }
+
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };

@@ -91,7 +91,9 @@ export default function ListaProyectoGestionReserva() {
       render: (_, record) => (
         <Space>
           <Button type="primary" onClick={() => handleReserva(record)}>
-            Agregar Reserva
+            {record.estado?.nombre === "Gestion Reserva"
+              ? "Agregar Reserva"
+              : "Ver Reserva"}
           </Button>
         </Space>
       ),

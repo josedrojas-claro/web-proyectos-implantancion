@@ -89,7 +89,7 @@ const features = [
     ], // Admin, Supervisor y Ejecutor
   },
   {
-    title: "RDO y/o Conciliación Mate",
+    title: "RDO Final",
     icon: rdoConciliacionIcon,
     path: "/lista-proyectos-rdo-conciliacion-materiales",
     allowedRoles: [
@@ -101,6 +101,21 @@ const features = [
       ROLES.planificador,
       ROLES.coordinadorIng,
       ROLES.coordinadorSup,
+    ],
+  },
+  {
+    title: "Conciliacion Materiales",
+    icon: "src/assets/conciliacionMateriales.png",
+    path: "/lista-conciliacion-materiales",
+    allowedRoles: [
+      ROLES.admin,
+      ROLES.planificador,
+      ROLES.coordinadorSup,
+      ROLES.coordinadorIng,
+      ROLES.lider,
+      ROLES.liderContratista,
+      ROLES.supervisorClaro,
+      ROLES.supervisoContratista,
     ],
   },
   // {

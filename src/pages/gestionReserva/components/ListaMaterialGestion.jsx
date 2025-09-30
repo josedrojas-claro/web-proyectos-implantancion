@@ -17,7 +17,6 @@ import {
 
 import { CloudSyncOutlined, UploadOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
-import MaterialSearch from "./MaterialSearch";
 import ModalAsignacionRetiros from "./ModalAsignacionRetiro";
 import BottonExcelReserva from "./BottonDescargarExcelReserva";
 import ReservasEditable from "./ReservasEditable";
@@ -31,6 +30,7 @@ import {
   asignarMaterialContratista,
   fetchMaterialesReservaPorProyecto,
   deleteAlmacenSeleccionado,
+  crearYAsignarReservaApi,
 } from "../../../services/materialesServices";
 
 const { Title, Text } = Typography;
@@ -112,6 +112,12 @@ const ListaMaterialesGestion = ({
       title: "Suministrado",
       dataIndex: "cantidadAsignado",
       key: "cantidadAsignado",
+      render: (text) => <Tag color="blue">{text}</Tag>,
+    },
+    {
+      title: "Reserva",
+      dataIndex: ["reserva", "reserva"],
+      key: "reserva",
       render: (text) => <Tag color="blue">{text}</Tag>,
     },
   ];
@@ -450,6 +456,100 @@ const ListaMaterialesGestion = ({
     });
   };
 
+  const handleCrearNuevaReserva = async () => {
+    // 1. Extraemos los datos necesarios del objeto que recibe la función
+    const materialAsignadoId = materialSeleccionado.id;
+    // La reserva original de la cual copiaremos el elementoPep
+    const reservaOriginal = materialSeleccionado.reserva;
+
+    if (!reservaOriginal) {
+      Swal.fire(
+        "Error",
+        "El material no tiene una reserva original de la cual copiar datos.",
+        "error"
+      );
+      return;
+    }
+
+    const inputStyles =
+      "width: 70%; padding: 0.5em; font-size: 15px; box-sizing: border-box;";
+
+    // 2. Usamos Swal.fire para mostrar un formulario
+    const { value: formValues } = await Swal.fire({
+      title: "Asignar o Crear Reserva",
+      // Usamos la propiedad 'html' para construir un pequeño formulario
+      html:
+        `<p style="text-align: left; font-size: 14px;">Ingresa los nuevos valores para la reserva:</p>` +
+        // Aplica los estilos al input de Elemento PEP
+        `<input id="swal-input-pep" class="swal2-input" style="${inputStyles}" value="${reservaOriginal.elementoPep}" disabled>` +
+        // Aplica los estilos al input de Reserva
+        `<input id="swal-input-reserva" class="swal2-input" style="${inputStyles}" value="${reservaOriginal.reserva}" placeholder="Nuevo Número de Reserva" required>` +
+        // Aplica los estilos al input de Grafo
+        `<input id="swal-input-grafo" class="swal2-input" style="${inputStyles}" value="${reservaOriginal.grafo}" placeholder="Nuevo Grafo" required>`,
+
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: "Crear y Asignar",
+      cancelButtonText: "Cancelar",
+      // 3. 'preConfirm' se ejecuta antes de cerrar el modal para validar y recolectar los datos
+      preConfirm: () => {
+        const numeroReserva =
+          document.getElementById("swal-input-reserva").value;
+        const grafo = document.getElementById("swal-input-grafo").value;
+
+        if (!numeroReserva || !grafo) {
+          Swal.showValidationMessage("Por favor, completa todos los campos");
+          return false; // Evita que el modal se cierre
+        }
+        // Lo que retornes aquí estará disponible en result.value
+        return { numeroReserva, grafo };
+      },
+    });
+
+    // 4. Si el usuario confirmó y la validación pasó, 'formValues' tendrá los datos
+    if (formValues) {
+      Swal.fire({
+        title: "Procesando...",
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false,
+      });
+
+      try {
+        // 5. Construimos el cuerpo de la petición para el API
+        const body = {
+          reserva: formValues.numeroReserva,
+          grafo: formValues.grafo,
+        };
+
+        // 6. Llamamos al servicio del API que creamos
+        const response = await crearYAsignarReservaApi(
+          materialAsignadoId,
+          body
+        );
+
+        Swal.fire({
+          title: "¡Éxito!",
+          text:
+            response.message || "La reserva se creó y asignó correctamente.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        onUpdate();
+        fetchReserva();
+      } catch (error) {
+        Swal.fire(
+          "Error",
+          error.response?.data?.message || "No se pudo crear la nueva reserva.",
+          "error"
+        );
+      }
+    }
+  };
+
+  // 432433 -- 21312
+
   const [fechaSincronizacion, setFechaSincronizacion] = useState(null);
   const [reservaMateriales, setReservaMateriales] = useState(null);
   const [loadingReservaMateriales, setLoadingReservaMateriales] =
@@ -497,13 +597,19 @@ const ListaMaterialesGestion = ({
           const response = await rollbackMaterialGestionReserva(
             materialSeleccionado.id
           );
+          if (onUpdate) {
+            await onUpdate();
+          }
+
+          // LA CLAVE ESTÁ AQUÍ: Espera a que los datos se refresquen
+          await fetchReserva();
+
           console.log("Rollback response:", response.message);
           Swal.fire(
             "¡Éxito!",
             response.message || "Los cambios han sido revertidos.",
             "success"
           );
-          onUpdate();
           setIsModalVisibleStock(false);
         } catch (error) {
           Swal.fire(
@@ -591,6 +697,7 @@ const ListaMaterialesGestion = ({
         <ReservasEditable
           data={reservaMateriales}
           loading={loadingReservaMateriales}
+          recargar={onUpdate}
         />
       )}
       {/* 4. El Modal que contiene el Dragger */}
@@ -628,6 +735,7 @@ const ListaMaterialesGestion = ({
           onAsignarContratista={handleAsignarContratista}
           onRollbackMaterial={handleRollbackMaterial}
           onDelete={deleteSeleccionAlmacen}
+          reasignarReserva={handleCrearNuevaReserva}
           stockDisponible={stockActual}
           materialInfo={materialSeleccionado}
         />

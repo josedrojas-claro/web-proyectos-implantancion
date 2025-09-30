@@ -17,6 +17,7 @@ import {
   RollbackOutlined,
   SwapOutlined,
   DeleteOutlined,
+  IssuesCloseOutlined,
 } from "@ant-design/icons";
 
 const { Text } = Typography;
@@ -29,6 +30,7 @@ const ModalAsignacionRetiros = ({
   onAsignarContratista,
   onRollbackMaterial,
   onDelete,
+  reasignarReserva,
   stockDisponible,
   materialInfo,
 }) => {
@@ -242,6 +244,16 @@ const ModalAsignacionRetiros = ({
             onClick={onDelete}
           >
             Limpiar
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            color="geekblue"
+            variant="solid"
+            icon={<IssuesCloseOutlined />}
+            onClick={reasignarReserva}
+          >
+            Cambiar Reserva
           </Button>
         </Col>
       </Row>

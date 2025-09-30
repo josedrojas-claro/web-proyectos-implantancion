@@ -16,21 +16,26 @@ const BottonDescargarExcelMaterialFinal = ({ proyectoId }) => {
     });
 
     try {
-      const blob = await obtenerExcelReservaContratisa(proyectoId);
-
-      // Si todo sale bien, cerramos la alerta de carga
+      const response = await obtenerExcelReservaContratisa(proyectoId);
+      const header = response.headers["content-disposition"];
+      let filename = `materiales_${proyectoId}.xlsx`; // Nombre por defecto si falla la extracción
+      if (header) {
+        const filenameMatch = header.match(/filename="(.+)"/);
+        if (filenameMatch && filenameMatch.length > 1) {
+          filename = filenameMatch[1];
+        }
+      }
+      // --- FIN DE LA CORRECCIÓN ---
       Swal.close();
-
-      const fileUrl = URL.createObjectURL(blob);
-
+      // Ahora usa 'response.data' que es el blob
+      const fileUrl = URL.createObjectURL(response.data);
       const link = document.createElement("a");
       link.href = fileUrl;
-      link.setAttribute("download", "materiales_.xlsx");
+      // Usa el nombre de archivo dinámico extraído de los headers
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
-
       link.click();
       link.parentNode.removeChild(link);
-
       URL.revokeObjectURL(fileUrl);
     } catch (error) {
       console.error("Error al descargar el archivo:", error?.response);

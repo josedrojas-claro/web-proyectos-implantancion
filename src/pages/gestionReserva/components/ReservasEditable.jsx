@@ -4,7 +4,7 @@ import { updateDataReserva } from "../../../services/materialesServices";
 
 import Swal from "sweetalert2";
 
-const ReservasEditable = ({ data, loading, buttonTrue = true }) => {
+const ReservasEditable = ({ data, loading, buttonTrue = true, recargar }) => {
   // Use an empty array as the default value for useState
   const [editedData, setEditedData] = useState(data || []);
   const [originalData, setOriginalData] = useState(data || []);
@@ -58,6 +58,10 @@ const ReservasEditable = ({ data, loading, buttonTrue = true }) => {
           })
         )
       );
+
+      if (recargar) {
+        recargar();
+      }
 
       Swal.fire({
         icon: "success",
