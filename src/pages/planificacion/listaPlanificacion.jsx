@@ -271,7 +271,7 @@ export default function ListaPlanificacion() {
       }
     },
     [opcionesDeEstado.length]
-  ); // Depende de `opcionesDeEstado` para no resetearlas
+  );
 
   useEffect(() => {
     loadProyectos(initialFilters);

@@ -249,3 +249,23 @@ export const listaProyectosConciliacion = async (limit, offset, search) => {
   );
   return response.data;
 };
+
+//funciones para liquidar proyectos lista
+
+export const listaProyectosLiquidacion = async ({
+  limit,
+  offset,
+  estados,
+  search,
+} = {}) => {
+  const response = await apiClient.get("/proyecto/proyectos-en-liquidacion", {
+    params: {
+      limit,
+      offset,
+      estados,
+      search,
+    },
+  });
+
+  return response.data;
+};

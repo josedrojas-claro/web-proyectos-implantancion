@@ -40,7 +40,9 @@ import ListaSitios from "../pages/miscelaneo/sitios/listaSitios";
 //conciliacion materiales
 import ListaConciliacionMateriales from "../pages/conciliacionMateriales/ListaConciliacionMateriales";
 import DetallesConciliacionMateriales from "../pages/conciliacionMateriales/detallesConciliacionMateriales";
-
+//liquidacion de proyectos
+import ListaProyectosLiquidar from "../pages/liquidacion/listaProyectosLiquidar";
+import DetallesParaLiquidar from "../pages/liquidacion/detallesParaLiquidar";
 const appRoutes = [
   { path: "/login", element: <Login />, isPrivate: false },
   {
@@ -197,6 +199,17 @@ const appRoutes = [
   {
     path: "/lista-conciliacion-materiales/detalles/:ticketCode",
     element: <DetallesConciliacionMateriales />,
+    isPrivate: true,
+  },
+  //liquidacion de proyectos
+  {
+    path: "/lista-liquidacion-proyectos",
+    element: <ListaProyectosLiquidar />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-liquidacion-proyectos/detalles-para-liquidar/:ticketCode",
+    element: <DetallesParaLiquidar />,
     isPrivate: true,
   },
 ];

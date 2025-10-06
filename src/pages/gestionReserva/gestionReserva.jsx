@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
 import MainLayout from "../../layout/MainLayout";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ProyectoResumenCard from "../../components/ProyectoResumenCard";
 import ListaServiciosGestion from "./components/ListaServiciosGestion";
 import ListaMaterialesGestion from "./components/ListaMaterialGestion";
@@ -18,6 +18,7 @@ import { Space } from "antd";
 
 export default function GestionReserva() {
   const user = useAuthUser(); // Obtiene la información del usuario autenticado
+  const navigate = useNavigate();
 
   // Asegúrate de que user y user.UserData existan antes de intentar acceder a user.UserData.rol
   const userRole = user?.role;
@@ -95,11 +96,16 @@ export default function GestionReserva() {
     cargarServicios();
     cargarMateriales();
     cargarMaterialesPlanificados();
+    handleBack();
   };
 
   const cargarMaterialesGeneral = () => {
     cargarMateriales();
     cargarMaterialesPlanificados();
+  };
+
+  const handleBack = () => {
+    navigate("/lista-proyectos-gestion-reserva"); // Navega a la página anterior en el historial
   };
   return (
     <MainLayout>
@@ -133,7 +139,11 @@ export default function GestionReserva() {
         }}
       >
         {["admin", "coordinador-ing", "planificador"].includes(userRole) && (
-          <BotonConfirmaRetiro proyectoId={proyecto.id} onSuccess={cargaAll} />
+          <BotonConfirmaRetiro
+            proyectoId={proyecto.id}
+            onSuccess={cargaAll}
+            back={handleBack}
+          />
         )}
 
         {proyecto.estado?.nombre === "Gestion Reserva-Retiro" && (

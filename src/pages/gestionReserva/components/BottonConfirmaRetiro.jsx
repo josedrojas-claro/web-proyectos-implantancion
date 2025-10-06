@@ -6,7 +6,7 @@ import { confirmarEnvioARetiro } from "../../../services/materialesServices";
 import Swal from "sweetalert2";
 
 // El componente debe recibir una función 'onSuccess' para notificar al padre que debe recargar los datos
-const BotonConfirmaRetiro = ({ proyectoId, onSuccess }) => {
+const BotonConfirmaRetiro = ({ proyectoId, onSuccess, back }) => {
   const handleConfirmarEnvio = async () => {
     // PASO 1: Muestra la alerta de confirmación y espera la respuesta del usuario
     const result = await Swal.fire({
@@ -48,6 +48,9 @@ const BotonConfirmaRetiro = ({ proyectoId, onSuccess }) => {
             "El proyecto se ha enviado a retiro correctamente.",
         });
 
+        if (back) {
+          back(); // Navega a la página anterior si se proporciona la función back
+        }
         // Llama a la función onSuccess para que el componente padre refresque los datos
         if (onSuccess) {
           onSuccess();

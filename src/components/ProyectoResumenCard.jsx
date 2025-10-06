@@ -138,6 +138,7 @@ export default function ProyectoResumenCard({ proyecto }) {
     "DTA",
     "Validacion Documentos",
     "Pendiente Planificación",
+    "Pendiente Liquidación",
   ];
 
   const estadosDescargaSinPo = [
@@ -150,15 +151,25 @@ export default function ProyectoResumenCard({ proyecto }) {
     "Validacion Documentos",
     "Con SOLPED",
     "Con Correlativo",
+    "Pendiente Liquidación",
   ];
 
   // Función para verificar si el estado del proyecto está en la lista estadosDescarga
   const isEstadoDescarga = (project) => {
-    // Opcional: Añade una verificación si project o project.estado son nulos/indefinidos
+    const isAdicional = project?.isAdicional ?? false;
+
+    // Verificación de datos nulos
     if (!project || !project.estado || !project.estado.nombre) {
       return false;
     }
-    return proyecto.havePo
+
+    // Si es adicional, no permitir descarga
+    if (isAdicional) {
+      return false;
+    }
+
+    // Validación según si tiene PO
+    return project.havePo
       ? estadosDescargaConPo.includes(project.estado.nombre)
       : estadosDescargaSinPo.includes(project.estado.nombre);
   };

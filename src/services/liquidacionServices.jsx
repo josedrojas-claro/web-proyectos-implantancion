@@ -124,3 +124,52 @@ export const getListaPo = async (proyectoId) => {
     throw error;
   }
 };
+
+//funcion para ver los datos de liquidacion por proyecto incluye solped po y posiciones a liquidar
+export const getDatosLiquidacionPorProyecto = async (proyectoId) => {
+  try {
+    const response = await apiClient.get(
+      `/orden-compra/proyecto-solped-servicios-materiales/${proyectoId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("No se obtiene data:", error);
+    throw error;
+  }
+};
+
+export const exportarExcelPorNumeroPO = async (proyectoId, numeroPO) => {
+  try {
+    const response = await apiClient.get(
+      `/orden-compra/excel/${proyectoId}/${numeroPO}`,
+      {
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], {
+      type: response.headers["content-type"],
+    });
+    const url = window.URL.createObjectURL(blob);
+
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = "excel_po.xlsx";
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+      if (filenameMatch && filenameMatch.length > 1) {
+        filename = filenameMatch[1];
+      }
+    }
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al exportar Excel por número PO:", error);
+    throw error;
+  }
+};

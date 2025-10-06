@@ -118,12 +118,12 @@ const features = [
       ROLES.supervisoContratista,
     ],
   },
-  // {
-  //   title: "Liquidacion",
-  //   icon: "src/assets/taxes.png",
-  //   path: "/finanzas",
-  //   allowedRoles: [ROLES.admin, ROLES.planificador, ROLES.lider], // Solo Admin y Finanzas
-  // },
+  {
+    title: "Liquidacion",
+    icon: "src/assets/taxes.png",
+    path: "/lista-liquidacion-proyectos",
+    allowedRoles: [ROLES.admin, ROLES.planificador, ROLES.lider],
+  },
   {
     title: "Proyectos",
     icon: proyectosIcon,

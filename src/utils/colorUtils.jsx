@@ -25,12 +25,12 @@ export const getEstadoColor = (estado) => {
     "Con PO-Ejecutado": "#00796B", // Teal Oscuro
     "En Conciliación de Materiales": "#4E342E", // Marrón Oscuro
     "Con Correlativo": "#33691E", // Verde muy oscuro
-    Liquidacion: "#BF360C", // Naranja Intenso/Rojo
+    "Pendiente Liquidación": "#e43a07ff", // Naranja Intenso/Rojo
     DTA: "#3E2723", // Marrón muy oscuro
 
     // --- 5. Estados Terminales (Tonos Grises y Rojos) ---
     Finalizado: "#9E9E9E", // Gris
-    Cancelado: "#f44336", // Rojo
+    Cancelado: "#c20d00ff", // Rojo
     Ticket: "#0D7575", // Un color único para un estado especial
   };
 

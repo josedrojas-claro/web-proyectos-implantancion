@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { List, Typography, Tooltip, Button, Space } from "antd";
-import { DownloadOutlined, DeleteOutlined, FileOutlined, UserOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  DeleteOutlined,
+  FileOutlined,
+  UserOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
@@ -13,7 +19,12 @@ import {
   fetchDocumentosByPo,
 } from "../../../services/DocumentosServices";
 
-export default function ListaDocumentos({ proyectoId, reloadTrigger, ventana = false, docFirmados = false }) {
+export default function ListaDocumentos({
+  proyectoId,
+  reloadTrigger,
+  ventana = false,
+  docFirmados = false,
+}) {
   const [documentos, setDocumentos] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -72,14 +83,21 @@ export default function ListaDocumentos({ proyectoId, reloadTrigger, ventana = f
       locale={{ emptyText: "No hay documentos subidos." }}
       renderItem={(doc) => (
         <List.Item
-          style={{ paddingTop: 6, paddingBottom: 6, paddingLeft: 8, paddingRight: 8 }}
+          style={{
+            paddingTop: 6,
+            paddingBottom: 6,
+            paddingLeft: 8,
+            paddingRight: 8,
+          }}
           actions={[
             <Tooltip title="Descargar" key="download">
               <Button
                 type="link"
                 size="small"
                 icon={<DownloadOutlined />}
-                onClick={() => descargarArchivoDesdeUrl(doc.nombreArchivo, doc.id)}
+                onClick={() =>
+                  descargarArchivoDesdeUrl(doc.nombreArchivo, doc.id)
+                }
               />
             </Tooltip>,
             !ventana && (
@@ -105,7 +123,8 @@ export default function ListaDocumentos({ proyectoId, reloadTrigger, ventana = f
                   <b>Comentario:</b> {doc.descripcion || "Sin comentario"}
                 </div>
                 <div>
-                  <b>Subido:</b> {dayjs(doc.createdAt).format("D MMM YYYY, hh:mm a")}
+                  <b>Subido:</b>{" "}
+                  {dayjs(doc.createdAt).format("D MMM YYYY, hh:mm a")}
                 </div>
                 <div>
                   <b>Por:</b> {doc.SubidoPor?.UserData?.nombre || "Desconocido"}
@@ -116,18 +135,30 @@ export default function ListaDocumentos({ proyectoId, reloadTrigger, ventana = f
           >
             <Space size="small" style={{ minWidth: 0, flexWrap: "wrap" }}>
               <FileOutlined style={{ color: "#1677ff" }} />
-              <Typography.Text ellipsis style={{ maxWidth: 120 }}>
+              <Typography.Text ellipsis style={{ maxWidth: 300 }}>
                 {doc.nombreArchivo}
               </Typography.Text>
-              <Typography.Text type="secondary" ellipsis style={{ maxWidth: 110 }}>
+              <Typography.Text
+                type="secondary"
+                ellipsis
+                style={{ maxWidth: 150 }}
+              >
                 {doc.descripcion || "Sin comentario"}
               </Typography.Text>
               <UserOutlined style={{ color: "#aaa", marginLeft: 4 }} />
-              <Typography.Text type="secondary" ellipsis style={{ maxWidth: 90 }}>
+              <Typography.Text
+                type="secondary"
+                ellipsis
+                style={{ maxWidth: 90 }}
+              >
                 {doc.SubidoPor?.UserData?.nombre || "Desconocido"}
               </Typography.Text>
               <InfoCircleOutlined style={{ color: "#aaa", marginLeft: 4 }} />
-              <Typography.Text type="secondary" ellipsis style={{ maxWidth: 80 }}>
+              <Typography.Text
+                type="secondary"
+                ellipsis
+                style={{ maxWidth: 80 }}
+              >
                 {dayjs(doc.createdAt).format("D MMM YY")}
               </Typography.Text>
             </Space>
@@ -140,7 +171,7 @@ export default function ListaDocumentos({ proyectoId, reloadTrigger, ventana = f
         boxShadow: "0 2px 8px #f0f1f2",
         padding: 0,
         width: "100%",
-        maxWidth: 600,
+        maxWidth: 800,
       }}
     />
   );
