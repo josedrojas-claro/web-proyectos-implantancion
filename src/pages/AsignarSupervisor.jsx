@@ -24,7 +24,10 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { fetchProyectosLideres, updateAsignarSupervisor } from "../services/proyectoServices";
+import {
+  fetchProyectosLideres,
+  updateAsignarSupervisor,
+} from "../services/proyectoServices";
 import { fetchSupervisoresClaro } from "../services/userServices";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
@@ -62,12 +65,16 @@ export default function ListaProyectos() {
   }, []);
 
   const proyectosFiltrados = proyectos.filter(
-    (proy) => proy.nombre.toLowerCase().includes(filtro.toLowerCase()) || String(proy.ticketCode).includes(filtro)
+    (proy) =>
+      proy.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+      String(proy.ticketCode).includes(filtro)
   );
 
   // Filtrado local de supervisores
   const supervisoresFiltrados = supervisores.filter((supervisor) =>
-    supervisor.UserData.nombre.toLowerCase().includes(filtroSupervisores.toLowerCase())
+    supervisor.UserData.nombre
+      .toLowerCase()
+      .includes(filtroSupervisores.toLowerCase())
   );
   const handleVerDetalles = (proyecto) => {
     setProyectoSeleccionado(proyecto);
@@ -138,8 +145,13 @@ export default function ListaProyectos() {
             </TableHead>
             <TableBody>
               {proyectosFiltrados.map((proy, index) => (
-                <TableRow key={proy.id} sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}>
-                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{index + 1}</TableCell>
+                <TableRow
+                  key={proy.id}
+                  sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}
+                >
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {index + 1}
+                  </TableCell>
                   <TableCell>{proy.ticketCode}</TableCell>
                   <TableCell>{proy.nombre}</TableCell>
                   <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
@@ -157,10 +169,16 @@ export default function ListaProyectos() {
                   >
                     {proy.tecnologia}
                   </TableCell>
-                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{proy.Sitios.nombre_sitio}</TableCell>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {proy.Sitios.nombre_sitio}
+                  </TableCell>
 
                   <TableCell align="left">
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="flex-start">
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      spacing={1}
+                      alignItems="flex-start"
+                    >
                       <Tooltip title="Ver detalles">
                         <Button
                           size="small"
@@ -195,7 +213,12 @@ export default function ListaProyectos() {
         </TableContainer>
       )}
       {/* // Dialogo para ver detalles del proyecto */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Detalles del Proyecto</DialogTitle>
         <DialogContent dividers>
           {proyectoSeleccionado ? (
@@ -228,7 +251,9 @@ export default function ListaProyectos() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Rubro
                     </Typography>
-                    <Typography>{proyectoSeleccionado.CodigosIngenieria?.codigo || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.CodigosIngenieria?.codigo || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -243,19 +268,25 @@ export default function ListaProyectos() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Nombre Sitio
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.nombre_sitio || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.nombre_sitio || "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Nemonico
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.nemonico || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.nemonico || "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Municipio
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Sitios?.Municipio?.municipio || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Sitios?.Municipio?.municipio || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -270,19 +301,27 @@ export default function ListaProyectos() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Contratista
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Contratistas?.nombre_contratista || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Contratistas?.nombre_contratista ||
+                        "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Planificador
                     </Typography>
-                    <Typography>{proyectoSeleccionado.Planificador?.UserData?.nombre || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.Planificador?.UserData?.nombre ||
+                        "—"}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Estado
                     </Typography>
-                    <Typography>{proyectoSeleccionado.estado?.nombre || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.estado?.nombre || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -297,13 +336,19 @@ export default function ListaProyectos() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Fecha Inicio
                     </Typography>
-                    <Typography>{new Date(proyectoSeleccionado.fechaInicio).toLocaleDateString("es-NI")}</Typography>
+                    <Typography>
+                      {new Date(
+                        proyectoSeleccionado.fechaInicio
+                      ).toLocaleDateString("es-NI")}
+                    </Typography>
                   </Box>
                   <Box sx={{ minWidth: 250 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Descripción
                     </Typography>
-                    <Typography>{proyectoSeleccionado.descripcion || "—"}</Typography>
+                    <Typography>
+                      {proyectoSeleccionado.descripcion || "—"}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -320,8 +365,15 @@ export default function ListaProyectos() {
         </DialogActions>
       </Dialog>
       {/* // Dialogo para asignar supervisor */}
-      <Dialog open={openDialogSupervisor} onClose={() => setOpenDialogSupervisor(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Asignar Supervisor al proyecto: {proyectoSeleccionado?.nombre}</DialogTitle>
+      <Dialog
+        open={openDialogSupervisor}
+        onClose={() => setOpenDialogSupervisor(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Asignar Supervisor al proyecto: {proyectoSeleccionado?.nombre}
+        </DialogTitle>
         <DialogContent dividers>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Selecciona un supervisor
@@ -354,7 +406,10 @@ export default function ListaProyectos() {
                 </TableHead>
                 <TableBody>
                   {supervisoresFiltrados.map((supervisor, index) => (
-                    <TableRow key={supervisor.id} sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}>
+                    <TableRow
+                      key={supervisor.id}
+                      sx={{ bgcolor: index % 2 === 0 ? "#fafafa" : "white" }}
+                    >
                       <TableCell>{supervisor.UserData.nombre}</TableCell>
                       <TableCell align="center">
                         <Button
@@ -378,12 +433,16 @@ export default function ListaProyectos() {
         </DialogContent>
       </Dialog>
       {/* ///confirmacion de asignar supervisor */}
-      <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
+      <Dialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+      >
         <DialogTitle>¿Confirmar asignación?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            ¿Estás seguro de que deseas asignar al supervisor <strong>{supervisorSeleccionado?.UserData.nombre}</strong>{" "}
-            al proyecto <strong>{proyectoSeleccionado?.nombre}</strong>?
+            ¿Estás seguro de que deseas asignar al supervisor{" "}
+            <strong>{supervisorSeleccionado?.UserData.nombre}</strong> al
+            proyecto <strong>{proyectoSeleccionado?.nombre}</strong>?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -420,7 +479,11 @@ export default function ListaProyectos() {
         onClose={() => setAlerta({ ...alerta, open: false })}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={() => setAlerta({ ...alerta, open: false })} severity={alerta.tipo} sx={{ width: "100%" }}>
+        <Alert
+          onClose={() => setAlerta({ ...alerta, open: false })}
+          severity={alerta.tipo}
+          sx={{ width: "100%" }}
+        >
           {alerta.mensaje}
         </Alert>
       </Snackbar>

@@ -1,13 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import MainLayout from "../../layout/MainLayout";
 import ProyectoResumenCard from "../../components/ProyectoResumenCard";
 import ListaDocumentos from "../ejecucionDiaria/components/ListaDocumentos";
 import POConSolpedsSimple from "./components/POConSolpedsSimple";
-import { Flex, Space, Typography, Alert, Spin, Empty } from "antd";
+import {
+  Flex,
+  Space,
+  Typography,
+  Alert,
+  Spin,
+  Empty,
+  Row,
+  Col,
+  Button,
+  Card,
+  Table,
+  Tag,
+  Divider,
+} from "antd";
 import { getDatosLiquidacionPorProyecto } from "../../services/liquidacionServices";
+import { subirDocumentos } from "../../services/DocumentosServices";
+import SubirArchivoValidDocumentos from "../ejecucionDiaria/components/SubirArchivoValidDocumentos";
 
-const { Text } = Typography;
+import Swal from "sweetalert2";
+const { Title, Text } = Typography;
 
 export default function DetallesParaLiquidar() {
   const location = useLocation();
@@ -17,43 +34,29 @@ export default function DetallesParaLiquidar() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const fetchPoSolpeds = useCallback(async () => {
+    if (!proyectoId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getDatosLiquidacionPorProyecto(proyectoId);
+      const arr = Array.isArray(result) ? result : result?.data ?? [];
+      setData(arr);
+    } catch (err) {
+      console.error("Error al obtener datos de liquidación:", err);
+      setError(err);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [proyectoId]);
 
   useEffect(() => {
-    if (!proyectoId) return;
-
-    let ignore = false;
-    const controller = new AbortController();
-
-    const fetchPoSolpeds = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Si tu service no acepta signal, quita el objeto de opciones.
-        const result = await getDatosLiquidacionPorProyecto(proyectoId, {
-          signal: controller.signal,
-        });
-        if (!ignore) {
-          // Normaliza por si el service retorna { data: [...] } o directamente [...]
-          const arr = Array.isArray(result) ? result : result?.data ?? [];
-          setData(arr);
-        }
-      } catch (err) {
-        if (!ignore && err.name !== "AbortError") {
-          console.error("Error al obtener datos de liquidación:", err);
-          setError(err);
-          setData([]);
-        }
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    };
-
     fetchPoSolpeds();
-    return () => {
-      ignore = true;
-      controller.abort();
-    };
-  }, [proyectoId]);
+    // No abort controller, solo fetch simple
+  }, [fetchPoSolpeds]);
 
   // Si alguien llegó sin proyecto seleccionado
   if (!proyectoId) {
@@ -129,10 +132,68 @@ export default function DetallesParaLiquidar() {
             description={error?.message || "Inténtalo de nuevo más tarde."}
           />
         ) : data?.length ? (
-          <POConSolpedsSimple data={data} />
+          <POConSolpedsSimple data={data} refetch={fetchPoSolpeds} />
         ) : (
           <Empty description="Este proyecto no tiene datos de liquidación aún." />
         )}
+        <Title level={5}>Documentos Cargados</Title>
+        <Row
+          justify="center" // Centra las columnas horizontalmente
+          align="middle" // Centra el contenido de las columnas verticalmente
+          gutter={[16, 16]} // Espacio horizontal y vertical entre columnas
+        >
+          <Col
+            xs={24}
+            md={12}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <SubirArchivoValidDocumentos
+              onSubmit={async ({ files, comentario }) => {
+                try {
+                  if (!files.length) {
+                    return Swal.fire(
+                      "Advertencia",
+                      "Debes seleccionar al menos un archivo.",
+                      "warning"
+                    );
+                  }
+
+                  if (!comentario.trim()) {
+                    return Swal.fire(
+                      "Advertencia",
+                      "El comentario no puede estar vacío.",
+                      "warning"
+                    );
+                  }
+
+                  const response = await subirDocumentos({
+                    proyectoId: proyecto.id,
+                    comentario,
+                    estado: "PO firmadas", // ⚠️ cámbialo si usas otro tipo en backend
+                    archivos: files,
+                  });
+
+                  setReloadKey((prev) => prev + 1);
+                  Swal.fire("¡Éxito!", response.message, "success");
+                } catch (error) {
+                  console.error(error);
+                  Swal.fire("Error", error.message, "error");
+                }
+              }}
+            />
+          </Col>
+          <Col
+            xs={24}
+            md={12}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <ListaDocumentos
+              proyectoId={proyecto.id}
+              reloadTrigger={reloadKey}
+              docFirmados={true}
+            />
+          </Col>
+        </Row>
       </Space>
     </MainLayout>
   );

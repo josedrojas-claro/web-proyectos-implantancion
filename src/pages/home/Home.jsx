@@ -24,6 +24,7 @@ const ROLES = {
   planificador: "planificador",
   coordinadorIng: "coordinador-ing",
   coordinadorSup: "coordinador-sup",
+  liquidador: "liquidador",
 };
 
 const features = [
@@ -101,6 +102,7 @@ const features = [
       ROLES.planificador,
       ROLES.coordinadorIng,
       ROLES.coordinadorSup,
+      ROLES.liquidador,
     ],
   },
   {
@@ -116,13 +118,19 @@ const features = [
       ROLES.liderContratista,
       ROLES.supervisorClaro,
       ROLES.supervisoContratista,
+      ROLES.liquidador,
     ],
   },
   {
     title: "Liquidacion",
     icon: "src/assets/taxes.png",
     path: "/lista-liquidacion-proyectos",
-    allowedRoles: [ROLES.admin, ROLES.planificador, ROLES.lider],
+    allowedRoles: [
+      ROLES.admin,
+      ROLES.planificador,
+      ROLES.lider,
+      ROLES.liquidador,
+    ],
   },
   {
     title: "Proyectos",
@@ -137,6 +145,7 @@ const features = [
       ROLES.planificador,
       ROLES.coordinadorIng,
       ROLES.coordinadorSup,
+      ROLES.liquidador,
     ],
   },
   {

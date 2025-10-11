@@ -139,6 +139,7 @@ export default function ProyectoResumenCard({ proyecto }) {
     "Validacion Documentos",
     "Pendiente Planificación",
     "Pendiente Liquidación",
+    "Con PO-Ejecutado",
   ];
 
   const estadosDescargaSinPo = [
@@ -152,6 +153,7 @@ export default function ProyectoResumenCard({ proyecto }) {
     "Con SOLPED",
     "Con Correlativo",
     "Pendiente Liquidación",
+    "Con PO-Ejecutado",
   ];
 
   // Función para verificar si el estado del proyecto está en la lista estadosDescarga

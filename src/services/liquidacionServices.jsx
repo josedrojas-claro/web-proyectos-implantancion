@@ -173,3 +173,17 @@ export const exportarExcelPorNumeroPO = async (proyectoId, numeroPO) => {
     throw error;
   }
 };
+
+// funcion para actualizar fechas de po
+export const actualizarDataPo = async (poId, data) => {
+  try {
+    const response = await apiClient.patch(
+      `/orden-compra/editar-po/${poId}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar fechas de PO:", error);
+    throw error;
+  }
+};

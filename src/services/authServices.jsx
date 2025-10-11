@@ -8,7 +8,6 @@ export const login = async (email, password) => {
   // Guarda el token en una cookie
   const token = res.data.token;
   const User = res.data.User;
-  console.log("Token:", res);
   Cookies.set("token", token, { expires: 1 }); // 1 día
   localStorage.setItem("user", JSON.stringify(User));
 

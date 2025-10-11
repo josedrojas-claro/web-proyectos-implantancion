@@ -6,6 +6,7 @@ import InfoProyecto from "./components/InfoProyecto";
 import HistorialProyecto from "./components/HistorialProyecto";
 import ListaPoComponent from "./components/listaPoGeneral";
 import ListaDocumentos from "../ejecucionDiaria/components/ListaDocumentos";
+import SubirArchivoValidDocumentos from "../ejecucionDiaria/components/SubirArchivoValidDocumentos";
 import {
   Typography,
   Space,
@@ -30,6 +31,8 @@ import { useAuthUser } from "../../services/authServices";
 // se usa el mismo enpoint para actualizar la aprobacion de servicio y material el update
 import { fetchServiciosSolicutudAproRecha } from "../../services/serviciosServices";
 import { fetchMaterialesSolicutudAproRecha } from "../../services/materialesServices";
+import { subirDocumentos } from "../../services/DocumentosServices";
+
 import SolicitudAprobarCard from "./components/SolicitudAprobarCard";
 import {
   cancelarProyecto,
@@ -57,6 +60,7 @@ export default function ProyectoDetalles() {
   const [serviciosApro, setServiciosApro] = useState([]);
   const [materialesApro, setMaterialesApro] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   // Carga inicial de todos los datos
   const cargarTodo = useCallback(async () => {
@@ -253,7 +257,13 @@ export default function ProyectoDetalles() {
     });
   };
 
-  const rolesConPermiso = ["admin", "lider", "planificador", "coordinador-sup"];
+  const rolesConPermiso = [
+    "admin",
+    "lider",
+    "planificador",
+    "coordinador-sup",
+    "coordinador-ing",
+  ];
   const rolesParaAprobar = ["admin", "planificador"];
   const roleCancelarProyecto = ["admin", "coordinador-ing"];
   const rolesPausarProyecto = ["admin", "coordinador-sup"];
@@ -335,12 +345,52 @@ export default function ProyectoDetalles() {
         <Collapse.Panel header="Información General del Proyecto" key="1">
           <InfoProyecto proyecto={proyecto} />
           <Space direction="horizontal" size={25}>
-            <ListaDocumentos proyectoId={proyecto.id} ventana={true} />
+            <ListaDocumentos
+              proyectoId={proyecto.id}
+              ventana={true}
+              reloadTrigger={reloadKey}
+            />
             <ListaDocumentos
               proyectoId={proyecto.id}
               ventana={true}
               docFirmados={true}
             />
+            {rolesConPermiso.includes(user.role) && (
+              <SubirArchivoValidDocumentos
+                onSubmit={async ({ files, comentario }) => {
+                  try {
+                    if (!files.length) {
+                      return Swal.fire(
+                        "Advertencia",
+                        "Debes seleccionar al menos un archivo.",
+                        "warning"
+                      );
+                    }
+                    if (!comentario.trim()) {
+                      return Swal.fire(
+                        "Advertencia",
+                        "El comentario no puede estar vacío.",
+                        "warning"
+                      );
+                    }
+
+                    const response = await subirDocumentos({
+                      proyectoId: proyecto.id,
+                      comentario,
+                      estado: "Validacion Documentos", // ⚠️ cámbialo si usas otro tipo en backend
+                      archivos: files,
+                    });
+
+                    Swal.fire("¡Éxito!", response.message, "success");
+                    // 👇 fuerza la recarga de ListaDocumentos
+                    setReloadKey((prev) => prev + 1);
+                  } catch (error) {
+                    console.error(error);
+                    Swal.fire("Error", error.message, "error");
+                  }
+                }}
+              />
+            )}
           </Space>
         </Collapse.Panel>
         <Collapse.Panel header="Correlativo, Solpeds y Lista PO" key="2">

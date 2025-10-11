@@ -310,7 +310,6 @@ export default function ListaPlanificacion() {
   const handleVerDetalles = (proyecto) => {
     setProyectoSeleccionado(proyecto);
     setIsModalVisible(true);
-    console.log(proyecto);
   };
 
   const handleCloseModal = () => {

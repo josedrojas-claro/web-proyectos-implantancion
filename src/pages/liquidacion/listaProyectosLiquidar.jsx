@@ -17,7 +17,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { listaProyectosLiquidacion } from "../../services/proyectoServices";
+import { fetchLiquidadores } from "../../services/userServices";
 import { getEstadoColor } from "../../utils/colorUtils";
+import { useAuthUser } from "../../services/authServices";
+import LiquidadoresAlert from "./components/LiquidadoresAlert";
 
 const { Title } = Typography;
 
@@ -29,6 +32,9 @@ const initialFilters = {
 };
 export default function ListaProyectosLiquidar() {
   const navigate = useNavigate();
+
+  const [liquidadores, setLiquidadores] = useState([]);
+  const user = useAuthUser();
 
   const columns = [
     {
@@ -62,18 +68,42 @@ export default function ListaProyectosLiquidar() {
     {
       title: "Acciones",
       key: "acciones",
-      render: (text, record) => (
-        <Space>
-          <Button
-            type="link"
-            onClick={() => {
-              handleDetallesLiquidar(record);
-            }}
-          >
-            Ver Detalles
-          </Button>
-        </Space>
-      ),
+      render: (text, record) => {
+        const estado = record.estado?.nombre;
+        const estadosNoPermitidos = [
+          "Pendiente Liquidación",
+          "Con PO-Ejecutado",
+        ];
+        const mostrarBotonDetalles = !estadosNoPermitidos.includes(estado);
+
+        return (
+          <Space>
+            {mostrarBotonDetalles && (
+              <Button
+                type="link"
+                onClick={() => {
+                  handleDetallesLiquidar(record);
+                }}
+              >
+                Ver Detalles
+              </Button>
+            )}
+
+            {["admin", "coordinador-ing", "lider"].includes(user.role) && (
+              <LiquidadoresAlert
+                liquidadores={liquidadores}
+                proyectoId={record.id}
+                refresh={handleReloadTable}
+              />
+            )}
+          </Space>
+        );
+      },
+    },
+    {
+      title: "Asignado a",
+      dataIndex: ["Liquidador", "UserData", "nombre"],
+      key: "Liquidador",
     },
   ];
 
@@ -119,9 +149,19 @@ export default function ListaProyectosLiquidar() {
     [opcionesDeEstado.length]
   );
 
+  const cargaLiquidadores = useCallback(async () => {
+    try {
+      const listaLiquidadres = await fetchLiquidadores();
+      setLiquidadores(listaLiquidadres);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   useEffect(() => {
     loadProyectos(initialFilters);
-  }, [loadProyectos]);
+    cargaLiquidadores();
+  }, [loadProyectos, cargaLiquidadores]);
 
   // --- 3. MANEJADORES DE EVENTOS ---
   const handleInputChange = (key, value) => {
@@ -149,6 +189,9 @@ export default function ListaProyectosLiquidar() {
 
   const isFiltersActive = filters.search !== "" || filters.estados.length > 0;
 
+  const handleReloadTable = () => {
+    handleSearch();
+  };
   return (
     <MainLayout>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>

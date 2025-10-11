@@ -18,8 +18,12 @@ import { DownloadOutlined } from "@ant-design/icons";
 
 const { Panel } = Collapse;
 const { Text, Title } = Typography;
-import { exportarExcelPorNumeroPO } from "../../../services/liquidacionServices";
+import {
+  exportarExcelPorNumeroPO,
+  actualizarDataPo,
+} from "../../../services/liquidacionServices";
 import Swal from "sweetalert2";
+import ActualizarFechasPO from "./ActualizarFechasPo";
 
 // ---- Utils
 
@@ -230,7 +234,7 @@ const materialColumns = [
 
 // ---- Vista
 
-export default function POConSolpedsSimple({ data = [] }) {
+export default function POConSolpedsSimple({ data = [], refetch }) {
   const grouped = useMemo(() => groupByPOandSolped(data), [data]);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -267,6 +271,48 @@ export default function POConSolpedsSimple({ data = [] }) {
     }
   };
 
+  // Crea un ISO que representa "YYYY-MM-DD 00:00:00" en hora local
+  const toLocalMidnightISOZ = (yyyyMMdd) => {
+    if (!yyyyMMdd) return null;
+    const [y, m, d] = yyyyMMdd.split("-").map(Number);
+    // Date(y, m-1, d, 0, 0, 0) crea la fecha en HORA LOCAL
+    const local = new Date(y, m - 1, d, 0, 0, 0);
+    // toISOString la convierte a UTC; en Managua (-06) será "YYYY-MM-DDT06:00:00.000Z"
+    return local.toISOString();
+  };
+
+  const guardarFechas = async ({ fechaInicio, fechaFin, poId }) => {
+    try {
+      const fechas = {};
+      if (fechaInicio != null) {
+        // Enviar ISO en medianoche local (no .split('T')[0])
+        fechas.fechaInicio = toLocalMidnightISOZ(fechaInicio);
+      }
+      if (fechaFin != null) {
+        fechas.fechaFin = toLocalMidnightISOZ(fechaFin);
+      }
+
+      const response = await actualizarDataPo(poId, fechas);
+      Swal.fire({
+        icon: "success",
+        title: "¡Fechas actualizadas!",
+        text:
+          response.message ||
+          "Las fechas de la PO se han actualizado correctamente.",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      if (refetch) refetch();
+    } catch (error) {
+      console.error("Error al actualizar fechas:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudieron actualizar las fechas. Inténtalo de nuevo.",
+      });
+    }
+  };
+
   return (
     <Space direction="vertical" size={16} style={{ width: "100%" }}>
       <Title level={4} style={{ margin: 0 }}>
@@ -283,12 +329,6 @@ export default function POConSolpedsSimple({ data = [] }) {
                 <Tag color="blue">SOLPEDs: {po.contadores.solpeds}</Tag>
                 <Tag color="geekblue">Servicios: {po.contadores.servicios}</Tag>
                 <Tag color="gold">Materiales: {po.contadores.materiales}</Tag>
-                {po?.fechaInicio && (
-                  <Text type="secondary">
-                    Inicio:{" "}
-                    {new Date(po.fechaInicio).toLocaleDateString("es-NI")}
-                  </Text>
-                )}
 
                 <Tooltip title="Exporta los datos de esta PO en Excel">
                   <Button
@@ -297,14 +337,11 @@ export default function POConSolpedsSimple({ data = [] }) {
                       width: 140,
                     }}
                     icon={<DownloadOutlined />}
-                    // Si quieres loading global: loading={isDownloading}
-                    // Mejor por PO específica:
                     loading={isDownloading === po.numeroPO}
                     onClick={(e) => {
-                      e.stopPropagation(); // evita que se colapse el panel si esto está en el header de un Collapse
+                      e.stopPropagation();
                       handleExportarExcel(po.numeroPO);
                     }}
-                    // Opcional: deshabilitar otros botones mientras uno descarga
                     disabled={
                       Boolean(isDownloading) && isDownloading !== po.numeroPO
                     }
@@ -314,6 +351,10 @@ export default function POConSolpedsSimple({ data = [] }) {
                       : "Exportar Excel"}
                   </Button>
                 </Tooltip>
+                <ActualizarFechasPO
+                  po={po}
+                  onSave={(params) => guardarFechas({ ...params, poId: po.id })}
+                />
               </Flex>
             }
           >

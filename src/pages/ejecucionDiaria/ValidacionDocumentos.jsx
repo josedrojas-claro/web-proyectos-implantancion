@@ -48,7 +48,9 @@ export default function ValidacionDocumentos() {
 
       // Cambio de estado
       setLoadingNuevoEstado(true);
-      const response = await cambioEstadoGeneral(proyecto.id, { nuevoEstadoNombre: "En RDO" });
+      const response = await cambioEstadoGeneral(proyecto.id, {
+        nuevoEstadoNombre: "En RDO",
+      });
 
       // Mensaje de éxito con auto cierre y navegación al cerrar
       await Swal.fire({
@@ -69,7 +71,9 @@ export default function ValidacionDocumentos() {
       console.error("Error al cambiar estado del proyecto:", error);
       await Swal.fire({
         title: "Error",
-        text: error?.response?.data?.message || "Error al cambiar el estado del proyecto.",
+        text:
+          error?.response?.data?.message ||
+          "Error al cambiar el estado del proyecto.",
         icon: "error",
       });
     } finally {
@@ -84,7 +88,14 @@ export default function ValidacionDocumentos() {
           Validacion de documentos
         </Typography>
       </Stack>
-      <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap" justifyContent="center" alignItems="center">
+      <Stack
+        direction="row"
+        spacing={2}
+        useFlexGap
+        flexWrap="wrap"
+        justifyContent="center"
+        alignItems="center"
+      >
         {/* Box 1 datos generales del proyecto */}
         <ProyectoResumenCard proyecto={proyecto} />
 
@@ -95,11 +106,19 @@ export default function ValidacionDocumentos() {
           onSubmit={async ({ files, comentario }) => {
             try {
               if (!files.length) {
-                return Swal.fire("Advertencia", "Debes seleccionar al menos un archivo.", "warning");
+                return Swal.fire(
+                  "Advertencia",
+                  "Debes seleccionar al menos un archivo.",
+                  "warning"
+                );
               }
 
               if (!comentario.trim()) {
-                return Swal.fire("Advertencia", "El comentario no puede estar vacío.", "warning");
+                return Swal.fire(
+                  "Advertencia",
+                  "El comentario no puede estar vacío.",
+                  "warning"
+                );
               }
 
               const response = await subirDocumentos({
@@ -108,12 +127,13 @@ export default function ValidacionDocumentos() {
                 estado: "Validacion Documentos", // ⚠️ cámbialo si usas otro tipo en backend
                 archivos: files,
               });
+              console.log(response);
 
               Swal.fire("¡Éxito!", response.message, "success");
               // 👇 fuerza la recarga de ListaDocumentos
               setReloadKey((prev) => prev + 1);
             } catch (error) {
-              console.error(error);
+              console.error("respuesta: ", error);
               Swal.fire("Error", error.message, "error");
             }
           }}
@@ -122,7 +142,13 @@ export default function ValidacionDocumentos() {
       </Stack>
       {user.role !== "contratista" && user.role !== "contratista-lider" && (
         <Stack sx={{ mt: 4 }} alignItems="center">
-          <Button variant="contained" color="warning" size="small" sx={{ width: 200 }} onClick={cargarBitacoraFinal}>
+          <Button
+            variant="contained"
+            color="warning"
+            size="small"
+            sx={{ width: 200 }}
+            onClick={cargarBitacoraFinal}
+          >
             {loadingNuevoEstado ? "Cargando..." : "Documentos Completos"}
           </Button>
         </Stack>

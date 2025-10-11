@@ -269,3 +269,9 @@ export const listaProyectosLiquidacion = async ({
 
   return response.data;
 };
+
+//funcion para actualizar y asignar el liquidadro:
+export const updateAsignarLiquidador = async (data) => {
+  const response = await apiClient.patch(`/proyecto/asignar-liquidador`, data);
+  return response.data;
+};

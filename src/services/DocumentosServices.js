@@ -16,9 +16,12 @@ export const fetchDocumentosByPo = async (poId) => {
 // 3. Descargar archivo por ID (crea enlace y lo simula)
 export const descargarArchivoDesdeUrl = async (nombre, id) => {
   try {
-    const response = await apiClient.get(`/documento-proyecto/descargar-documento/${id}`, {
-      responseType: "blob", // 👈 importante para manejar binarios
-    });
+    const response = await apiClient.get(
+      `/documento-proyecto/descargar-documento/${id}`,
+      {
+        responseType: "blob", // 👈 importante para manejar binarios
+      }
+    );
 
     const blob = new Blob([response.data]);
     const url = window.URL.createObjectURL(blob);
@@ -33,7 +36,9 @@ export const descargarArchivoDesdeUrl = async (nombre, id) => {
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error("Error al descargar el archivo:", error);
-    alert("No se pudo descargar el archivo. Verifica que exista en el servidor.");
+    alert(
+      "No se pudo descargar el archivo. Verifica que exista en el servidor."
+    );
   }
 };
 
@@ -44,7 +49,12 @@ export const deleteDocumentoById = async (id) => {
 };
 
 // 5. Subir documentos finales
-export const subirDocumentos = async ({ proyectoId, comentario, estado, archivos }) => {
+export const subirDocumentos = async ({
+  proyectoId,
+  comentario,
+  estado,
+  archivos,
+}) => {
   const formData = new FormData();
   formData.append("proyectoId", proyectoId);
   formData.append("comentario", comentario);
@@ -63,10 +73,13 @@ export const subirDocumentos = async ({ proyectoId, comentario, estado, archivos
     });
     return response.data;
   } catch (error) {
+    console.log("code estatus: ", error);
     if (error.response?.status === 500) {
       throw new Error("Error al subir documento o archivo muy grande");
     }
-    throw new Error(error.response?.data?.message || "Error al subir documentos");
+    throw new Error(
+      error.response?.data?.message || "Error al subir documentos"
+    );
   }
 };
 

@@ -27,6 +27,7 @@ export const getEstadoColor = (estado) => {
     "Con Correlativo": "#33691E", // Verde muy oscuro
     "Pendiente Liquidación": "#e43a07ff", // Naranja Intenso/Rojo
     DTA: "#3E2723", // Marrón muy oscuro
+    Liquidando: "#746865ff",
 
     // --- 5. Estados Terminales (Tonos Grises y Rojos) ---
     Finalizado: "#9E9E9E", // Gris
