@@ -134,15 +134,15 @@ export const descargarExcelPrevioPlanificacion = async (proyectoId) => {
   document.body.removeChild(link);
 };
 
-export const descargarExcelFormatoPlanificacion = async (proyectoId) => {
-  const response = await apiClient.get(
-    `/bitacora-final/formato-planificacion/${proyectoId}`,
+export const descargarExcelFormatoPlanificacion = async (proyectoIds) => {
+  const response = await apiClient.post(
+    `/bitacora-final/formato-planificacion`,
+    { proyectoIds }, // Enviar el array en el cuerpo
     {
-      responseType: "blob", // MUY IMPORTANTE
+      responseType: "blob", // Para recibir el archivo
     }
   );
 
-  // Crear un link temporal y simular click
   const blob = new Blob([response.data], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
@@ -151,7 +151,6 @@ export const descargarExcelFormatoPlanificacion = async (proyectoId) => {
   const link = document.createElement("a");
   link.href = url;
 
-  // Recuperar nombre de Content-Disposition si quieres
   const contentDisposition = response.headers["content-disposition"];
   let fileName = "rdo.xlsx";
   if (contentDisposition) {

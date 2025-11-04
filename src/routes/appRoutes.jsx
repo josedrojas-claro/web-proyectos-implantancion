@@ -34,6 +34,7 @@ import VerSolpedsCorrelativo from "../pages/planificacion/verSolpedsCorrelativo"
 import CargaSolpedsMasiva from "../pages/planificacion/cargaSolpedsMasiva";
 import CargaPoMasiva from "../pages/planificacion/cargaPoMasiva";
 import PendientePlanifacion from "../pages/planificacion/pendientePlanificacion";
+import ListaPendientePlanificacion from "../pages/planificacion/listaPendienPlanificar";
 //Miscelane
 import ListaContratistaPage from "../pages/miscelaneo/contratista/listaContratistaPage";
 import ListaSitios from "../pages/miscelaneo/sitios/listaSitios";
@@ -177,6 +178,11 @@ const appRoutes = [
   {
     path: "/lista-proyectos-planificacion/pendiente-planificacion/:ticketCode",
     element: <PendientePlanifacion />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-proyectos-planificacion/pendiente-planificacion",
+    element: <ListaPendientePlanificacion />,
     isPrivate: true,
   },
   //miscelaneo

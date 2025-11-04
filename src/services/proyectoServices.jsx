@@ -275,3 +275,30 @@ export const updateAsignarLiquidador = async (data) => {
   const response = await apiClient.patch(`/proyecto/asignar-liquidador`, data);
   return response.data;
 };
+
+//funcion para traer los proyectos pendientes de planificacion
+export const fetchProyectosPendientesPlanificacion = async ({
+  limit,
+  offset,
+  search,
+} = {}) => {
+  const response = await apiClient.get(
+    "/proyecto/proyectos-pendientes-de-planificar",
+    {
+      params: {
+        limit,
+        offset,
+        search,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const cambiarEstadoProyectosMultiples = async (ids) => {
+  const response = await apiClient.put(`/proyecto/avanzar-estado-multiple`, {
+    proyectoIds: ids,
+  });
+  return response.data;
+};

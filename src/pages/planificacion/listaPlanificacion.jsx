@@ -79,6 +79,11 @@ export default function ListaPlanificacion() {
       ),
     },
     {
+      title: "Codigo Ingeniería",
+      dataIndex: ["CodigosIngenieria", "codigo"],
+      key: "codigoIngenieria",
+    },
+    {
       title: "Acciones",
       key: "acciones",
       render: (text, record) => {
@@ -174,6 +179,10 @@ export default function ListaPlanificacion() {
 
   const handleCargaPO = () => {
     navigate(`/lista-proyectos-planificacion/carga-po-masiva`);
+  };
+
+  const handlePendientePlanificacion = () => {
+    navigate(`/lista-proyectos-planificacion/pendiente-planificacion`);
   };
 
   const handleAsignar = async (proyectoSeleccionado) => {
@@ -383,6 +392,21 @@ export default function ListaPlanificacion() {
                   Carga PO's
                 </Button>
               </Space>
+              <Button
+                onClick={handlePendientePlanificacion}
+                color="danger"
+                variant="solid"
+                icon={<FullscreenExitOutlined />}
+                style={{
+                  marginTop: 10,
+                  width: "100%",
+                  backgroundColor: "#558d39ff",
+                  color: "white",
+                  maxWidth: 200,
+                }}
+              >
+                Planificar
+              </Button>
             </Col>
           </Row>
         </Card>

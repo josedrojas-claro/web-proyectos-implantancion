@@ -73,7 +73,11 @@ export default function DetallesParaLiquidar() {
         <ProyectoResumenCard proyecto={proyecto} />
       </Flex>
 
-      <Space direction="vertical" size={24} style={{ width: "100%" }}>
+      <Space
+        direction="vertical"
+        size={24}
+        style={{ width: "100%", marginTop: 24 }}
+      >
         {/* Banner informativo general */}
         <Alert
           type="info"
