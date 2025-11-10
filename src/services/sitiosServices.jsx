@@ -32,3 +32,15 @@ export const fecthListaSitios = async ({ limit, offset, search } = {}) => {
 
   return response.data;
 };
+
+//lista zonificaiones
+export const fecthListaZonificaiones = async () => {
+  const response = await apiClient.get(`/zonificacion`);
+  return response.data;
+};
+
+//lista de municipios
+export const fetchListaMunicipios = async () => {
+  const response = await apiClient.get(`/municipios`);
+  return response.data;
+};

@@ -38,12 +38,14 @@ import ListaPendientePlanificacion from "../pages/planificacion/listaPendienPlan
 //Miscelane
 import ListaContratistaPage from "../pages/miscelaneo/contratista/listaContratistaPage";
 import ListaSitios from "../pages/miscelaneo/sitios/listaSitios";
+import ListaMateriales from "../pages/miscelaneo/materiales/listaMateriales";
 //conciliacion materiales
 import ListaConciliacionMateriales from "../pages/conciliacionMateriales/ListaConciliacionMateriales";
 import DetallesConciliacionMateriales from "../pages/conciliacionMateriales/detallesConciliacionMateriales";
 //liquidacion de proyectos
 import ListaProyectosLiquidar from "../pages/liquidacion/listaProyectosLiquidar";
 import DetallesParaLiquidar from "../pages/liquidacion/detallesParaLiquidar";
+
 const appRoutes = [
   { path: "/login", element: <Login />, isPrivate: false },
   {
@@ -194,6 +196,11 @@ const appRoutes = [
   {
     path: "/lista-sitios",
     element: <ListaSitios />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-materiales",
+    element: <ListaMateriales />,
     isPrivate: true,
   },
   //conciliacion materiales  DetallesConciliacionMateriales

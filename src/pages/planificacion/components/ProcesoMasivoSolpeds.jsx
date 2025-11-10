@@ -2,15 +2,12 @@ import React, { useState } from "react";
 import { Table, Card, Typography, Button, Space, Input, Alert } from "antd";
 import { ExperimentOutlined, BuildOutlined } from "@ant-design/icons";
 import { cargarSolpedsMasivos } from "../../../services/liquidacionServices";
-import { useNavigate } from "react-router-dom";
 
 import Swal from "sweetalert2";
 const { Title } = Typography;
 const { TextArea } = Input;
 
 const ProcesoMasivoSolpeds = () => {
-  const navigate = useNavigate();
-
   const [inputText, setInputText] = useState("");
   const [parsedData, setParsedData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -121,24 +118,30 @@ const ProcesoMasivoSolpeds = () => {
       // 2. Llamada al servicio, pasando el estado 'parsedData' directamente
       const response = await cargarSolpedsMasivos(parsedData);
 
-      // 3. Notificación de éxito con Swal
+      // 1. Mostrar mensaje de éxito
       await Swal.fire({
-        title: "¡Éxito!",
-        text: response.message || "Se cargan las solpeds",
-        icon: "success",
-        timer: 3000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
+        title: "Resultado de carga",
+        text: response.message,
+        icon: response.data.length > 0 ? "success" : "warning",
+        confirmButtonText: "OK",
       });
 
-      // 4. Limpiar el formulario para la siguiente carga
+      if (response.advertencias && response.advertencias.length > 0) {
+        const htmlAdvertencias = response.advertencias
+          .map((a) => {
+            return `<li><strong>${a.ticketCode}</strong>: ${a.mensaje}</li>`;
+          })
+          .join("");
+
+        await Swal.fire({
+          title: "Advertencias",
+          html: `<ul style="text-align:left;">${htmlAdvertencias}</ul>`,
+          icon: "info",
+          confirmButtonText: "Entendido",
+        });
+      }
       setInputText("");
       setParsedData([]);
-      // Redirigir al cerrar el mensaje
-      navigate("/lista-proyectos-planificacion");
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||

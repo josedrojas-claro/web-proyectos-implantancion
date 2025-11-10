@@ -13,9 +13,10 @@ import {
   Button,
   Tooltip,
 } from "antd";
+import { useNavigate } from "react-router-dom";
 
-import { DownloadOutlined } from "@ant-design/icons";
-
+import { DownloadOutlined, DollarOutlined } from "@ant-design/icons";
+import { confirmarLiquidacionSolped } from "../../../services/liquidacionServices";
 const { Panel } = Collapse;
 const { Text, Title } = Typography;
 import {
@@ -67,6 +68,7 @@ function groupByPOandSolped(ordenes = []) {
           grafo: sol.grafo,
           subtec: sol.subtec,
           descripcion: sol.descripcion,
+          isLiquidada: sol.isLiquidada,
           materiales: [],
           servicios: [],
           posiciones: [],
@@ -135,7 +137,14 @@ function groupByPOandSolped(ordenes = []) {
       }
     );
 
-    return { ...po, solpeds, contadores: contadoresPO };
+    const todasLiquidadas = solpeds.every((sp) => sp.isLiquidada);
+
+    return {
+      ...po,
+      solpeds,
+      contadores: contadoresPO,
+      estadoLiquidacion: todasLiquidadas ? "Liquidado" : "Pendiente", // 👈 Aquí
+    };
   });
 }
 
@@ -237,6 +246,7 @@ const materialColumns = [
 export default function POConSolpedsSimple({ data = [], refetch }) {
   const grouped = useMemo(() => groupByPOandSolped(data), [data]);
   const [isDownloading, setIsDownloading] = useState(false);
+  const navigate = useNavigate();
 
   const proyectoId = data[0].ordenesCompraPosiciones[0].solpeds.proyectoId;
 
@@ -313,6 +323,49 @@ export default function POConSolpedsSimple({ data = [], refetch }) {
     }
   };
 
+  const confirmarLiquidacion = async (proyectoId, solpeds) => {
+    const confirmacion = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¿Confirmas que ya has subido el archivo firmado y deseas confirmar PO Liquidada?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, confirmar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!confirmacion.isConfirmed) {
+      return; // El usuario canceló
+    }
+
+    try {
+      Swal.fire({
+        title: "Cargando...",
+        text: "Por favor espera.",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      const response = await confirmarLiquidacionSolped(proyectoId, solpeds);
+      Swal.fire({
+        icon: "success",
+        title: "¡Liquidación Confirmada!",
+        text:
+          response.message || "La liquidación se ha confirmado correctamente.",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      navigate("/lista-liquidacion-proyectos");
+    } catch (error) {
+      console.error("Error al confirmar liquidación:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo confirmar la liquidación. Inténtalo de nuevo.",
+      });
+    }
+  };
+
   return (
     <Space direction="vertical" size={16} style={{ width: "100%" }}>
       <Title level={4} style={{ margin: 0 }}>
@@ -329,6 +382,12 @@ export default function POConSolpedsSimple({ data = [], refetch }) {
                 <Tag color="blue">SOLPEDs: {po.contadores.solpeds}</Tag>
                 <Tag color="geekblue">Servicios: {po.contadores.servicios}</Tag>
                 <Tag color="gold">Materiales: {po.contadores.materiales}</Tag>
+
+                <Tag
+                  color={po.estadoLiquidacion === "Liquidado" ? "green" : "red"}
+                >
+                  {po.estadoLiquidacion}
+                </Tag>
 
                 <Tooltip title="Exporta los datos de esta PO en Excel">
                   <Button
@@ -355,6 +414,20 @@ export default function POConSolpedsSimple({ data = [], refetch }) {
                   po={po}
                   onSave={(params) => guardarFechas({ ...params, poId: po.id })}
                 />
+                <Button
+                  size="small"
+                  style={{
+                    width: 170,
+                  }}
+                  icon={<DollarOutlined />}
+                  onClick={() => {
+                    const solpedArray = po.solpeds.map((s) => s.numeroSOLPED);
+
+                    confirmarLiquidacion(proyectoId, solpedArray);
+                  }}
+                >
+                  Confirmar Liquidacion
+                </Button>
               </Flex>
             }
           >

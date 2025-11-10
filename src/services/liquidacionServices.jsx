@@ -187,3 +187,17 @@ export const actualizarDataPo = async (poId, data) => {
     throw error;
   }
 };
+
+//funcion para confirmar liquidacion de solpeds
+export const confirmarLiquidacionSolped = async (proyectoId, solpeds) => {
+  try {
+    const response = await apiClient.post(
+      `/solpeds/confirmar-solped-liquidadas`,
+      { proyectoId, solpeds }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al confirmar liquidación de Solped:", error);
+    throw error;
+  }
+};

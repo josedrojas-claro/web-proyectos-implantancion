@@ -13,6 +13,8 @@ import proyectosIcon from "../../assets/metric.png";
 import reportesIcon from "../../assets/reporteNegocio.png";
 import reservaIcon from "../../assets/reserva.png";
 import planificacionIcon from "../../assets/dta.png";
+import conciliacionIcon from "../../assets/conciliacionMateriales.png";
+import liquidacionIcon from "../../assets/taxes.png";
 
 // Define los roles de ejemplo que podrías usar. ¡Asegúrate de que estos coincidan con los roles reales de tus usuarios!
 const ROLES = {
@@ -107,7 +109,7 @@ const features = [
   },
   {
     title: "Conciliacion Materiales",
-    icon: "src/assets/conciliacionMateriales.png",
+    icon: conciliacionIcon,
     path: "/lista-conciliacion-materiales",
     allowedRoles: [
       ROLES.admin,
@@ -123,7 +125,7 @@ const features = [
   },
   {
     title: "Liquidacion",
-    icon: "src/assets/taxes.png",
+    icon: liquidacionIcon,
     path: "/lista-liquidacion-proyectos",
     allowedRoles: [
       ROLES.admin,

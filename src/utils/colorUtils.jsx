@@ -28,6 +28,8 @@ export const getEstadoColor = (estado) => {
     "Pendiente Liquidación": "#e43a07ff", // Naranja Intenso/Rojo
     DTA: "#3E2723", // Marrón muy oscuro
     Liquidando: "#746865ff",
+    Liquidado: "#5c2d1fff", // Marrón
+    "Liquidado Parcial": "#8D6E63", // Marrón Claro
 
     // --- 5. Estados Terminales (Tonos Grises y Rojos) ---
     Finalizado: "#9E9E9E", // Gris

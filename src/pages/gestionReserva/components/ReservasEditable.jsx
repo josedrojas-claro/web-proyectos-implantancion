@@ -111,11 +111,6 @@ const ReservasEditable = ({ data, loading, buttonTrue = true, recargar }) => {
         />
       ),
     },
-    {
-      title: "Estado",
-      dataIndex: "estado",
-      render: (text) => <span>{text}</span>,
-    },
   ];
 
   return (

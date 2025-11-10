@@ -10,6 +10,7 @@ import {
   Typography,
   Row,
   Col,
+  Select,
 } from "antd";
 import {
   PlusOutlined,
@@ -25,6 +26,8 @@ import {
   createSitio,
   updateSitio,
   deleteSitio,
+  fecthListaZonificaiones,
+  fetchListaMunicipios,
 } from "../../../services/sitiosServices"; // Assuming these services exist
 import { useAuthUser } from "../../../services/authServices"; // Importa el hook para obtener el usuario autenticado
 
@@ -46,6 +49,11 @@ const ListaSitios = () => {
     page: 1,
     limit: 10,
   });
+  const [zonificaciones, setZonificaciones] = useState([]);
+  const [loadingZonificaciones, setLoadingZonificaciones] = useState(false);
+
+  const [municipios, setMunicipios] = useState([]);
+  const [loadingMunicipios, setLoadingMunicipios] = useState(false);
 
   // --- 2. DATA FETCHING ---
   const loadSitios = useCallback(async () => {
@@ -65,9 +73,35 @@ const ListaSitios = () => {
     }
   }, [filters]);
 
+  const loadZonifiaciones = useCallback(async () => {
+    setLoadingZonificaciones(true);
+    try {
+      const response = await fecthListaZonificaiones(); // tu servicio
+      setZonificaciones(response);
+    } catch (error) {
+      console.error("Error al cargar zonificaciones:", error);
+    } finally {
+      setLoadingZonificaciones(false);
+    }
+  }, []);
+
+  const loadMunicipios = useCallback(async () => {
+    setLoadingMunicipios(true);
+    try {
+      const response = await fetchListaMunicipios(); // tu servicio
+      setMunicipios(response);
+    } catch (error) {
+      console.error("Error al cargar zonificaciones:", error);
+    } finally {
+      setLoadingMunicipios(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadSitios();
-  }, [loadSitios]);
+    loadZonifiaciones();
+    loadMunicipios();
+  }, [loadSitios, loadZonifiaciones, loadMunicipios]);
 
   // --- 3. CRUD HANDLERS ---
   const handleOpenModal = (sitio = null) => {
@@ -85,9 +119,16 @@ const ListaSitios = () => {
   };
 
   const handleFormSubmit = async (values) => {
+    // Filtrar campos vacíos que no son requeridos
+    const filteredValues = Object.fromEntries(
+      Object.entries(values).filter(
+        ([, value]) => value !== undefined && value !== null && value !== ""
+      )
+    );
+
     const apiCall = editingSitio
-      ? updateSitio(editingSitio.id, values)
-      : createSitio(values);
+      ? updateSitio(editingSitio.id, filteredValues)
+      : createSitio(filteredValues);
 
     const action = editingSitio ? "actualizado" : "creado";
 
@@ -101,8 +142,11 @@ const ListaSitios = () => {
       handleCloseModal();
       loadSitios();
     } catch (error) {
-      console.error(`Error al ${action} el sitio:`, error);
-      Swal.fire("Error", `No se pudo ${action} el sitio.`, "error");
+      console.error(
+        `Error al ${action} el sitio:`,
+        error.response.data.message
+      );
+      Swal.fire("Error", error.response.data.message, "error");
     }
   };
 
@@ -243,7 +287,7 @@ const ListaSitios = () => {
 
       <Modal
         title={editingSitio ? "Editar Sitio" : "Nuevo Sitio"}
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCloseModal}
         footer={null} // We will use the form's button
       >
@@ -255,8 +299,9 @@ const ListaSitios = () => {
               { required: true, message: "Por favor, ingrese el nombre." },
             ]}
           >
-            <Input />
+            <Input placeholder="Ej. AEROPUERTO PUNTA HUETE" />
           </Form.Item>
+
           <Form.Item
             name="nemonico"
             label="Nemónico"
@@ -264,12 +309,131 @@ const ListaSitios = () => {
               { required: true, message: "Por favor, ingrese el nemónico." },
             ]}
           >
-            <Input />
+            <Input placeholder="Ej. MN608" />
           </Form.Item>
-          <Form.Item name="dirreccion" label="Dirección">
-            <Input.TextArea rows={3} />
+
+          <Form.Item
+            name="claseObjetivo"
+            label="Clase Objetivo"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, ingrese la clase objetivo.",
+              },
+            ]}
+          >
+            <Input placeholder="Ej. RBS" />
           </Form.Item>
-          {/* Add other form fields here (municipioId, zonficacionId, etc.) using Select components */}
+
+          <Form.Item
+            name="centroEmpalazamiento"
+            label="Centro Empalazamiento"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, ingrese el centro de empalazamiento.",
+              },
+            ]}
+          >
+            <Input placeholder="Ej. E936" />
+          </Form.Item>
+
+          <Form.Item
+            name="empalazamiento"
+            label="Empalazamiento"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, ingrese el empalazamiento.",
+              },
+            ]}
+          >
+            <Input placeholder="Ej. MANAGUA-SAN. FCO. LIBRE" />
+          </Form.Item>
+
+          <Form.Item
+            name="dirreccion"
+            label="Dirección"
+            rules={[{ message: "Por favor, ingrese la dirección." }]}
+          >
+            <Input placeholder="Ej. Pista 1.34Km Norte, Aerop. Punta Huete San Francisco Libre, Managua" />
+          </Form.Item>
+
+          <Form.Item
+            name="latitud"
+            label="Latitud"
+            rules={[{ message: "Por favor, ingrese la latitud." }]}
+          >
+            <Input placeholder="Ej. 12.362054" />
+          </Form.Item>
+
+          <Form.Item
+            name="longitud"
+            label="Longitud"
+            rules={[{ message: "Por favor, ingrese la longitud." }]}
+          >
+            <Input placeholder="Ej. -86.170617" />
+          </Form.Item>
+
+          <Form.Item
+            name="ubicacionTenica"
+            label="Ubicación Técnica"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, ingrese la ubicación técnica.",
+              },
+            ]}
+          >
+            <Input placeholder="Ej. NI-B-MA-SIT-SC-MN0608" />
+          </Form.Item>
+          <Form.Item
+            name="zonficacionId"
+            label="Zonificación"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, seleccione una zonificación.",
+              },
+            ]}
+          >
+            <Select
+              placeholder="Seleccione una zonificación"
+              loading={loadingZonificaciones}
+              showSearch
+              optionFilterProp="children"
+            >
+              {zonificaciones.map((zona) => (
+                <Select.Option key={zona.id} value={zona.id}>
+                  {zona.nombreZonificacion}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="municipioId"
+            label="Municipio"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, seleccione un Municipio.",
+              },
+            ]}
+          >
+            <Select
+              placeholder="Seleccione un Municipio"
+              loading={loadingMunicipios}
+              showSearch
+              optionFilterProp="children"
+            >
+              {municipios.map((muni) => (
+                <Select.Option key={muni.id} value={muni.id}>
+                  {muni.municipio}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" block>
               {editingSitio ? "Actualizar" : "Guardar"}

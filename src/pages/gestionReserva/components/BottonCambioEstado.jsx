@@ -82,30 +82,6 @@ const BottonCambioEstado = ({ proyectoSeleccionado }) => {
 
     if (!checklist.isConfirmed) return;
 
-    // -------- PASO 2: Confirmación final e irreversible --------
-    const confirmacionFinal = await Swal.fire({
-      title: "¿Confirmar envío a Ejecución?",
-      icon: "warning",
-      html: `
-        <div style="text-align:left;">
-          <p>Estás por enviar este proyecto a <strong>Ejecución</strong>.</p>
-          <ul style="margin-left:18px;">
-            <li>El cambio es <strong>irreversible desde esta pantalla</strong>.</li>
-            <li>No podrás regresar a la ventana anterior.</li>
-            <li>Se actualizará el estado del proyecto y continuará el flujo operativo.</li>
-          </ul>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: "Sí, confirmar y ejecutar",
-      cancelButtonText: "Cancelar",
-      confirmButtonColor: "#d33",
-      allowOutsideClick: false,
-      reverseButtons: true,
-    });
-
-    if (!confirmacionFinal.isConfirmed) return;
-
     // -------- PASO 3: Llamada a API con loading --------
     try {
       Swal.fire({

@@ -5,6 +5,21 @@ export const fetchMateriales = async () => {
   return response.data;
 };
 
+export const createMaterial = async (data) => {
+  const response = await apiClient.post("/materiales", data);
+  return response.data;
+};
+
+export const updateMaterial = async (id, data) => {
+  const response = await apiClient.patch(`/materiales/${id}`, data);
+  return response.data;
+};
+
+export const deleteMaterial = async (id) => {
+  const response = await apiClient.delete(`/materiales/${id}`);
+  return response.data;
+};
+
 //funcion para buscar con filtro desde el backend
 export const fetchMaterialesByFiltro = async (busqueda) => {
   const response = await apiClient.get("/materiales/filtro", {
@@ -294,4 +309,17 @@ export const descargarExcelFormatoConciliacion = async (proyectoId) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+};
+
+//lista de materiales normales
+export const fecthListaMateriales = async ({ limit, offset, search } = {}) => {
+  const response = await apiClient.get("/materiales/lista-materiales", {
+    params: {
+      limit,
+      offset,
+      search,
+    },
+  });
+
+  return response.data;
 };

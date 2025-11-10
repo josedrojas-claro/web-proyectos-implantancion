@@ -134,10 +134,14 @@ export const descargarExcelPrevioPlanificacion = async (proyectoId) => {
   document.body.removeChild(link);
 };
 
-export const descargarExcelFormatoPlanificacion = async (proyectoIds) => {
+export const descargarExcelFormatoPlanificacion = async (
+  proyectoIds,
+  nombreProyectoGeneral,
+  comentarioGeneral
+) => {
   const response = await apiClient.post(
     `/bitacora-final/formato-planificacion`,
-    { proyectoIds }, // Enviar el array en el cuerpo
+    { proyectoIds, nombreProyectoGeneral, comentarioGeneral }, // Enviar el array en el cuerpo
     {
       responseType: "blob", // Para recibir el archivo
     }

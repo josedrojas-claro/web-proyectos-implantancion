@@ -140,6 +140,11 @@ export default function ProyectoResumenCard({ proyecto }) {
     "Pendiente Planificación",
     "Pendiente Liquidación",
     "Con PO-Ejecutado",
+    "Liquidado",
+    "Con PO",
+    "Liquidado Parcial",
+    "Liquidando",
+    "Pendiente Planificación",
   ];
 
   const estadosDescargaSinPo = [
@@ -153,7 +158,12 @@ export default function ProyectoResumenCard({ proyecto }) {
     "Con SOLPED",
     "Con Correlativo",
     "Pendiente Liquidación",
+    "Pendiente Planificación",
     "Con PO-Ejecutado",
+    "Liquidado",
+    "Con PO",
+    "Liquidado Parcial",
+    "Liquidando",
   ];
 
   // Función para verificar si el estado del proyecto está en la lista estadosDescarga
@@ -246,7 +256,7 @@ export default function ProyectoResumenCard({ proyecto }) {
             <>
               <Divider style={{ margin: "8px 0" }} />
               <Flex justify="center">
-                {proyecto.estado.nombre !== "Pendiente Planificación" && (
+                {
                   <Button
                     type="primary"
                     icon={<DownloadOutlined />}
@@ -256,7 +266,7 @@ export default function ProyectoResumenCard({ proyecto }) {
                   >
                     Descargar Bitácora
                   </Button>
-                )}
+                }
                 <Button
                   onClick={
                     proyecto.estado.nombre === "Pendiente Planificación"
