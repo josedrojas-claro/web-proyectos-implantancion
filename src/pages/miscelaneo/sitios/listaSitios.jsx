@@ -250,9 +250,12 @@ const ListaSitios = () => {
                 enterButton={<SearchOutlined />}
               />
             </Col>
-            {["admin", "coordinador-ing", "coordinador-sup"].includes(
-              userRole
-            ) && (
+            {[
+              "admin",
+              "coordinador-ing",
+              "coordinador-sup",
+              "planificador",
+            ].includes(userRole) && (
               <Col
                 xs={24}
                 md={4}

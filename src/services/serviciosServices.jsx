@@ -98,3 +98,32 @@ export const updateServiciosAsignadosEjecucion = async (id, serviciosId) => {
   );
   return response.data;
 };
+
+//funcion para lista de servicios generales
+export const fecthListaServicios = async ({ limit, offset, search } = {}) => {
+  const response = await apiClient.get("/servicios/lista-servicios", {
+    params: {
+      limit,
+      offset,
+      search,
+    },
+  });
+
+  return response.data;
+};
+
+//funccion para crear servicio nuevo
+export const nuevoServicio = async (data) => {
+  const response = await apiClient.post(`/servicios`, data);
+  return response.data;
+};
+
+export const actualizarServicio = async (id, data) => {
+  const response = await apiClient.patch(`/servicios/${id}`, data);
+  return response.data;
+};
+
+export const deleteServicio = async (id) => {
+  const response = await apiClient.delete(`/servicios/${id}`);
+  return response.data;
+};

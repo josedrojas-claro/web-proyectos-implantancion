@@ -39,6 +39,7 @@ import ListaPendientePlanificacion from "../pages/planificacion/listaPendienPlan
 import ListaContratistaPage from "../pages/miscelaneo/contratista/listaContratistaPage";
 import ListaSitios from "../pages/miscelaneo/sitios/listaSitios";
 import ListaMateriales from "../pages/miscelaneo/materiales/listaMateriales";
+import ListaServicios from "../pages/miscelaneo/servicios/listaServicios";
 //conciliacion materiales
 import ListaConciliacionMateriales from "../pages/conciliacionMateriales/ListaConciliacionMateriales";
 import DetallesConciliacionMateriales from "../pages/conciliacionMateriales/detallesConciliacionMateriales";
@@ -201,6 +202,11 @@ const appRoutes = [
   {
     path: "/lista-materiales",
     element: <ListaMateriales />,
+    isPrivate: true,
+  },
+  {
+    path: "/lista-servicios",
+    element: <ListaServicios />,
     isPrivate: true,
   },
   //conciliacion materiales  DetallesConciliacionMateriales

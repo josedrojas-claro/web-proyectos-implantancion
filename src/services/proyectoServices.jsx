@@ -302,3 +302,8 @@ export const cambiarEstadoProyectosMultiples = async (ids) => {
   });
   return response.data;
 };
+
+export const getListaGerenciasTecnicas = async () => {
+  const response = await apiClient.get("/gerenciastecnias");
+  return response.data;
+};

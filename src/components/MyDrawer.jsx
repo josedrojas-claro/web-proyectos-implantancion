@@ -32,7 +32,11 @@ export default function MyDrawer({ open, toggleDrawer }) {
 
   const drawerItems = [
     { label: "Página Principal", path: "/home", icon: <HomeIcon /> },
-    { label: "Servicios", path: "/servicios", icon: <ConstructionIcon /> },
+    {
+      label: "Servicios",
+      path: "/lista-servicios",
+      icon: <ConstructionIcon />,
+    },
     { label: "Materiales", path: "/lista-materiales", icon: <WarehouseIcon /> },
     { label: "Sitios", path: "/lista-sitios", icon: <LocationOnIcon /> },
     { label: "Contratistas", path: "/lista-contratistas", icon: <GroupIcon /> },

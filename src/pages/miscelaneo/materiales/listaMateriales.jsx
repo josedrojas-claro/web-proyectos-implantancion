@@ -77,7 +77,7 @@ export default function ListaMateriales() {
       key: "codigo",
     },
     {
-      title: "Código",
+      title: "Descripcion",
       dataIndex: "descripcion",
       key: "descripcion",
     },
@@ -246,7 +246,6 @@ export default function ListaMateriales() {
             total: materiales.totalItems,
             onChange: handlePaginationChange,
           }}
-          //   onChange={handleTableChange}
         />
       </Card>
       <Modal
