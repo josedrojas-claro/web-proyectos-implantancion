@@ -26,7 +26,6 @@ import {
 } from "@mui/material";
 import SignaturePad from "react-signature-pad-wrapper";
 import CircularProgress from "@mui/material/CircularProgress";
-
 const BitacoraFinal = () => {
   const { ticketCode } = useParams();
   const location = useLocation();
@@ -58,12 +57,15 @@ const BitacoraFinal = () => {
   //variable para manejar el cambio de estado del proyecto
   const [loadingNuevoEstado, setLoadingNuevoEstado] = useState(false);
   //variable para abirl el modal para confirma cambio de estado
-  const [openConfirmacionCambioEstado, setOpenConfirmacionCambioEstado] = useState(false);
+  const [openConfirmacionCambioEstado, setOpenConfirmacionCambioEstado] =
+    useState(false);
   React.useEffect(() => {
     if (!proyecto) {
       navigate("/lista-proyectos-ejecucion", {
         replace: true,
-        state: { error: "Acceso inválido a bitácora final. Usa el flujo correcto." },
+        state: {
+          error: "Acceso inválido a bitácora final. Usa el flujo correcto.",
+        },
       });
     }
   }, [proyecto, navigate]);
@@ -98,7 +100,8 @@ const BitacoraFinal = () => {
   const firmaOperaciones = bitacora?.[0]?.firmaOperaciones;
 
   const handleAceptarFirma = async () => {
-    const yaFirmaronContratistaYSupervisor = !!firmaSupervisor && !!firmaContratista;
+    const yaFirmaronContratistaYSupervisor =
+      !!firmaSupervisor && !!firmaContratista;
 
     // Siempre se debe enviar comentario
     if (!comentario.trim()) {
@@ -121,7 +124,9 @@ const BitacoraFinal = () => {
         });
         return;
       }
-      const firma = sigCanvas.current.toDataURL("image/png").replace(/^data:image\/png;base64,/, "");
+      const firma = sigCanvas.current
+        .toDataURL("image/png")
+        .replace(/^data:image\/png;base64,/, "");
 
       payload.firmaOperaciones = firma;
       payload.nombreOperaciones = nombre.trim();
@@ -141,7 +146,8 @@ const BitacoraFinal = () => {
       });
     } catch (error) {
       console.error("Error al guardar firma:", error);
-      const mensaje = error?.response?.data?.message || "Error al guardar firma en servidor.";
+      const mensaje =
+        error?.response?.data?.message || "Error al guardar firma en servidor.";
       setSnackbar({
         open: true,
         message: mensaje,
@@ -164,7 +170,9 @@ const BitacoraFinal = () => {
   const cargarBitacoraFinal = async (proyecto) => {
     try {
       setLoadingNuevoEstado(true);
-      const response = await cambioEstadoGeneral(proyecto.id, { nuevoEstadoNombre: "Validacion Documentos" });
+      const response = await cambioEstadoGeneral(proyecto.id, {
+        nuevoEstadoNombre: "Validacion Documentos",
+      });
       setSnackbar({
         open: true,
         message: response.message || "Proyecto cambia de estado.",
@@ -177,7 +185,9 @@ const BitacoraFinal = () => {
       console.error("Error al cambiar estado del proyecto:", error);
       setSnackbar({
         open: true,
-        message: error?.response?.data?.message || "Error al cambiar estado del proyecto.",
+        message:
+          error?.response?.data?.message ||
+          "Error al cambiar estado del proyecto.",
         severity: "error",
       });
     }
@@ -211,10 +221,14 @@ const BitacoraFinal = () => {
                     size="small"
                     sx={{ width: 200 }}
                     disabled={loadingNuevoEstado}
-                    startIcon={loadingNuevoEstado && <CircularProgress size={16} />}
+                    startIcon={
+                      loadingNuevoEstado && <CircularProgress size={16} />
+                    }
                     onClick={() => setOpenConfirmacionCambioEstado(true)}
                   >
-                    {loadingNuevoEstado ? "Cambiando estado..." : "Proyecto Ejecutado"}
+                    {loadingNuevoEstado
+                      ? "Cambiando estado..."
+                      : "Proyecto Ejecutado"}
                   </Button>
                 )}
 
@@ -223,7 +237,9 @@ const BitacoraFinal = () => {
                   size="small"
                   sx={{ width: 200 }}
                   disabled={loadingNuevoEstado}
-                  startIcon={loadingNuevoEstado && <CircularProgress size={16} />}
+                  startIcon={
+                    loadingNuevoEstado && <CircularProgress size={16} />
+                  }
                   onClick={handleDescargar}
                 >
                   {loadingNuevoEstado ? "Cambiando estado..." : "Descargar PDF"}
@@ -233,7 +249,13 @@ const BitacoraFinal = () => {
           )}
 
           {/* firmas ya registradas */}
-          <Grid container spacing={3} justifyContent="space-around" alignItems="center" sx={{ mt: 4, px: 2 }}>
+          <Grid
+            container
+            spacing={3}
+            justifyContent="space-around"
+            alignItems="center"
+            sx={{ mt: 4, px: 2 }}
+          >
             {/* firma contratista */}
             {!firmaContratista && (
               <Box sx={{ mb: 2 }}>
@@ -250,10 +272,12 @@ const BitacoraFinal = () => {
                     textAlign: "center",
                   }}
                 >
-                  {proyecto.SupervisorContratista.UserData.nombre || "Contratista sin nombre"}
+                  {proyecto.SupervisorContratista.UserData.nombre ||
+                    "Contratista sin nombre"}
                 </Box>
                 <Alert severity="warning" sx={{ mt: 1, maxWidth: "400px" }}>
-                  Antes de seguir el flujo, el supervisor del contratista debe aceptar la bitácora final primero.
+                  Antes de seguir el flujo, el supervisor del contratista debe
+                  aceptar la bitácora final primero.
                 </Alert>
                 {usuarioEsContratista && !firmaContratista && (
                   <Button
@@ -292,7 +316,9 @@ const BitacoraFinal = () => {
                   <Typography fontWeight="bold" mt={1}>
                     {bitacora[0].nombreContratista}
                   </Typography>
-                  <Typography fontSize={13}>{proyecto.SupervisorContratista.UserData.carnet}</Typography>
+                  <Typography fontSize={13}>
+                    {proyecto.SupervisorContratista.UserData.carnet}
+                  </Typography>
                 </Box>
               </Grid>
             )}
@@ -312,7 +338,8 @@ const BitacoraFinal = () => {
                     textAlign: "center",
                   }}
                 >
-                  {proyecto.Supervisor.UserData.nombre || "Supervisor sin nombre"}
+                  {proyecto.Supervisor.UserData.nombre ||
+                    "Supervisor sin nombre"}
                 </Box>
                 <Alert severity="warning" sx={{ mt: 1, maxWidth: "400px" }}>
                   El supervisor debe aceptar la bitácora final.
@@ -354,7 +381,9 @@ const BitacoraFinal = () => {
                   <Typography fontWeight="bold" mt={1}>
                     {proyecto.Supervisor.UserData.nombre}
                   </Typography>
-                  <Typography fontSize={13}>{proyecto.Supervisor.UserData.carnet}</Typography>
+                  <Typography fontSize={13}>
+                    {proyecto.Supervisor.UserData.carnet}
+                  </Typography>
                 </Box>
               </Grid>
             )}
@@ -393,7 +422,11 @@ const BitacoraFinal = () => {
                   sx={{ mb: 2 }}
                   variant="outlined"
                 />
-                <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  fontWeight="bold"
+                  sx={{ mb: 1 }}
+                >
                   Firma
                 </Typography>
                 <Box
@@ -425,10 +458,20 @@ const BitacoraFinal = () => {
                   />
                 </Box>
                 <Box display="flex" justifyContent="space-between" gap={2}>
-                  <Button onClick={() => sigCanvas.current.clear()} variant="outlined" color="secondary" fullWidth>
+                  <Button
+                    onClick={() => sigCanvas.current.clear()}
+                    variant="outlined"
+                    color="secondary"
+                    fullWidth
+                  >
                     Limpiar
                   </Button>
-                  <Button onClick={handleAceptarFirma} variant="contained" color="primary" fullWidth>
+                  <Button
+                    onClick={handleAceptarFirma}
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                  >
                     Guardar Firma
                   </Button>
                 </Box>
@@ -447,7 +490,9 @@ const BitacoraFinal = () => {
                     {bitacora[0].nombreOperaciones}
                   </Typography>
                   <Typography fontSize={13}>{bitacora[0].carnet}</Typography>
-                  <Typography fontSize={13}>{bitacora[0].tipoCliente}</Typography>
+                  <Typography fontSize={13}>
+                    {bitacora[0].tipoCliente}
+                  </Typography>
                 </Box>
               </Grid>
             )}
@@ -456,7 +501,10 @@ const BitacoraFinal = () => {
       </div>
 
       {/* dialog para confirmar la firma */}
-      <Dialog open={showConfirmDialog} onClose={() => setShowConfirmDialog(false)}>
+      <Dialog
+        open={showConfirmDialog}
+        onClose={() => setShowConfirmDialog(false)}
+      >
         <DialogTitle>¿Estás seguro de firmar esta bitácora?</DialogTitle>
         <DialogContent>
           <Typography fontWeight="bold" gutterBottom>
@@ -465,28 +513,40 @@ const BitacoraFinal = () => {
           <Typography>- Ha revisado la bitácora correctamente.</Typography>
           <Typography>- Acepta los términos registrados.</Typography>
           <Typography>
-            - Si es necesario realizar cambios, puede editar el último comentario antes de proceder.
+            - Si es necesario realizar cambios, puede editar el último
+            comentario antes de proceder.
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancelar</Button>
-          <Button onClick={handleAceptarFirma} variant="contained" color="error">
+          <Button
+            onClick={handleAceptarFirma}
+            variant="contained"
+            color="error"
+          >
             Confirmar firma
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* dialog para confirmar el cambio de estado del proyecto */}
-      <Dialog open={openConfirmacionCambioEstado} onClose={() => setOpenConfirmacionCambioEstado(false)}>
+      <Dialog
+        open={openConfirmacionCambioEstado}
+        onClose={() => setOpenConfirmacionCambioEstado(false)}
+      >
         <DialogTitle>¿Confirmar ejecución?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Estás a punto de marcar este proyecto como <strong>Ejecutado</strong>. Esta acción cambiará su estado.
-            ¿Estás seguro de continuar?
+            Estás a punto de marcar este proyecto como{" "}
+            <strong>Ejecutado</strong>. Esta acción cambiará su estado. ¿Estás
+            seguro de continuar?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenConfirmacionCambioEstado(false)} color="inherit">
+          <Button
+            onClick={() => setOpenConfirmacionCambioEstado(false)}
+            color="inherit"
+          >
             Cancelar
           </Button>
           <Button

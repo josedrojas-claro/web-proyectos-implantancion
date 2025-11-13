@@ -20,6 +20,8 @@ import {
   Group as GroupIcon,
   Logout as LogoutIcon,
   Settings as SettingsIcon,
+  PersonAddAlt as PersonAddAltIcon,
+  Password as PasswordIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/authServices";
@@ -29,6 +31,7 @@ export default function MyDrawer({ open, toggleDrawer }) {
   const navigate = useNavigate();
 
   const user = useAuthUser();
+  const userRole = user?.role;
 
   const drawerItems = [
     { label: "Página Principal", path: "/home", icon: <HomeIcon /> },
@@ -40,9 +43,19 @@ export default function MyDrawer({ open, toggleDrawer }) {
     { label: "Materiales", path: "/lista-materiales", icon: <WarehouseIcon /> },
     { label: "Sitios", path: "/lista-sitios", icon: <LocationOnIcon /> },
     { label: "Contratistas", path: "/lista-contratistas", icon: <GroupIcon /> },
+    {
+      label: "Cambiar Password",
+      path: "/cambiar-password",
+      icon: <PasswordIcon />,
+    },
     // El ítem de Configuración solo se añade al arreglo si el rol del usuario es 'admin'
-    ...(user?.role === "admin"
+    ...(["admin", "coordinador-ing", "coordinador-sup"].includes(userRole)
       ? [
+          {
+            label: "Usuarios",
+            path: "/lista-usuarios",
+            icon: <PersonAddAltIcon />,
+          },
           {
             label: "Configuracion",
             path: "/configuraciones", // Corregí la ruta para que sea única

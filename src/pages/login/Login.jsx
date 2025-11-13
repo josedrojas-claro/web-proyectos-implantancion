@@ -31,7 +31,6 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const response = await login(email, password);
-      console.log(response.data);
       setAlertType("success");
       setAlertMsg(`Bienvenido ${response.data.User?.UserData.nombre}`);
       setAlertOpen(true);
@@ -41,7 +40,6 @@ export default function Login() {
         navigate("/home", { replace: true }); // ← reemplaza el historial (borra /login)
       }, 1500); // opcional, si quieres mostrar el mensaje 1.5s antes de navegar
     } catch (err) {
-      console.error("Error:", err);
       setLoading(true); // ← activa el bloqueador
 
       if (err.response && err.response.status === 401) {
@@ -52,7 +50,7 @@ export default function Login() {
         }, 1500); // espera 1.5 segundos para mostar el procesnado
       } else {
         setAlertType("error");
-        setAlertMsg("Error al iniciar sesión o contactar al administrador");
+        setAlertMsg(err.response.data.message);
         setTimeout(() => {
           setLoading(false); // ← desactivar el bloqueador
         }, 1500); // espera 1.5 segundos para mostar el procesnado

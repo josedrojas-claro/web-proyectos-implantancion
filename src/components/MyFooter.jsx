@@ -1,23 +1,24 @@
 // src/components/MyFooter.jsx
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Layout, Typography } from "antd";
+
+const { Footer } = Layout;
+const { Text } = Typography;
 
 export default function MyFooter() {
   return (
-    <Box
-      component="footer"
-      sx={{
+    <Footer
+      style={{
         backgroundColor: "#f5f5f5",
-        py: 1,
-        px: 2,
-        mt: "auto",
+        padding: "8px 16px",
+        marginTop: "auto",
         textAlign: "center",
         borderTop: "1px solid #ddd",
       }}
     >
-      <Typography variant="caption" color="text.secondary">
+      <Text type="secondary" style={{ fontSize: 12 }}>
         Claro Nicaragua - Gerencia Implantación
-      </Typography>
-    </Box>
+      </Text>
+    </Footer>
   );
 }

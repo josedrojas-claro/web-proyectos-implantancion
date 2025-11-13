@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const API = import.meta.env.VITE_API_dev;
+import apiClient from "./apiClient";
 
 export const login = async (email, password) => {
   const res = await axios.post(`${API}/auth/login`, { email, password });
@@ -28,4 +29,14 @@ export const logout = async () => {
 export const useAuthUser = () => {
   const userRaw = localStorage.getItem("user");
   return userRaw ? JSON.parse(userRaw) : null;
+};
+
+export const cambiarContraseña = async (data) => {
+  const response = await apiClient.post("/auth/change-password", data);
+  return response.data; // Aquí sí existe
+};
+
+export const resetContraseña = async (id) => {
+  const response = await apiClient.post(`/auth/reset-password/${id}`);
+  return response.data;
 };
